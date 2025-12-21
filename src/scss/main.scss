@@ -1,0 +1,16 @@
+// 1. Configurações e Base
+@use 'base/variables' as *;
+@use 'base/reset';
+
+// 2. Layout
+@use 'layout/container';
+@use 'layout/header';
+@use 'layout/footer';
+
+// 3. Componentes
+@use 'components/buttons';
+@use 'components/cards';
+@use 'components/inputs';
+
+// 4. Páginas 
+@use 'pages/home';
