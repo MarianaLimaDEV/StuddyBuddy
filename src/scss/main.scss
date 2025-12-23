@@ -1,16 +1,29 @@
-// 1. Configurações e Base
-@use 'base/variables' as *;
-@use 'base/reset';
+@use '_variables.scss' as *;
+@use '_footer.scss' as *;
+@use '_navbar.scss' as *;
+@use 'reset.scss' as *;
+@use 'responsive' as *;
 
-// 2. Layout
-@use 'layout/container';
-@use 'layout/header';
-@use 'layout/footer';
+body {
+  min-height: 100vh;
+}
 
-// 3. Componentes
-@use 'components/buttons';
-@use 'components/cards';
-@use 'components/inputs';
+#container {
+  height: 90vh;
+  background-color: $bg-color;
+}
 
-// 4. Páginas 
-@use 'pages/home';
+#card {
+  width: 100px;
+  height: 100px;
+  background-color: $card-color;
+  border-radius: 5px;
+  position: fixed;
+  cursor: grab;
+
+  // Feedback visual ao clicar
+  &:active {
+    cursor: grabbing;
+    filter: brightness(0.9);
+  }
+}
