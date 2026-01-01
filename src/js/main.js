@@ -1,28 +1,39 @@
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
-const card = document.getElementById('card')
+const card = document.getElementById('card');
 
-card.addEventListener('mousedown', mouseDown)
+if (card) {
+  card.addEventListener('mousedown', mouseDown);
+}
 
 function mouseDown(e){
-    startX = e.clientX
-    startY = e.clientY
+    e.preventDefault(); // prevent text selection start
+    startX = e.clientX;
+    startY = e.clientY;
 
-    document.addEventListener('mousemove', mouseMove)
-    document.addEventListener('mouseup', mouseUp)
+    // disable text selection globally while dragging
+    document.body.style.userSelect = 'none';
+
+    document.addEventListener('mousemove', mouseMove);
+    document.addEventListener('mouseup', mouseUp);
 }
 
 function mouseMove(e){
-    newX = startX - e.clientX 
-    newY = startY - e.clientY 
+    newX = startX - e.clientX;
+    newY = startY - e.clientY;
   
-    startX = e.clientX
-    startY = e.clientY
+    startX = e.clientX;
+    startY = e.clientY;
 
-    card.style.top = (card.offsetTop - newY) + 'px'
-    card.style.left = (card.offsetLeft - newX) + 'px'
+    card.style.top = (card.offsetTop - newY) + 'px';
+    card.style.left = (card.offsetLeft - newX) + 'px';
 }
 
 function mouseUp(e){
-    document.removeEventListener('mousemove', mouseMove)
+    document.removeEventListener('mousemove', mouseMove);
+    document.removeEventListener('mouseup', mouseUp);
+
+    // restore text selection
+    document.body.style.userSelect = '';
 }
+

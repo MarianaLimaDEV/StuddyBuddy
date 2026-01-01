@@ -3,10 +3,15 @@ $grid-size: 4em;
 
 // Navbar
 $nav-height: 80px;
-$primary-white: #ffffff; // Ajuste conforme necessário
+$primary-white: #e79797; // Ajuste conforme necessário
 $transition-speed: 0.7s;
 
 // Main colors
-$bg-color: #f0f2f5;
+$bg-color: #7796c5;
 $card-color: #3498db;
 $transition-fast: 0.2s ease;
+
+//hover navbar
+$hover-bg: #6c6c6c;
+$hover-color: #ffacac;
+$hover-border: #bababa;

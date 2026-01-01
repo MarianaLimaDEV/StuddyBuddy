@@ -8,9 +8,10 @@
   position: sticky;
   top: 0;
   background: transparent;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   z-index: 999;
+  
 
   &-container {
     display: flex;
@@ -38,9 +39,9 @@
         white-space: nowrap;
 
         &:hover {
-          color: gray;
-          background: rgba(188, 212, 229, 0.8);
-          border: 2px solid #ffff;
+          color: $hover-color;
+          background: $hover-bg;
+          border: 2px solid $hover-border;
         }
       }
     }
@@ -54,3 +55,4 @@
     cursor: pointer;
   }
 }
+
