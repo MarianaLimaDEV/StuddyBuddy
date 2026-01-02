@@ -1,17 +1,35 @@
+// Grid
 $grid-color: #292a30;
 $grid-size: 4em;
 
-// Navbar
-$nav-height: 80px;
-$primary-white: #e79797; // Ajuste conforme necessário
+// Nav / layout
+$nav-height: 64px;
+
+// Color palette — Paleta principal (escura, com accents)
+$bg-color: #212228;        // fundo principal (escuro)
+$surface: #2b2f36;        // superfícies sobre o fundo
+
+$primary: #3498db;        // cor principal (azul)
+$primary-variant: #2b82c8;
+$secondary: #AFDA9F;      // secundária (verde suave)
+$accent: #F6C667;         // destaque (amarelo/quente)
+
+$text: #F4F7FA;           // texto claro principal
+$muted: #9AA3AD;          // texto secundário / subtítulos
+
+$success: #34D399;
+$warning: #F59E0B;
+$danger: #EF4444;
+
+// legacy / aliases (para compatibilidade com os ficheiros existentes)
+$primary-white: $text;    // usado no navbar e em outros lugares
+$card-color: $primary;    // card padrão
+
+// Hover / interacção
+$hover-bg: rgba(255,255,255,0.06);
+$hover-color: $accent;
+$hover-border: rgba(255,255,255,0.12);
+
+// Transitions
 $transition-speed: 0.7s;
-
-// Main colors
-$bg-color: #7796c5;
-$card-color: #3498db;
 $transition-fast: 0.2s ease;
-
-//hover navbar
-$hover-bg: #6c6c6c;
-$hover-color: #ffacac;
-$hover-border: #bababa;
