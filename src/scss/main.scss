@@ -1,8 +1,9 @@
-@use '_variables.scss' as *;
-@use '_footer.scss' as *;
-@use '_navbar.scss' as *;
-@use 'reset.scss' as *;
+@use '_variables' as *;
+@use '_footer' as *;
+@use '_navbar' as *;
+@use 'reset' as *;
 @use 'responsive' as *;
+@use 'mobile' as *;
 
 body {
   min-height: 100vh;
@@ -12,11 +13,16 @@ body {
   background-size: 4em 4em;
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none; 
+    font-family: $font-fredoka;
+  font-size: $fredoka-md;
+  color: $text;
 }
 
 #container {
   height: 90vh;
-//  background-color: $bg-color;
 }
 
 #card {
@@ -38,3 +44,6 @@ body {
   }
 } 
 
+#navbar-toggle{
+    height: 60px;
+}

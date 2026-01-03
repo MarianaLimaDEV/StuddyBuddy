@@ -1,19 +1,21 @@
 @use '_variables.scss' as *;
+
+/* Navbar (desktop) */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: center;
   height: $nav-height;
   position: sticky;
-  top: 1rem; /* lift slightly */
+  top: 1rem;
   left: 1rem;
   right: 1rem;
   margin: 0 auto;
-  max-width: 1000px; /* caps width on wide screens */
-  background-color: rgba(33,34,40,0.35); /* translucent so backdrop-filter shows */
+  max-width: 85%;
+  background-color: rgba(33,34,40,0.35);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border-radius: 12px; /* rounded corners */
+  border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
   z-index: 999;
 
@@ -23,31 +25,6 @@
     justify-content: space-between;
     width: 100%;
     padding: 0 2rem;
-
-    .navbar-menu {
-      display: flex;
-      text-align: center;
-      gap: 1.5rem;
-      list-style: none;
-
-      li a {
-        text-decoration: none;
-        color: $primary-white;
-        font-size: 1.3rem;
-        font-weight: 500;
-        padding: 3px 20px;
-        border-radius: 20px;
-        border: 2px solid transparent;
-        transition: all $transition-speed ease;
-        white-space: nowrap;
-
-        &:hover {
-          color: $hover-color;
-          background: $hover-bg;
-          border: 2px solid $hover-border;
-        }
-      }
-    }
   }
 
   &-logo {
@@ -56,6 +33,52 @@
     color: $primary-white;
     text-decoration: none;
     cursor: pointer;
+  }
+}
+
+/* Desktop menu */
+.navbar-menu {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  padding-left: 50px;
+
+  li a {
+    text-decoration: none;
+    color: $primary-white;
+    font-size: 1.3rem;
+    font-weight: 500;
+    padding: 3px 20px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    transition: all $transition-speed ease;
+    white-space: nowrap;
+
+    &:hover {
+      color: $hover-color;
+      background: $hover-bg;
+      border: 2px solid $hover-border;
+    }
+  }
+}
+
+/* Toggle button (hidden on desktop) */
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.5rem;
+
+  .bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: $text;
+    margin: 3px 0;
+    transition: transform .2s, opacity .2s;
   }
 }
 
