@@ -71,14 +71,84 @@
   border: 0;
   cursor: pointer;
   padding: 0.5rem;
+  width: 44px;
+  height: 44px;
 
   .bar {
     display: block;
     width: 22px;
     height: 2px;
     background: $text;
-    margin: 3px 0;
-    transition: transform .2s, opacity .2s;
+    margin: 4px 0;
+    transition: transform .25s ease, opacity .2s ease;
+    transform-origin: center;
+  }
+
+  /* Accessible focus state */
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.12);
+  }
+
+  /* When toggled (hamburger -> X) */
+  &.is-open .bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  &.is-open .bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  &.is-open .bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
   }
 }
 
+/* Mobile behaviour (overrides for small screens) */
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: flex; /* show hamburger on mobile */
+  }
+
+  .navbar-menu {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .28s ease, opacity .2s ease;
+    position: absolute;
+    top: calc(#{$nav-height} + 0.75rem);
+    left: 1rem;
+    right: 1rem;
+    flex-direction: column;
+    background: $surface;
+    border-radius: 8px;
+    padding: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 1000;
+  }
+
+  .navbar-menu.open {
+    max-height: 600px; /* enough for expanded menu */
+    opacity: 1;
+  }
+}
+
+/* Desktop reset — garante que mobile overrides não vazem */
+@media (min-width: 769px) {
+  .navbar-toggle { display: none !important; }
+
+  .navbar-menu {
+    position: static !important;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap; /* ou wrap se preferir que quebre linha */
+    max-height: none !important;
+    opacity: 1 !important;
+    padding-left: 0; /* reduz o padding que empurra os links */
+    align-items: center;
+  }
+
+  .navbar-menu li a {
+    padding: 3px 16px; /* diminuir se necessário para caber */
+  }
+}
