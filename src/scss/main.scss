@@ -36,14 +36,30 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   touch-action: none;
+  will-change: transform;
+  transform: translate3d(0,0,0);
 
   // Feedback visual ao clicar
   &:active {
     cursor: grabbing;
     filter: brightness(0.9);
   }
-} 
+}
+
+/* Skip link utility (visually hidden until focused) */
+.skip-link {
+  @extend .skip-link;
+}
+
+/* Footer base styles */
+footer {
+  padding: 1.25rem;
+  text-align: center;
+  color: $muted;
+  font-size: $fredoka-sm;
+  a { color: $primary; text-decoration: none; }
+}
 
 #navbar-toggle{
     height: 60px;
-}
+} 

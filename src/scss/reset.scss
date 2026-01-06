@@ -4,3 +4,11 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+} 
