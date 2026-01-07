@@ -1,39 +1,37 @@
-let newX = 0, newY = 0, startX = 0, startY = 0;
+let activeCard = null;
+let startX = 0, startY = 0;
+let initialLeft = 0, initialTop = 0;
 
-const card = document.getElementById('card');
-
-if (card) {
-  card.addEventListener('mousedown', mouseDown);
-}
-
-function mouseDown(e){
-    e.preventDefault(); // prevent text selection start
+// Adiciona drag a todos os cards arrastáveis
+document.querySelectorAll('#card, #card1').forEach(card => {
+  card.addEventListener('mousedown', (e) => {
+    activeCard = card;
     startX = e.clientX;
     startY = e.clientY;
-
-    // disable text selection globally while dragging
+    initialLeft = card.offsetLeft;
+    initialTop = card.offsetTop;
+    
+    e.preventDefault();
     document.body.style.userSelect = 'none';
-
     document.addEventListener('mousemove', mouseMove);
     document.addEventListener('mouseup', mouseUp);
-}
+  });
+});
 
 function mouseMove(e){
-    newX = startX - e.clientX;
-    newY = startY - e.clientY;
-  
-    startX = e.clientX;
-    startY = e.clientY;
-
-    card.style.top = (card.offsetTop - newY) + 'px';
-    card.style.left = (card.offsetLeft - newX) + 'px';
+    if (!activeCard) return;
+    
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    
+    activeCard.style.left = (initialLeft + dx) + 'px';
+    activeCard.style.top = (initialTop + dy) + 'px';
 }
 
 function mouseUp(e){
+    activeCard = null;
     document.removeEventListener('mousemove', mouseMove);
     document.removeEventListener('mouseup', mouseUp);
-
-    // restore text selection
     document.body.style.userSelect = '';
 }
 
@@ -84,3 +82,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+
+// Seleciona os elementos
+const toggleButton = document.getElementById('toggleButton');
+const toggleCard = document.getElementById('card');
+
+// Estado inicial: botão em "Não" (não pressionado), card escondido
+let isPressed = false;
+
+// Função para alternar
+toggleButton.addEventListener('click', () => {
+    isPressed = !isPressed;
+    
+    if (isPressed) {
+        // Estado "Sim": botão pressionado, card visível
+        toggleButton.textContent = 'Sim';
+        toggleButton.classList.add('pressed');
+        toggleCard.classList.remove('hidden');
+    } else {
+        // Estado "Não": botão não pressionado, card escondido
+        toggleButton.textContent = 'Não';
+        toggleButton.classList.remove('pressed');
+        toggleCard.classList.add('hidden');
+    }
+});

@@ -4,6 +4,8 @@
 @use 'reset' as *;
 @use 'responsive' as *;
 @use 'mobile' as *;
+@use 'button' as *;
+@use 'cards' as *;
 
 body {
   min-height: 100vh;
@@ -62,4 +64,10 @@ footer {
 
 #navbar-toggle{
     height: 60px;
-} 
+}
+
+/* Classe para esconder elementos */
+.hidden {
+    display: none;
+}
+
