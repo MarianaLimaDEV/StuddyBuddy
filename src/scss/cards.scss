@@ -5,7 +5,9 @@
   height: 150px;
   background-color: $card-color;
   border-radius: 5px;
-  position: fixed;
+  position: absolute;
+  left: 50px;
+  top: 50px;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
@@ -21,13 +23,25 @@
 
 /* Estilo do card */
 .card {
-    margin-top: 20px;
+    position: absolute;
+    left: 100px;
+    top: 100px;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    width: 900px;
+    width: 300px;
     text-align: center;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    touch-action: none;
+
+    &:active {
+      cursor: grabbing;
+      filter: brightness(0.9);
+    }
 }
 

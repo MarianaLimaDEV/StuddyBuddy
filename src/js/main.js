@@ -3,35 +3,48 @@ let startX = 0, startY = 0;
 let initialLeft = 0, initialTop = 0;
 
 // Adiciona drag a todos os cards arrastáveis
-document.querySelectorAll('#card, #card1').forEach(card => {
-  card.addEventListener('mousedown', (e) => {
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('pointerdown', (e) => {
     activeCard = card;
     startX = e.clientX;
     startY = e.clientY;
     initialLeft = card.offsetLeft;
     initialTop = card.offsetTop;
-    
+
     e.preventDefault();
     document.body.style.userSelect = 'none';
-    document.addEventListener('mousemove', mouseMove);
-    document.addEventListener('mouseup', mouseUp);
+
+    // Capture the pointer for better touch support
+    if (e.pointerId && card.setPointerCapture) {
+      try { card.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    }
+
+    document.addEventListener('pointermove', pointerMove);
+    document.addEventListener('pointerup', pointerUp);
   });
 });
 
-function mouseMove(e){
+function pointerMove(e){
     if (!activeCard) return;
-    
+
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    
+
     activeCard.style.left = (initialLeft + dx) + 'px';
     activeCard.style.top = (initialTop + dy) + 'px';
 }
 
-function mouseUp(e){
+function pointerUp(e){
+    if (!activeCard) return;
+
+    // Release pointer capture
+    if (e.pointerId && activeCard.releasePointerCapture) {
+      try { activeCard.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    }
+
     activeCard = null;
-    document.removeEventListener('mousemove', mouseMove);
-    document.removeEventListener('mouseup', mouseUp);
+    document.removeEventListener('pointermove', pointerMove);
+    document.removeEventListener('pointerup', pointerUp);
     document.body.style.userSelect = '';
 }
 
@@ -94,7 +107,7 @@ let isPressed = false;
 // Função para alternar
 toggleButton.addEventListener('click', () => {
     isPressed = !isPressed;
-    
+
     if (isPressed) {
         // Estado "Sim": botão pressionado, card visível
         toggleButton.textContent = 'Sim';
@@ -106,4 +119,26 @@ toggleButton.addEventListener('click', () => {
         toggleButton.classList.remove('pressed');
         toggleCard.classList.add('hidden');
     }
+});
+
+// Configuração para os outros botões
+const buttons = [
+    { button: document.getElementById('pomodoroButton'), card: document.getElementById('pomodoroCard') },
+    { button: document.getElementById('timerButton'), card: document.getElementById('timerCard') },
+    { button: document.getElementById('tasklistButton'), card: document.getElementById('tasklistCard') },
+    { button: document.getElementById('countdownButton'), card: document.getElementById('countdownCard') }
+];
+
+buttons.forEach(({ button, card }) => {
+    let isPressed = false;
+    button.addEventListener('click', () => {
+        isPressed = !isPressed;
+        if (isPressed) {
+            button.classList.add('pressed');
+            card.classList.remove('hidden');
+        } else {
+            button.classList.remove('pressed');
+            card.classList.add('hidden');
+        }
+    });
 });
