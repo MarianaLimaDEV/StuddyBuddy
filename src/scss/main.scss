@@ -1,59 +1,48 @@
 @use '_variables' as *;
-@use '_footer' as *;
 @use '_navbar' as *;
 @use 'reset' as *;
-@use 'responsive' as *;
-@use 'mobile' as *;
 @use 'button' as *;
-@use 'cards' as *;
 
 body {
   min-height: 100vh;
-    background-color: #212228;
+  background-color: #212228;
   background-image: linear-gradient(#292a30 .1em, transparent .1em),
- linear-gradient(90deg, #292a30 .1em, transparent .1em);
+    linear-gradient(90deg, #292a30 .1em, transparent .1em);
   background-size: 4em 4em;
   margin: 0;
-  padding: 0;
+  padding-top: $navbar-height;
   height: 100%;
-  overflow: hidden;
-  overscroll-behavior: none; 
-    font-family: $font-fredoka;
+  font-family: $font-fredoka;
   font-size: $fredoka-md;
   color: $text;
 }
 
-#container {
-  height: 90vh;
-}
-
-#card {
-  width: 100px;
-  height: 100px;
+/* Card styles */
+.card {
+  width: 300px;
+  height: 150px;
+  padding: 20px;
   background-color: $card-color;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  position: fixed;
+  position: absolute;
+  left: 100px;
+  top: 100px;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
   touch-action: none;
-  will-change: transform;
-  transform: translate3d(0,0,0);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
 
-  // Feedback visual ao clicar
   &:active {
     cursor: grabbing;
     filter: brightness(0.9);
   }
 }
 
-/* Skip link utility (visually hidden until focused) */
-.skip-link {
-  @extend .skip-link;
-}
-
-/* Footer base styles */
+/* Footer styles */
 footer {
   padding: 1.25rem;
   text-align: center;
@@ -62,12 +51,7 @@ footer {
   a { color: $primary; text-decoration: none; }
 }
 
-#navbar-toggle{
-    height: 60px;
-}
-
-/* Classe para esconder elementos */
+/* Utility class */
 .hidden {
-    display: none;
+  display: none;
 }
-

@@ -11,12 +11,12 @@
     <meta name="author" content="Mariana Lima">
 
     <link rel="icon" href="SB_B.png">
-    
-    <link rel="icon" type="image/svg+xml" href="/src/assets/img/logo.svg">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/scss/main.scss">
 </head>
 <body>
+
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.html" class="navbar-logo">StuddyBuddy</a>
@@ -36,30 +36,28 @@
     </nav>
 
      
-    <!-- Cards positioned absolutely (z-index: 1, behind buttons) -->
-    <div id="card" class="card hidden" style="left: 200px; top: 150px; z-index: 1;">
+    <div id="card" class="card hidden">
         <h2>Card Visível</h2>
         <p>Este é o conteúdo do card que aparece quando o botão está em "Sim".</p>
     </div>
-    <div id="pomodoroCard" class="card hidden" style="left: 350px; top: 150px; z-index: 1;">
+    <div id="pomodoroCard" class="card hidden">
         <h2>Pomodoro Timer</h2>
         <p>Conteúdo para o timer Pomodoro.</p>
     </div>
-    <div id="timerCard" class="card hidden" style="left: 500px; top: 150px; z-index: 1;">
+    <div id="timerCard" class="card hidden">
         <h2>Timer</h2>
         <p>Conteúdo para o timer geral.</p>
     </div>
-    <div id="tasklistCard" class="card hidden" style="left: 200px; top: 300px; z-index: 1;">
+    <div id="tasklistCard" class="card hidden">
         <h2>Task List</h2>
         <p>Conteúdo para a lista de tarefas.</p>
     </div>
-    <div id="countdownCard" class="card hidden" style="left: 350px; top: 300px; z-index: 1;">
+    <div id="countdownCard" class="card hidden">
         <h2>Countdown</h2>
         <p>Conteúdo para o countdown.</p>
     </div>
 
-    <!-- Button container (z-index: 10, above cards) -->
-    <div id="buttonContainer" style="position: fixed; left: 50px; top: 150px; z-index: 10;">
+    <div id="buttonContainer" class="buttonContainer">
         <button id="toggleButton">Não</button>
         <button id="pomodoroButton">pomodoro</button>
         <button id="timerButton">timer</button>

@@ -3,14 +3,10 @@
 /* Navbar (desktop) */
 .navbar {
   display: flex;
-  align-items: center;
-  justify-content: center;
   height: $nav-height;
   position: sticky;
-  top: 1rem;
-  left: 1rem;
-  right: 1rem;
   margin: 0 auto;
+  
   max-width: 85%;
   background-color: rgba(33,34,40,0.35);
   -webkit-backdrop-filter: blur(10px);
@@ -125,11 +121,15 @@
     padding: 0.75rem;
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     z-index: 1000;
+    max-height: calc(100vh - (#{$nav-height} + 4rem));
+    pointer-events: none;
   }
 
-  .navbar-menu.open {
-    max-height: 600px; /* enough for expanded menu */
+  .navbar-menu.open,
+  .navbar-menu[aria-hidden="false"] {
+    display: flex;
     opacity: 1;
+    pointer-events: auto;
   }
 }
 
@@ -152,3 +152,4 @@
     padding: 3px 16px; /* diminuir se necessário para caber */
   }
 }
+

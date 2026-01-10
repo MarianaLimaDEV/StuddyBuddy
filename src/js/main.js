@@ -1,8 +1,8 @@
+// Drag functionality for all cards
 let activeCard = null;
 let startX = 0, startY = 0;
 let initialLeft = 0, initialTop = 0;
 
-// Adiciona drag a todos os cards arrastáveis
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('pointerdown', (e) => {
     activeCard = card;
@@ -10,15 +10,11 @@ document.querySelectorAll('.card').forEach(card => {
     startY = e.clientY;
     initialLeft = card.offsetLeft;
     initialTop = card.offsetTop;
-
     e.preventDefault();
     document.body.style.userSelect = 'none';
-
-    // Capture the pointer for better touch support
     if (e.pointerId && card.setPointerCapture) {
       try { card.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     }
-
     document.addEventListener('pointermove', pointerMove);
     document.addEventListener('pointerup', pointerUp);
   });
@@ -26,35 +22,29 @@ document.querySelectorAll('.card').forEach(card => {
 
 function pointerMove(e){
     if (!activeCard) return;
-
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-
     activeCard.style.left = (initialLeft + dx) + 'px';
     activeCard.style.top = (initialTop + dy) + 'px';
 }
 
 function pointerUp(e){
     if (!activeCard) return;
-
-    // Release pointer capture
     if (e.pointerId && activeCard.releasePointerCapture) {
       try { activeCard.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     }
-
     activeCard = null;
     document.removeEventListener('pointermove', pointerMove);
     document.removeEventListener('pointerup', pointerUp);
     document.body.style.userSelect = '';
 }
 
-/* Navbar toggle (mobile) — minimal, accessible */
+// Navbar toggle (mobile) — minimal, accessible
 document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('.navbar-toggle');
   const menu = document.getElementById('navbar-menu') || document.querySelector('.navbar-menu');
   if (!toggle || !menu) return;
 
-  // initialize ARIA
   toggle.setAttribute('aria-expanded', 'false');
   menu.setAttribute('aria-hidden', 'true');
 
@@ -79,66 +69,43 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.classList.contains('open') ? closeMenu() : openMenu();
   });
 
-  // click outside closes
   document.addEventListener('click', (ev) => {
     if (!menu.contains(ev.target) && !toggle.contains(ev.target) && menu.classList.contains('open')) closeMenu();
   });
 
-  // ESC to close
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape' && menu.classList.contains('open')) closeMenu();
   });
 
-  // close on resize to desktop
   window.addEventListener('resize', () => {
     if (window.innerWidth >= 768 && menu.classList.contains('open')) closeMenu();
   });
 });
 
+// Reusable toggle setup function
+function setupToggle(buttonId, cardId, yesText = 'Sim', noText = 'Não') {
+  const button = document.getElementById(buttonId);
+  const card = document.getElementById(cardId);
+  if (!button || !card) return;
 
-
-// Seleciona os elementos
-const toggleButton = document.getElementById('toggleButton');
-const toggleCard = document.getElementById('card');
-
-// Estado inicial: botão em "Não" (não pressionado), card escondido
-let isPressed = false;
-
-// Função para alternar
-toggleButton.addEventListener('click', () => {
+  let isPressed = false;
+  button.addEventListener('click', () => {
     isPressed = !isPressed;
-
     if (isPressed) {
-        // Estado "Sim": botão pressionado, card visível
-        toggleButton.textContent = 'Sim';
-        toggleButton.classList.add('pressed');
-        toggleCard.classList.remove('hidden');
+      button.textContent = yesText;
+      button.classList.add('pressed');
+      card.classList.remove('hidden');
     } else {
-        // Estado "Não": botão não pressionado, card escondido
-        toggleButton.textContent = 'Não';
-        toggleButton.classList.remove('pressed');
-        toggleCard.classList.add('hidden');
+      button.textContent = noText;
+      button.classList.remove('pressed');
+      card.classList.add('hidden');
     }
-});
+  });
+}
 
-// Configuração para os outros botões
-const buttons = [
-    { button: document.getElementById('pomodoroButton'), card: document.getElementById('pomodoroCard') },
-    { button: document.getElementById('timerButton'), card: document.getElementById('timerCard') },
-    { button: document.getElementById('tasklistButton'), card: document.getElementById('tasklistCard') },
-    { button: document.getElementById('countdownButton'), card: document.getElementById('countdownCard') }
-];
-
-buttons.forEach(({ button, card }) => {
-    let isPressed = false;
-    button.addEventListener('click', () => {
-        isPressed = !isPressed;
-        if (isPressed) {
-            button.classList.add('pressed');
-            card.classList.remove('hidden');
-        } else {
-            button.classList.remove('pressed');
-            card.classList.add('hidden');
-        }
-    });
-});
+// Setup all toggles
+setupToggle('toggleButton', 'card', 'Sim', 'Não');
+setupToggle('pomodoroButton', 'pomodoroCard');
+setupToggle('timerButton', 'timerCard');
+setupToggle('tasklistButton', 'tasklistCard');
+setupToggle('countdownButton', 'countdownCard');

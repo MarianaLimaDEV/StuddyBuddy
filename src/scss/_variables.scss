@@ -2,8 +2,9 @@
 $grid-color: #292a30;
 $grid-size: 4em;
 
-// Navbar
-$nav-height: 64px;
+// Navbar height
+$navbar-height: 64px;
+$nav-height: $navbar-height; // Alias for backward compatibility
 
 // Fonts
 $font-fredoka: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -51,6 +52,9 @@ $hover-border: rgba(255,255,255,0.12);
 // Transições
 $transition-speed: 0.7s;
 $transition-fast: 0.2s ease;
+
+// Seletores de botões
+$btn-selector: '#toggleButton, #pomodoroButton, #timerButton, #tasklistButton, #countdownButton';
 
 /* utility classes */
 .font-fredoka { font-family: $font-fredoka; }
