@@ -15,60 +15,120 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/scss/main.scss">
 </head>
-<body>
+<body class="dark-theme">
 
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.html" class="navbar-logo">StuddyBuddy</a>
-            <button class="navbar-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
             <ul class="navbar-menu">
                 <li><a href="#">Principal</a></li>
                 <li><a href="#">Sobre</a></li>
                 <li><a href="#">Serviços</a></li>
                 <li><a href="#">Configurações</a></li>
                 <li><a href="#">Contacto</a></li>
+                <li class="navbar-theme-toggle">
+                    <theme-toggle theme="dark"></theme-toggle>
+                </li>
             </ul>
+            <button class="navbar-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
         </div>
     </nav>
 
-     
-    <div id="card" class="card hidden">
-        <h2>Card Visível</h2>
-        <p>Este é o conteúdo do card que aparece quando o botão está em "Sim".</p>
-    </div>
+    <!-- Pomodoro Card -->
     <div id="pomodoroCard" class="card hidden">
+        <button class="card-close" data-card-id="pomodoroCard">&times;</button>
         <h2>Pomodoro Timer</h2>
-        <p>Conteúdo para o timer Pomodoro.</p>
+        <div class="timer-display" id="pomodoroDisplay">25:00</div>
+        <div class="controls">
+            <input type="number" id="pomodoroWork" min="1" max="60" value="25" placeholder="Work (min)">
+            <input type="number" id="pomodoroBreak" min="1" max="30" value="5" placeholder="Break (min)">
+        </div>
+        <div class="buttons">
+            <button id="pomodoroStart">Start</button>
+            <button id="pomodoroStop">Stop</button>
+            <button id="pomodoroReset">Reset</button>
+        </div>
     </div>
+
+    <!-- Timer Card -->
     <div id="timerCard" class="card hidden">
+        <button class="card-close" data-card-id="timerCard">&times;</button>
         <h2>Timer</h2>
-        <p>Conteúdo para o timer geral.</p>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="controls">
+            <input type="number" id="timerMinutes" min="0" max="99" value="1" placeholder="Minutes">
+            <input type="number" id="timerSeconds" min="0" max="59" value="0" placeholder="Seconds">
+        </div>
+        <div class="buttons">
+            <button id="timerStart">Start</button>
+            <button id="timerStop">Stop</button>
+            <button id="timerReset">Reset</button>
+        </div>
     </div>
+
+    <!-- TaskList Card -->
     <div id="tasklistCard" class="card hidden">
+        <button class="card-close" data-card-id="tasklistCard">&times;</button>
         <h2>Task List</h2>
-        <p>Conteúdo para a lista de tarefas.</p>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Add a new task...">
+            <button id="addTaskBtn">Add</button>
+        </div>
+        <ul id="taskList" class="task-list"></ul>
     </div>
+
+    <!-- Countdown Card -->
     <div id="countdownCard" class="card hidden">
+        <button class="card-close" data-card-id="countdownCard">&times;</button>
         <h2>Countdown</h2>
-        <p>Conteúdo para o countdown.</p>
+        <div class="timer-display" id="countdownDisplay">00:00:00:00</div>
+        <div class="controls">
+            <input type="datetime-local" id="countdownDate">
+        </div>
+        <div class="buttons">
+            <button id="countdownStart">Start</button>
+            <button id="countdownStop">Stop</button>
+        </div>
+    </div>
+
+    <!-- World Clock Card -->
+    <div id="worldClockCard" class="card hidden">
+        <button class="card-close" data-card-id="worldClockCard">&times;</button>
+        <h2>World Clock</h2>
+        <div class="timezone-container">
+            <select id="timezoneSelect">
+                <option value="UTC">UTC (London)</option>
+                <option value="Europe/Lisbon">Lisbon (WET/WEST)</option>
+                <option value="Europe/Paris">Paris (CET/CEST)</option>
+                <option value="America/New_York">New York (EST/EDT)</option>
+                <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                <option value="Asia/Dubai">Dubai (GST)</option>
+                <option value="Asia/Singapore">Singapore (SGT)</option>
+                <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+            </select>
+            <button id="addTimezoneBtn">Add</button>
+        </div>
+        <div id="timezoneList" class="timezone-list"></div>
     </div>
 
     <div id="buttonContainer" class="buttonContainer">
-        <button id="toggleButton">Não</button>
-        <button id="pomodoroButton">pomodoro</button>
-        <button id="timerButton">timer</button>
-        <button id="tasklistButton">tasklist</button>
-        <button id="countdownButton">countdown</button>
+        <button id="pomodoroButton">Pomodoro</button>
+        <button id="timerButton">Timer</button>
+        <button id="tasklistButton">TaskList</button>
+        <button id="countdownButton">Countdown</button>
+        <button id="worldClockButton">World Clock</button>
     </div>
 
     
     <footer>
         <div>
-            <p>&copy; 2024 StuddyBuddy. Desenvolvido por Mariana Lima.</p>
+            <p>&copy; 2026 StuddyBuddy. Desenvolvido por Mariana Lima.</p>
         </div>
     </footer>
 

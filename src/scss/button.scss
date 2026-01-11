@@ -12,6 +12,37 @@
   background-color: $surface;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: $surface;
+  border: 2px solid $primary;
+  color: $text;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+  z-index: 998;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+  &:hover {
+    transform: scale(1.1) rotate(20deg);
+    box-shadow: 0 6px 16px rgba(52,152,219,0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 #{$btn-selector} {

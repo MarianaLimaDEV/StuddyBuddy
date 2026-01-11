@@ -32,12 +32,26 @@
   }
 }
 
+/* Light theme navbar - transparent */
+body.light-theme .navbar {
+  background-color: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .navbar-logo {
+  color: $text-light;
+}
+
 /* Desktop menu */
 .navbar-menu {
   display: flex;
   gap: 1.5rem;
   list-style: none;
   padding-left: 50px;
+  align-items: center;
 
   li a {
     text-decoration: none;
@@ -55,6 +69,18 @@
       background: $hover-bg;
       border: 2px solid $hover-border;
     }
+  }
+}
+
+/* Theme toggle inside navbar */
+.navbar-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  
+  theme-toggle {
+    --size: 2.2rem;
   }
 }
 

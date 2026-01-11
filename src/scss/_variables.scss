@@ -24,17 +24,28 @@ $funnel-md: 1rem;
 $funnel-lg: 1.125rem;
 $funnel-xl: 1.25rem;
 
-// (Ideia de) Paleta principal (escura, com accents)
-$bg-color: #212228;        // fundo principal (escuro)
-$surface: #2b2f36;        // superfícies sobre o fundo
+// Dark theme (default)
+$bg-color-dark: #212228;
+$surface-dark: #2b2f36;
+$text-dark: #F4F7FA;
+$muted-dark: #9AA3AD;
+
+// Light theme
+$bg-color-light: #F5F5F5;
+$surface-light: #FFFFFF;
+$text-light: #212228;
+$muted-light: #666666;
+
+// Default to dark theme
+$bg-color: $bg-color-dark;
+$surface: $surface-dark;
+$text: $text-dark;
+$muted: $muted-dark;
 
 $primary: #3498db;        // cor principal (azul)
 $primary-variant: #2b82c8;
 $secondary: #AFDA9F;      // secundária (verde suave)
 $accent: #F6C667;         // destaque (amarelo/quente)
-
-$text: #F4F7FA;           // texto claro principal
-$muted: #9AA3AD;          // texto secundário / subtítulos
 
 $success: #34D399;
 $warning: #F59E0B;
@@ -54,7 +65,7 @@ $transition-speed: 0.7s;
 $transition-fast: 0.2s ease;
 
 // Seletores de botões
-$btn-selector: '#toggleButton, #pomodoroButton, #timerButton, #tasklistButton, #countdownButton';
+$btn-selector: '#pomodoroButton, #timerButton, #tasklistButton, #countdownButton, #worldClockButton';
 
 /* utility classes */
 .font-fredoka { font-family: $font-fredoka; }
