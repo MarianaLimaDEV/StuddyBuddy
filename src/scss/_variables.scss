@@ -1,77 +1,132 @@
-// Background grid
+// ============================================
+// 1. Configurações Globais
+// ============================================
 $grid-color: #292a30;
 $grid-size: 4em;
-
-// Navbar height
 $navbar-height: 64px;
-$nav-height: $navbar-height; // Alias for backward compatibility
+$transition-speed: 0.7s;
+$transition-fast: 0.2s ease;
 
-// Fonts
-$font-fredoka: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-$font-funnel: 'Funnel Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+// ============================================
+// 2. Tipografia (Mapas para facilitar manutenção)
+// ============================================
+$fonts: (
+  "fredoka": ("Fredoka", system-ui, -apple-system, sans-serif),
+  "funnel": ("Funnel Sans", system-ui, -apple-system, sans-serif)
+);
 
-// Tamanhos — Fredoka
-$fredoka-xs: 0.75rem;
-$fredoka-sm: 0.875rem;
-$fredoka-md: 1rem;
-$fredoka-lg: 1.25rem;
-$fredoka-xl: 1.5rem;
+$font-sizes: (
+  "xs": 0.75rem,
+  "sm": 0.875rem,
+  "md": 1rem,
+  "lg": 1.125rem,
+  "xl": 1.25rem,
+  "2xl": 1.5rem
+);
 
-// Tamanhos — Funnel Sans
-$funnel-xs: 0.75rem;
-$funnel-sm: 0.875rem;
-$funnel-md: 1rem;
-$funnel-lg: 1.125rem;
-$funnel-xl: 1.25rem;
+// ============================================
+// 3. Sistema de Cores e Temas (CSS Variables)
+// ============================================
+:root {
+  // Cores de Marca (Fixas)
+  --primary: #3498db;
+  --primary-variant: #2b82c8;
+  --secondary: #AFDA9F;
+  --accent: #F6C667;
+  --success: #34D399;
+  --warning: #F59E0B;
+  --danger: #EF4444;
 
-// Dark theme (default)
+  // Tema Dark (Padrão)
+  --bg-color: #212228;
+  --surface: #2b2f36;
+  --text: #F4F7FA;
+  --muted: #9AA3AD;
+  --shadow-color: rgba(0, 0, 0, 0.35);
+  --hover-overlay: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+
+  // Cores de botões
+  --btn-bg: #f0f0f0;
+  --btn-border: #ccc;
+  --btn-hover-bg: #e0e0e0;
+  --btn-hover-border: #999;
+  --btn-pressed: #4CAF50;
+  --btn-danger-hover: #d63438;
+}
+
+[data-theme="light"] {
+  --bg-color: #F5F5F5;
+  --surface: #FFFFFF;
+  --text: #212228;
+  --muted: #666666;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --hover-overlay: rgba(0, 0, 0, 0.03);
+  --border-subtle: rgba(0, 0, 0, 0.1);
+
+  // Cores de botões (light)
+  --btn-bg: #ffffff;
+  --btn-border: #ddd;
+  --btn-hover-bg: #efefef;
+  --btn-hover-border: #999;
+}
+
+// Alias para compatibilidade com código existente
+$primary: var(--primary);
+$accent: var(--accent);
+$danger: var(--danger);
+$text: var(--text);
+$surface: var(--surface);
+$muted: var(--muted);
+$bg-color: var(--bg-color);
 $bg-color-dark: #212228;
 $surface-dark: #2b2f36;
 $text-dark: #F4F7FA;
 $muted-dark: #9AA3AD;
-
-// Light theme
 $bg-color-light: #F5F5F5;
 $surface-light: #FFFFFF;
 $text-light: #212228;
 $muted-light: #666666;
+$btn-pressed: var(--btn-pressed);
+$btn-danger-hover: var(--btn-danger-hover);
 
-// Default to dark theme
-$bg-color: $bg-color-dark;
-$surface: $surface-dark;
-$text: $text-dark;
-$muted: $muted-dark;
+// ============================================
+// 4. Mixins Úteis
+// ============================================
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-$primary: #3498db;        // cor principal (azul)
-$primary-variant: #2b82c8;
-$secondary: #AFDA9F;      // secundária (verde suave)
-$accent: #F6C667;         // destaque (amarelo/quente)
+@mixin font-style($family, $size) {
+  font-family: map-get($fonts, $family);
+  font-size: map-get($font-sizes, $size);
+}
 
-$success: #34D399;
-$warning: #F59E0B;
-$danger: #EF4444;
-
-// legacy / aliases (para compatibilidade com os ficheiros existentes)
-$primary-white: $text;    // usado no navbar e em outros lugares
-$card-color: $primary;    // card padrão
-
-// Hovers
-$hover-bg: rgba(255,255,255,0.06);
-$hover-color: $accent;
-$hover-border: rgba(255,255,255,0.12);
-
-// Transições
-$transition-speed: 0.7s;
-$transition-fast: 0.2s ease;
-
-// Seletores de botões
+// ============================================
+// 5. Seletores de Botões
+// ============================================
 $btn-selector: '#pomodoroButton, #timerButton, #tasklistButton, #countdownButton, #worldClockButton';
 
-/* utility classes */
-.font-fredoka { font-family: $font-fredoka; }
-.font-funnel  { font-family: $font-funnel; }
+// ============================================
+// 6. Utilidades
+// ============================================
+.font-fredoka { @include font-style("fredoka", "md"); }
+.font-funnel  { @include font-style("funnel", "md"); }
 
-/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -87,22 +142,11 @@ $btn-selector: '#pomodoroButton, #timerButton, #tasklistButton, #countdownButton
     width: auto;
     height: auto;
     z-index: 10000;
-    background: $surface;
-    color: $text;
+    background: var(--surface);
+    color: var(--text);
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px var(--shadow-color);
   }
 }
 
-.sr-only {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-} 

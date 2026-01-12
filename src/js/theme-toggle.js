@@ -181,12 +181,9 @@ class ThemeToggle extends HTMLElement {
     }
     
     this.theme = theme;
-    const themeClass = theme === "dark" ? "dark-theme" : "light-theme";
     const button = this.shadowRoot.querySelector("#theme-toggle");
     
-    document.body.classList.remove("dark-theme", "light-theme");
-    document.body.classList.add(themeClass);
-    document.documentElement.setAttribute("data-theme", theme);
+    document.body.setAttribute("data-theme", theme);
     
     // Save bare theme string to localStorage (without "-theme" suffix)
     localStorage.setItem("theme", theme);

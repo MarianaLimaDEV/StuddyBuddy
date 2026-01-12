@@ -1,18 +1,18 @@
-@use '_variables.scss' as *;
+@use '_variables' as *;
 
 /* Navbar (desktop) */
 .navbar {
   display: flex;
-  height: $nav-height;
+  height: $navbar-height;
   position: sticky;
   margin: 0 auto;
   
   max-width: 85%;
-  background-color: rgba(33,34,40,0.35);
+  background-color: var(--surface);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 20px var(--shadow-color);
   z-index: 999;
 
   &-container {
@@ -26,23 +26,10 @@
   &-logo {
     font-size: 2rem;
     font-weight: 600;
-    color: $primary-white;
+    color: var(--text);
     text-decoration: none;
     cursor: pointer;
   }
-}
-
-/* Light theme navbar - transparent */
-body.light-theme .navbar {
-  background-color: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-body.light-theme .navbar-logo {
-  color: $text-light;
 }
 
 /* Desktop menu */
@@ -55,7 +42,7 @@ body.light-theme .navbar-logo {
 
   li a {
     text-decoration: none;
-    color: $primary-white;
+    color: var(--text);
     font-size: 1.3rem;
     font-weight: 500;
     padding: 3px 20px;
@@ -65,9 +52,9 @@ body.light-theme .navbar-logo {
     white-space: nowrap;
 
     &:hover {
-      color: $hover-color;
-      background: $hover-bg;
-      border: 2px solid $hover-border;
+      color: var(--accent);
+      background: var(--hover-overlay);
+      border: 2px solid var(--border-subtle);
     }
   }
 }
@@ -100,7 +87,7 @@ body.light-theme .navbar-logo {
     display: block;
     width: 22px;
     height: 2px;
-    background: $text;
+    background: var(--text);
     margin: 4px 0;
     transition: transform .25s ease, opacity .2s ease;
     transform-origin: center;
@@ -109,7 +96,7 @@ body.light-theme .navbar-logo {
   /* Accessible focus state */
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(52,152,219,0.12);
+    box-shadow: 0 0 0 3px var(--primary);
   }
 
   /* When toggled (hamburger -> X) */
@@ -138,16 +125,15 @@ body.light-theme .navbar-logo {
     opacity: 0;
     transition: max-height .28s ease, opacity .2s ease;
     position: absolute;
-    top: calc(#{$nav-height} + 0.75rem);
+    top: calc(#{$navbar-height} + 0.75rem);
     left: 1rem;
     right: 1rem;
     flex-direction: column;
-    background: $surface;
+    background: var(--surface);
     border-radius: 8px;
     padding: 0.75rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px var(--shadow-color);
     z-index: 1000;
-    max-height: calc(100vh - (#{$nav-height} + 4rem));
     pointer-events: none;
   }
 
@@ -156,6 +142,7 @@ body.light-theme .navbar-logo {
     display: flex;
     opacity: 1;
     pointer-events: auto;
+    max-height: calc(100vh - (#{$navbar-height} + 4rem));
   }
 }
 
@@ -167,15 +154,15 @@ body.light-theme .navbar-logo {
     position: static !important;
     display: flex !important;
     flex-direction: row;
-    flex-wrap: wrap; /* ou wrap se preferir que quebre linha */
+    flex-wrap: wrap;
     max-height: none !important;
     opacity: 1 !important;
-    padding-left: 0; /* reduz o padding que empurra os links */
+    padding-left: 0;
     align-items: center;
   }
 
   .navbar-menu li a {
-    padding: 3px 16px; /* diminuir se necessário para caber */
+    padding: 3px 16px;
   }
 }
 
