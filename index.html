@@ -16,21 +16,22 @@
     <link rel="stylesheet" href="./src/css/main.css">
 </head>
 <body data-theme="dark">
+    <a href="#main-content" class="skip-link">Saltar para o conteúdo principal</a>
 
-    <nav class="navbar">
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
         <div class="navbar-container">
-            <a href="index.html" class="navbar-logo">StuddyBuddy</a>
-            <ul class="navbar-menu">
-                <li><a href="#">Principal</a></li>
-                <li><a href="#">Sobre</a></li>
-                <li><a href="#">Serviços</a></li>
-                <li><a href="#">Configurações</a></li>
-                <li><a href="#">Contacto</a></li>
+            <a href="index.html" class="navbar-logo" aria-label="StuddyBuddy - Página inicial">StuddyBuddy</a>
+            <ul class="navbar-menu" role="menubar">
+                <li role="none"><a href="#" role="menuitem" tabindex="0">Principal</a></li>
+                <li role="none"><a href="#" role="menuitem" tabindex="0">Sobre</a></li>
+                <li role="none"><a href="#" role="menuitem" tabindex="0">Serviços</a></li>
+                <li role="none"><a href="#" role="menuitem" tabindex="0">Configurações</a></li>
+                <li role="none"><a href="#" role="menuitem" tabindex="0">Contacto</a></li>
                 <li class="navbar-theme-toggle">
                     <theme-toggle theme="dark"></theme-toggle>
                 </li>
             </ul>
-            <button class="navbar-toggle">
+            <button class="navbar-toggle" aria-label="Alternar menu de navegação" aria-expanded="false" aria-controls="navbar-menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -38,69 +39,78 @@
         </div>
     </nav>
 
+    <main id="main-content" role="main">
+
     <!-- Pomodoro Card -->
-    <div id="pomodoroCard" class="card hidden">
-        <button class="card-close" data-card-id="pomodoroCard">&times;</button>
-        <h2>Pomodoro Timer</h2>
-        <div class="timer-display" id="pomodoroDisplay">25:00</div>
+    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="pomodoroCard" aria-label="Fechar Pomodoro Timer">&times;</button>
+        <h2 id="pomodoro-title">Pomodoro Timer</h2>
+        <div class="timer-display" id="pomodoroDisplay" aria-live="polite" aria-label="Tempo restante">25:00</div>
         <div class="controls">
-            <input type="number" id="pomodoroWork" min="1" max="60" value="25" placeholder="Work (min)">
-            <input type="number" id="pomodoroBreak" min="1" max="30" value="5" placeholder="Break (min)">
+            <label for="pomodoroWork" class="sr-only">Tempo de trabalho em minutos</label>
+            <input type="number" id="pomodoroWork" min="1" max="60" value="25" placeholder="Work (min)" aria-label="Tempo de trabalho em minutos">
+            <label for="pomodoroBreak" class="sr-only">Tempo de pausa em minutos</label>
+            <input type="number" id="pomodoroBreak" min="1" max="30" value="5" placeholder="Break (min)" aria-label="Tempo de pausa em minutos">
         </div>
         <div class="buttons">
-            <button id="pomodoroStart">Start</button>
-            <button id="pomodoroStop">Stop</button>
-            <button id="pomodoroReset">Reset</button>
+            <button id="pomodoroStart" aria-label="Iniciar Pomodoro">Start</button>
+            <button id="pomodoroStop" aria-label="Parar Pomodoro">Stop</button>
+            <button id="pomodoroReset" aria-label="Reiniciar Pomodoro">Reset</button>
         </div>
-    </div>
+    </section>
 
     <!-- Timer Card -->
-    <div id="timerCard" class="card hidden">
-        <button class="card-close" data-card-id="timerCard">&times;</button>
-        <h2>Timer</h2>
-        <div class="timer-display" id="timerDisplay">00:00</div>
+    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="timerCard" aria-label="Fechar Timer">&times;</button>
+        <h2 id="timer-title">Timer</h2>
+        <div class="timer-display" id="timerDisplay" aria-live="polite" aria-label="Tempo restante">00:00</div>
         <div class="controls">
-            <input type="number" id="timerMinutes" min="0" max="99" value="1" placeholder="Minutes">
-            <input type="number" id="timerSeconds" min="0" max="59" value="0" placeholder="Seconds">
+            <label for="timerMinutes" class="sr-only">Minutos</label>
+            <input type="number" id="timerMinutes" min="0" max="99" value="1" placeholder="Minutes" aria-label="Minutos">
+            <label for="timerSeconds" class="sr-only">Segundos</label>
+            <input type="number" id="timerSeconds" min="0" max="59" value="0" placeholder="Seconds" aria-label="Segundos">
         </div>
         <div class="buttons">
-            <button id="timerStart">Start</button>
-            <button id="timerStop">Stop</button>
-            <button id="timerReset">Reset</button>
+            <button id="timerStart" aria-label="Iniciar Timer">Start</button>
+            <button id="timerStop" aria-label="Parar Timer">Stop</button>
+            <button id="timerReset" aria-label="Reiniciar Timer">Reset</button>
         </div>
-    </div>
+    </section>
 
     <!-- TaskList Card -->
-    <div id="tasklistCard" class="card hidden">
-        <button class="card-close" data-card-id="tasklistCard">&times;</button>
-        <h2>Task List</h2>
+    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="tasklistCard" aria-label="Fechar Lista de Tarefas">&times;</button>
+        <h2 id="tasklist-title">Task List</h2>
         <div class="task-input">
-            <input type="text" id="taskInput" placeholder="Add a new task...">
-            <button id="addTaskBtn">Add</button>
+            <label for="taskInput" class="sr-only">Nova tarefa</label>
+            <input type="text" id="taskInput" placeholder="Add a new task..." aria-label="Nova tarefa">
+            <button id="addTaskBtn" aria-label="Adicionar tarefa">Add</button>
         </div>
-        <ul id="taskList" class="task-list"></ul>
-    </div>
+        <ul id="taskList" class="task-list" aria-label="Lista de tarefas"></ul>
+    </section>
 
     <!-- Countdown Card -->
-    <div id="countdownCard" class="card hidden">
-        <button class="card-close" data-card-id="countdownCard">&times;</button>
-        <h2>Countdown</h2>
-        <div class="timer-display" id="countdownDisplay">00:00:00:00</div>
+    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="countdownCard" aria-label="Fechar Contagem Regressiva">&times;</button>
+        <h2 id="countdown-title">Countdown</h2>
+        <div class="timer-display" id="countdownDisplay" aria-live="polite" aria-label="Tempo restante">00:00:00:00</div>
         <div class="controls">
-            <input type="datetime-local" id="countdownDate">
+            <label for="countdownDate" class="sr-only">Data e hora de destino</label>
+            <input type="datetime-local" id="countdownDate" aria-label="Data e hora de destino">
         </div>
         <div class="buttons">
-            <button id="countdownStart">Start</button>
-            <button id="countdownStop">Stop</button>
+            <button id="countdownStart" aria-label="Iniciar Contagem Regressiva">Start</button>
+            <button id="countdownStop" aria-label="Parar Contagem Regressiva">Stop</button>
         </div>
-    </div>
+    </section>
 
     <!-- World Clock Card -->
-    <div id="worldClockCard" class="card hidden">
-        <button class="card-close" data-card-id="worldClockCard">&times;</button>
-        <h2>World Clock</h2>
+    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="worldClockCard" aria-label="Fechar Relógio Mundial">&times;</button>
+        <h2 id="worldclock-title">World Clock</h2>
         <div class="timezone-container">
-            <select id="timezoneSelect">
+            <label for="timezoneSelect" class="sr-only">Selecionar fuso horário</label>
+            <select id="timezoneSelect" aria-label="Selecionar fuso horário">
                 <option value="UTC">UTC (London)</option>
                 <option value="Europe/Lisbon">Lisbon (WET/WEST)</option>
                 <option value="Europe/Paris">Paris (CET/CEST)</option>
@@ -112,21 +122,22 @@
                 <option value="Asia/Singapore">Singapore (SGT)</option>
                 <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
             </select>
-            <button id="addTimezoneBtn">Add</button>
+            <button id="addTimezoneBtn" aria-label="Adicionar fuso horário">Add</button>
         </div>
-        <div id="timezoneList" class="timezone-list"></div>
-    </div>
+        <div id="timezoneList" class="timezone-list" aria-label="Lista de fusos horários"></div>
+    </section>
 
     <div id="buttonContainer" class="buttonContainer">
-        <button id="pomodoroButton">Pomodoro</button>
-        <button id="timerButton">Timer</button>
-        <button id="tasklistButton">TaskList</button>
-        <button id="countdownButton">Countdown</button>
-        <button id="worldClockButton">World Clock</button>
+        <button id="pomodoroButton" aria-pressed="false">Pomodoro</button>
+        <button id="timerButton" aria-pressed="false">Timer</button>
+        <button id="tasklistButton" aria-pressed="false">TaskList</button>
+        <button id="countdownButton" aria-pressed="false">Countdown</button>
+        <button id="worldClockButton" aria-pressed="false">World Clock</button>
     </div>
 
-    
-    <footer>
+    </main>
+
+    <footer role="contentinfo">
         <div>
             <p>&copy; 2026 StuddyBuddy. Desenvolvido por Mariana Lima.</p>
         </div>
