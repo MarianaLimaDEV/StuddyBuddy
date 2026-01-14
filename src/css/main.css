@@ -1,3 +1,17 @@
+@charset "UTF-8";
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
 :root {
   --primary: #3498db;
   --primary-variant: #2b82c8;
@@ -35,48 +49,222 @@
   --btn-hover-border: #999;
 }
 
-.font-fredoka {
-  font-family: "Fredoka", system-ui, -apple-system, sans-serif;
-  font-size: 1rem;
+/* Navbar (desktop) */
+.navbar {
+  display: flex;
+  height: 64px;
+  position: sticky;
+  margin: 0 auto;
+  max-width: 85%;
+  background-color: var(--surface);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  z-index: 999;
 }
-
-.font-funnel {
-  font-family: "Funnel Sans", system-ui, -apple-system, sans-serif;
-  font-size: 1rem;
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 2rem;
 }
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  z-index: -1;
-}
-.skip-link:focus, .skip-link:active {
-  left: 1rem;
-  top: 1rem;
-  width: auto;
-  height: auto;
-  z-index: 10000;
-  background: var(--surface);
+.navbar-logo {
+  font-size: 2rem;
+  font-weight: 600;
   color: var(--text);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px var(--shadow-color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Desktop menu */
+.navbar-menu {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  padding-left: 50px;
+  align-items: center;
+}
+.navbar-menu li a {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 500;
+  padding: 3px 20px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  transition: all 0.7s ease;
+  white-space: nowrap;
+}
+.navbar-menu li a:hover {
+  color: var(--accent);
+  background: var(--hover-overlay);
+  border: 2px solid var(--border-subtle);
+}
+
+/* Theme toggle inside navbar */
+.navbar-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+}
+.navbar-theme-toggle theme-toggle {
+  --size: 2.2rem;
+}
+
+/* Toggle button (hidden on desktop) */
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 44px;
+  height: 44px;
+}
+.navbar-toggle .bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  margin: 4px 0;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+.navbar-toggle {
+  /* Accessible focus state */
+}
+.navbar-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary);
+}
+.navbar-toggle {
+  /* When toggled (hamburger -> X) */
+}
+.navbar-toggle.is-open .bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.navbar-toggle.is-open .bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.navbar-toggle.is-open .bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Mobile behaviour (overrides for small screens) */
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: flex; /* show hamburger on mobile */
+  }
+  .navbar-menu {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.2s ease;
+    position: absolute;
+    top: calc(64px + 0.75rem);
+    left: 1rem;
+    right: 1rem;
+    flex-direction: column;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 0.75rem;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    z-index: 1000;
+    pointer-events: none;
+  }
+  .navbar-menu.open,
+  .navbar-menu[aria-hidden=false] {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    max-height: calc(100vh - (64px + 4rem));
+  }
+}
+/* Desktop reset — garante que mobile overrides não vazem */
+@media (min-width: 769px) {
+  .navbar-toggle {
+    display: none !important;
+  }
+  .navbar-menu {
+    position: static !important;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-height: none !important;
+    opacity: 1 !important;
+    padding-left: 0;
+    align-items: center;
+  }
+  .navbar-menu li a {
+    padding: 3px 16px;
+  }
+}
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  margin: 3rem auto;
+  max-width: 600px;
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 2px solid var(--primary);
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+  z-index: 998;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(20deg);
+  box-shadow: 0 6px 16px var(--primary);
+}
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+#pomodoroButton, #timerButton, #tasklistButton, #countdownButton, #worldClockButton {
+  padding: 10px 20px;
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#pomodoroButton:hover, #timerButton:hover, #tasklistButton:hover, #countdownButton:hover, #worldClockButton:hover {
+  background: var(--btn-hover-bg);
+}
+#pomodoroButton.pressed, #timerButton.pressed, #tasklistButton.pressed, #countdownButton.pressed, #worldClockButton.pressed {
+  background: var(--btn-pressed);
+  color: white;
+  border-color: var(--btn-pressed);
 }
 
 body {
@@ -374,6 +562,42 @@ footer a {
 /* Utility class */
 .hidden {
   display: none;
+}
+
+/* Screen reader only class for accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -1;
+}
+.skip-link:focus, .skip-link:active {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  z-index: 10000;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px var(--shadow-color);
 }
 
 /*# sourceMappingURL=main.css.map */

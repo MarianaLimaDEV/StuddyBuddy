@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
+    "dev:sass": "sass --watch src/scss/main.scss:src/css/main.css --style=expanded",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:sass\"",
     "build": "vite build",
     "preview": "vite preview",
     "scss": "sass --watch src/scss:src/css --style=expanded"
@@ -21,6 +23,7 @@
   },
   "homepage": "https://github.com/MarianaLimaDEV/StuddyBuddy#readme",
   "devDependencies": {
+    "concurrently": "^9.0.0",
     "sass": "^1.97.1",
     "vite": "^7.3.0"
   }

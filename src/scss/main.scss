@@ -1,4 +1,7 @@
+@use 'reset';
 @use '_variables' as *;
+@use '_navbar';
+@use 'button';
 
 body {
   min-height: 100vh;
