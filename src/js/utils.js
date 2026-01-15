@@ -7,15 +7,21 @@
 let activeCard = null;
 let startX = 0, startY = 0;
 let initialLeft = 0, initialTop = 0;
+let isDragging = false;
+const DRAG_THRESHOLD = 5; // pixels - minimum movement to start dragging
 
 export function initDragFunctionality() {
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('pointerdown', (e) => {
+      // Don't start drag if clicking on close buttons or internal buttons
+      if (e.target.closest('.card-close') || e.target.closest('button')) return;
+      
       activeCard = card;
       startX = e.clientX;
       startY = e.clientY;
       initialLeft = card.offsetLeft;
       initialTop = card.offsetTop;
+      isDragging = false;
       e.preventDefault();
       document.body.style.userSelect = 'none';
       if (e.pointerId && card.setPointerCapture) {
@@ -31,8 +37,16 @@ function pointerMove(e){
     if (!activeCard) return;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    activeCard.style.left = (initialLeft + dx) + 'px';
-    activeCard.style.top = (initialTop + dy) + 'px';
+    
+    // Only start dragging after moving a few pixels
+    if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+      isDragging = true;
+    }
+    
+    if (isDragging) {
+      activeCard.style.left = (initialLeft + dx) + 'px';
+      activeCard.style.top = (initialTop + dy) + 'px';
+    }
 }
 
 function pointerUp(e){
@@ -41,6 +55,7 @@ function pointerUp(e){
       try { activeCard.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     }
     activeCard = null;
+    isDragging = false;
     document.removeEventListener('pointermove', pointerMove);
     document.removeEventListener('pointerup', pointerUp);
     document.body.style.userSelect = '';
@@ -118,16 +133,156 @@ export function setupToggle(buttonId, cardId) {
     });
   }
 
-  // Close card when clicking outside (but not on internal buttons)
+  // Note: We removed the document click listener that closed cards when clicking outside.
+  // This allows multiple cards to be open simultaneously.
+}
+
+// ==================== LOGIN POPUP ====================
+export function setupLoginPopup() {
+  const loginButton = document.getElementById('loginButton');
+  const loginPopup = document.getElementById('loginPopup');
+  const loginPopupClose = document.getElementById('loginPopupClose');
+  const loginForm = document.getElementById('loginForm');
+
+  if (!loginButton || !loginPopup) return;
+
+  let isPopupOpen = false;
+
+  // Open popup
+  const openPopup = () => {
+    isPopupOpen = true;
+    loginPopup.classList.remove('hidden');
+    loginButton.setAttribute('aria-expanded', 'true');
+    // Focus on email input for accessibility
+    const emailInput = document.getElementById('loginEmail');
+    if (emailInput) emailInput.focus();
+  };
+
+  // Close popup
+  const closePopup = () => {
+    isPopupOpen = false;
+    loginPopup.classList.add('hidden');
+    loginButton.setAttribute('aria-expanded', 'false');
+    loginButton.focus();
+  };
+
+  // Toggle popup
+  loginButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isPopupOpen) {
+      closePopup();
+    } else {
+      openPopup();
+    }
+  });
+
+  // Close on X button
+  if (loginPopupClose) {
+    loginPopupClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closePopup();
+    });
+  }
+
+  // Handle form submission
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Here you would typically handle the login logic
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      console.log('Login attempt:', { email, rememberMe });
+      // Simulate successful login
+      alert('Login functionality would be implemented here!');
+      closePopup();
+    });
+  }
+
+  // Close on clicking outside popup
   document.addEventListener('click', (e) => {
-    if (isPressed && !card.contains(e.target) && !button.contains(e.target)) {
-      // Check if clicked element is not inside the card
-      const clickedInCard = card.querySelector('*:hover');
-      if (!clickedInCard) {
-        isPressed = false;
-        button.classList.remove('pressed');
-        card.classList.add('hidden');
+    if (isPopupOpen && !loginPopup.contains(e.target) && !loginButton.contains(e.target)) {
+      closePopup();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isPopupOpen) {
+      closePopup();
+    }
+  });
+}
+
+// ==================== NAVBAR DROPDOWNS ====================
+export function setupNavbarDropdowns() {
+  const dropdownButtons = document.querySelectorAll('.navbar-dropdown-btn');
+  const dropdowns = document.querySelectorAll('.navbar-dropdown');
+
+  // Close all dropdowns
+  const closeAllDropdowns = () => {
+    dropdowns.forEach(dropdown => {
+      dropdown.classList.add('hidden');
+    });
+    dropdownButtons.forEach(btn => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  };
+
+  // Toggle specific dropdown
+  const toggleDropdown = (button) => {
+    const dropdownId = button.getAttribute('data-dropdown');
+    const dropdown = document.getElementById(`dropdown-${dropdownId}`);
+    if (!dropdown) return;
+
+    const isOpen = !dropdown.classList.contains('hidden');
+
+    // Close all dropdowns first
+    closeAllDropdowns();
+
+    if (!isOpen) {
+      dropdown.classList.remove('hidden');
+      button.classList.add('active');
+      button.setAttribute('aria-expanded', 'true');
+    }
+  };
+
+  // Add click handlers to dropdown buttons
+  dropdownButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown(button);
+    });
+  });
+
+  // Add click handlers to close buttons
+  const closeButtons = document.querySelectorAll('.dropdown-close');
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdown = btn.closest('.navbar-dropdown');
+      const button = document.querySelector(`.navbar-dropdown-btn[data-dropdown="${dropdown.id.replace('dropdown-', '')}"]`);
+      if (dropdown) dropdown.classList.add('hidden');
+      if (button) {
+        button.classList.remove('active');
+        button.setAttribute('aria-expanded', 'false');
       }
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.navbar-dropdown') && !e.target.closest('.navbar-dropdown-btn')) {
+      closeAllDropdowns();
+    }
+  });
+
+  // Close dropdowns on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllDropdowns();
     }
   });
 }

@@ -1,4 +1,4 @@
-// Theme Toggle Web Component based on theme-toggle-main
+// Theme Toggle Web Component
 const template = document.createElement("template");
 template.innerHTML = `
   <style>
@@ -232,5 +232,5 @@ if (!customElements.get("theme-toggle")) {
   customElements.define("theme-toggle", ThemeToggle);
 }
 
-export default ThemeToggle;
+export { ThemeToggle };
 

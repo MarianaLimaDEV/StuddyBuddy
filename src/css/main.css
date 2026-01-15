@@ -89,18 +89,47 @@
 .navbar-menu li a {
   text-decoration: none;
   color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 500;
   padding: 3px 20px;
   border-radius: 20px;
   border: 2px solid transparent;
   transition: all 0.7s ease;
   white-space: nowrap;
+  position: relative;
 }
 .navbar-menu li a:hover {
   color: var(--accent);
   background: var(--hover-overlay);
   border: 2px solid var(--border-subtle);
+}
+.navbar-menu li a {
+  /* Tooltip on hover */
+}
+.navbar-menu li a::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: var(--text);
+  color: var(--bg-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.navbar-menu li a:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Theme toggle inside navbar */
@@ -206,6 +235,323 @@
     padding: 3px 16px;
   }
 }
+/* Login button in navbar */
+.navbar-login-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.7s ease;
+  white-space: nowrap;
+}
+.navbar-login-btn:hover {
+  background: var(--primary-variant);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+.navbar-login-btn:active {
+  transform: translateY(0);
+}
+
+/* Login popup styles */
+.login-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px var(--shadow-color);
+  z-index: 2000;
+  min-width: 380px;
+  max-width: 90vw;
+  text-align: center;
+  color: var(--text);
+}
+.login-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.login-popup-close:hover {
+  background: var(--hover-overlay);
+  color: var(--danger);
+  transform: rotate(90deg);
+}
+.login-popup h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.75rem;
+  color: var(--text);
+}
+.login-popup .login-subtitle {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-input-group input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--hover-overlay);
+  color: var(--text);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+.login-input-group input::placeholder {
+  color: var(--muted);
+}
+.login-input-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+.login-options .remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+.login-options .remember-me input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.login-options .remember-me:hover {
+  color: var(--text);
+}
+.login-options .forgot-password {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.login-options .forgot-password:hover {
+  color: var(--primary-variant);
+  text-decoration: underline;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+.login-submit-btn:hover {
+  background: var(--primary-variant);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+.login-submit-btn:active {
+  transform: translateY(0);
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+.login-divider::before, .login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+.login-divider span {
+  padding: 0 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.social-login .social-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 2px solid var(--border-subtle);
+  background: var(--hover-overlay);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--text);
+}
+.social-login .social-btn:hover {
+  background: var(--surface);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.social-login .social-btn.google:hover {
+  border-color: #4285F4;
+  color: #4285F4;
+}
+.social-login .social-btn.github:hover {
+  border-color: #333;
+  color: #333;
+}
+.social-login .social-btn.microsoft:hover {
+  border-color: #00a4ef;
+  color: #00a4ef;
+}
+
+.login-footer {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.login-footer .signup-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.login-footer .signup-link:hover {
+  color: var(--primary-variant);
+  text-decoration: underline;
+}
+
+/* Navbar dropdown buttons (replacing links) */
+.navbar-dropdown-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 500;
+  padding: 3px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.7s ease;
+  white-space: nowrap;
+  position: relative;
+}
+.navbar-dropdown-btn:hover {
+  color: var(--accent);
+  background: var(--hover-overlay);
+  border: 2px solid var(--border-subtle);
+}
+.navbar-dropdown-btn.active {
+  color: var(--accent);
+  background: var(--hover-overlay);
+  border: 2px solid var(--border-subtle);
+}
+
+/* Navbar dropdown panel */
+.navbar-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 350px;
+  max-width: 450px;
+  box-shadow: 0 12px 40px var(--shadow-color);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  /* Semi-transparent backdrop effect */
+}
+.navbar-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.navbar-dropdown:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+.navbar-dropdown:not(.hidden)::before {
+  opacity: 1;
+}
+.navbar-dropdown .dropdown-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.navbar-dropdown .dropdown-close:hover {
+  background: var(--hover-overlay);
+  color: var(--danger);
+  transform: rotate(90deg);
+}
+.navbar-dropdown h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+.navbar-dropdown p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
 .buttonContainer {
   display: flex;
   flex-wrap: wrap;

@@ -4,12 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "dev:sass": "sass --watch src/scss/main.scss:src/css/main.css --style=expanded",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev:sass\"",
+    "dev": "concurrently \"vite\" \"sass --watch src/scss/main.scss:src/css/main.css --style=expanded\"",
     "build": "vite build",
-    "preview": "vite preview",
-    "scss": "sass --watch src/scss:src/css --style=expanded"
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
