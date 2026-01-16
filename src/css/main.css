@@ -71,7 +71,7 @@
   padding: 0 2rem;
 }
 .navbar-logo {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text);
   text-decoration: none;
@@ -81,7 +81,7 @@
 /* Desktop menu */
 .navbar-menu {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   list-style: none;
   padding-left: 50px;
   align-items: center;
@@ -89,7 +89,7 @@
 .navbar-menu li a {
   text-decoration: none;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: 500;
   padding: 3px 20px;
   border-radius: 20px;
@@ -459,7 +459,7 @@
   background: transparent;
   border: 2px solid transparent;
   color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 500;
   padding: 3px 20px;
   border-radius: 20px;
@@ -570,6 +570,7 @@
 /* Theme toggle button */
 .theme-toggle {
   position: fixed;
+  padding: 2rem;
   top: 80px;
   right: 20px;
   width: 50px;
@@ -618,7 +619,7 @@ body {
   background-color: var(--bg-color);
   background-image: linear-gradient(var(--hover-overlay) 1px, transparent 1px), linear-gradient(90deg, var(--hover-overlay) 1px, transparent 1px);
   background-size: 4em 4em;
-  font-family: "Fredoka", system-ui, -apple-system, sans-serif;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
   font-size: 1rem;
   color: var(--text);
   margin: 0;

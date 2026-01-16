@@ -79,3 +79,4 @@ export class SimpleTimer {
     display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 }
+
