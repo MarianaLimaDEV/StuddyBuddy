@@ -1,0 +1,49 @@
+Rodar watch: npm run sass:watch
+
+let newX = 0, newY = 0, startX = 0, startY = 0;
+
+const card = document.getElementById('card');
+if (!card) {
+  // No card element present — nothing to do
+} else {
+  // Use pointer events for mouse + touch support
+  card.style.touchAction = 'none';
+  card.addEventListener('pointerdown', pointerDown);
+}
+
+function pointerDown(e) {
+  startX = e.clientX;
+  startY = e.clientY;
+
+  // Try to capture the pointer so we keep receiving events
+  if (e.pointerId && card.setPointerCapture) {
+    try { card.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  }
+
+  document.addEventListener('pointermove', pointerMove);
+  document.addEventListener('pointerup', pointerUp);
+  document.addEventListener('pointercancel', pointerUp);
+}
+
+function pointerMove(e) {
+  newX = startX - e.clientX;
+  newY = startY - e.clientY;
+
+  startX = e.clientX;
+  startY = e.clientY;
+
+  card.style.top = (card.offsetTop - newY) + 'px';
+  card.style.left = (card.offsetLeft - newX) + 'px';
+}
+
+function pointerUp(e) {
+  document.removeEventListener('pointermove', pointerMove);
+  document.removeEventListener('pointerup', pointerUp);
+  document.removeEventListener('pointercancel', pointerUp);
+
+  if (e.pointerId && card.releasePointerCapture) {
+    try { card.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  }
+}
+
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);

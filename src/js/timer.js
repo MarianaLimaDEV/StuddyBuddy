@@ -2,6 +2,8 @@
  * Simple Timer Module
  * Handles a basic countdown timer with customizable minutes and seconds
  */
+import { showNotification } from './utils.js';
+
 export class SimpleTimer {
   constructor() {
     this.totalSeconds = 0;
@@ -52,7 +54,7 @@ export class SimpleTimer {
       this.updateDisplay();
       if (this.timeLeft <= 0) {
         this.stop();
-        alert('Timer finished!');
+        showNotification('Timer finished!', 'success', 5000);
       }
     }, 1000);
   }

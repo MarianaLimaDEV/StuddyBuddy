@@ -2,6 +2,8 @@
  * World Clock Module
  * Displays multiple timezones with local storage persistence
  */
+import { showNotification } from './utils.js';
+
 export class WorldClock {
   constructor() {
     this.timezones = [];
@@ -21,10 +23,23 @@ export class WorldClock {
     // Setup event listeners
     setTimeout(() => {
       const addBtn = document.getElementById('addTimezoneBtn');
+      const timezoneList = document.getElementById('timezoneList');
+      
       if (addBtn) {
         addBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.addTimezone();
+        });
+      }
+
+      // Event delegation for delete buttons
+      if (timezoneList) {
+        timezoneList.addEventListener('click', (e) => {
+          const deleteBtn = e.target.closest('[data-action="remove-tz"]');
+          if (deleteBtn) {
+            const tz = deleteBtn.dataset.tz;
+            this.removeTimezone(tz);
+          }
         });
       }
     }, 100);
@@ -44,14 +59,14 @@ export class WorldClock {
 
     // Validate timezone
     if (!tz) {
-      this.showFeedback('Por favor, selecione um fuso horário', 'warning');
+      showNotification('Por favor, selecione um fuso horário', 'warning');
       return;
     }
 
     // Check for duplicates
     const exists = this.timezones.find(t => t.tz === tz);
     if (exists) {
-      this.showFeedback('Este fuso horário já está na lista', 'warning');
+      showNotification('Este fuso horário já está na lista', 'warning');
       return;
     }
 
@@ -59,7 +74,7 @@ export class WorldClock {
     this.timezones.push({ tz, name: tzName });
     this.save();
     this.render();
-    this.showFeedback('Fuso horário adicionado!', 'success');
+    showNotification('Fuso horário adicionado!', 'success');
   }
 
   removeTimezone(tz) {
@@ -69,7 +84,7 @@ export class WorldClock {
     this.timezones.splice(tzIndex, 1);
     this.save();
     this.render();
-    this.showFeedback('Fuso horário removido', 'success');
+    showNotification('Fuso horário removido', 'success');
   }
 
   save() {
@@ -77,53 +92,8 @@ export class WorldClock {
       localStorage.setItem('worldClockTimezones', JSON.stringify(this.timezones));
     } catch (error) {
       console.warn('Failed to save timezones to localStorage:', error);
-      this.showFeedback('Falha ao guardar fusos horários. O armazenamento pode estar cheio.', 'error');
+      showNotification('Falha ao guardar fusos horários. O armazenamento pode estar cheio.', 'error');
     }
-  }
-
-  /**
-   * Show user feedback notification
-   * @param {string} message - Message to display
-   * @param {string} type - Notification type: 'success', 'warning', 'error'
-   */
-  showFeedback(message, type = 'success') {
-    const feedback = document.createElement('div');
-    feedback.className = `feedback feedback-${type}`;
-    feedback.setAttribute('role', 'alert');
-    feedback.setAttribute('aria-live', 'polite');
-    feedback.textContent = message;
-
-    const colors = {
-      success: 'var(--success)',
-      warning: 'var(--warning)',
-      error: 'var(--danger)'
-    };
-
-    feedback.style.cssText = `
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: ${colors[type] || colors.success};
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      z-index: 9999;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    `;
-
-    document.body.appendChild(feedback);
-
-    requestAnimationFrame(() => {
-      feedback.style.opacity = '1';
-    });
-
-    setTimeout(() => {
-      feedback.style.opacity = '0';
-      setTimeout(() => feedback.remove(), 300);
-    }, 3000);
   }
 
   render() {
@@ -146,10 +116,10 @@ export class WorldClock {
       }
 
       return `
-        <div class="timezone-item" role="listitem">
+        <div class="timezone-item" role="listitem" data-tz="${tz}">
           <span class="tz-name">${name}</span>
           <span class="tz-time" aria-label="Hora em ${name}">${time}</span>
-          <button class="delete-btn" aria-label="Remover ${name}" onclick="worldClockInstance.removeTimezone('${tz}')">×</button>
+          <button class="delete-btn" aria-label="Remover ${name}" data-action="remove-tz" data-tz="${tz}">×</button>
         </div>
       `;
     }).join('');

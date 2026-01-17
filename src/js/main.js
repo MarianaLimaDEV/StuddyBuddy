@@ -15,7 +15,7 @@ import { SimpleTimer } from './timer.js';
 import { TaskList } from './tasklist.js';
 import { CountdownTimer } from './countdown.js';
 import { WorldClock } from './worldclock.js';
-import { initDragFunctionality, initNavbarToggle, setupToggle, setupLoginPopup, setupNavbarDropdowns } from './utils.js';
+import { initDragFunctionality, initNavbarToggle, setupToggle, setupLoginPopup, setupNavbarDropdowns, initKeyboardShortcuts, showNotification } from './utils.js';
 
 /**
  * Initialize all features on DOM ready
@@ -36,6 +36,7 @@ async function initializeApp() {
     initNavbarToggle();
     setupLoginPopup();
     setupNavbarDropdowns();
+    initKeyboardShortcuts();
     console.info('UI utilities initialized');
   } catch (error) {
     console.error('Failed to initialize UI utilities:', error);

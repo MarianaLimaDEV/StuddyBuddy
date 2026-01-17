@@ -215,6 +215,164 @@ export function setupLoginPopup() {
   });
 }
 
+// ==================== SHARED NOTIFICATION SYSTEM ====================
+let notificationContainer = null;
+
+/**
+ * Create a shared notification element
+ */
+function getNotificationContainer() {
+  if (notificationContainer) return notificationContainer;
+  
+  notificationContainer = document.createElement('div');
+  notificationContainer.id = 'notification-container';
+  notificationContainer.setAttribute('role', 'alert');
+  notificationContainer.setAttribute('aria-live', 'polite');
+  notificationContainer.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 9999;
+    pointer-events: none;
+  `;
+  document.body.appendChild(notificationContainer);
+  return notificationContainer;
+}
+
+/**
+ * Show a notification toast
+ * @param {string} message - Message to display
+ * @param {string} type - Notification type: 'success', 'warning', 'error'
+ * @param {number} duration - Duration in ms (default: 3000)
+ */
+export function showNotification(message, type = 'success', duration = 3000) {
+  const container = getNotificationContainer();
+  const notification = document.createElement('div');
+  
+  const colors = {
+    success: 'var(--success)',
+    warning: 'var(--warning)',
+    error: 'var(--danger)',
+    info: 'var(--primary)'
+  };
+
+  notification.className = `notification notification-${type}`;
+  notification.textContent = message;
+  notification.setAttribute('role', 'alert');
+  notification.style.cssText = `
+    background-color: ${colors[type] || colors.success};
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
+  `;
+
+  container.appendChild(notification);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    notification.style.opacity = '1';
+    notification.style.transform = 'translateY(0)';
+  });
+
+  // Remove after duration
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateY(20px)';
+    setTimeout(() => notification.remove(), 300);
+  }, duration);
+}
+
+// ==================== KEYBOARD SHORTCUTS ====================
+export function initKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Don't trigger shortcuts when typing in input fields
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+      return;
+    }
+
+    // Ctrl/Cmd + Shift + P: Toggle Pomodoro
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+      e.preventDefault();
+      toggleCard('pomodoroButton', 'pomodoroCard');
+    }
+
+    // Ctrl/Cmd + Shift + T: Toggle Timer
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+      e.preventDefault();
+      toggleCard('timerButton', 'timerCard');
+    }
+
+    // Ctrl/Cmd + Shift + L: Toggle TaskList
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'L') {
+      e.preventDefault();
+      toggleCard('tasklistButton', 'tasklistCard');
+    }
+
+    // Ctrl/Cmd + Shift + C: Toggle Countdown
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+      e.preventDefault();
+      toggleCard('countdownButton', 'countdownCard');
+    }
+
+    // Ctrl/Cmd + Shift + W: Toggle World Clock
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'W') {
+      e.preventDefault();
+      toggleCard('worldClockButton', 'worldClockCard');
+    }
+
+    // Ctrl/Cmd + Shift + D: Toggle Dark/Light theme
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+      e.preventDefault();
+      const themeToggle = document.querySelector('theme-toggle');
+      if (themeToggle && typeof themeToggle.toggleTheme === 'function') {
+        themeToggle.toggleTheme();
+      }
+    }
+
+    // Escape: Close all cards
+    if (e.key === 'Escape') {
+      closeAllCards();
+    }
+  });
+}
+
+/**
+ * Toggle a card's visibility
+ */
+function toggleCard(buttonId, cardId) {
+  const button = document.getElementById(buttonId);
+  const card = document.getElementById(cardId);
+  if (!button || !card) return;
+
+  // Simulate button click to toggle
+  button.click();
+}
+
+/**
+ * Close all open cards
+ */
+function closeAllCards() {
+  const cards = document.querySelectorAll('.card:not(.hidden)');
+  const buttons = document.querySelectorAll('#buttonContainer button.pressed');
+
+  cards.forEach(card => {
+    card.classList.add('hidden');
+  });
+
+  buttons.forEach(button => {
+    button.classList.remove('pressed');
+  });
+}
+
 // ==================== NAVBAR DROPDOWNS ====================
 export function setupNavbarDropdowns() {
   const dropdownButtons = document.querySelectorAll('.navbar-dropdown-btn');

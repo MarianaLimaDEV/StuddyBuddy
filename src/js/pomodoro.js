@@ -2,6 +2,8 @@
  * Pomodoro Timer Module
  * Handles the Pomodoro timer functionality with work/break cycles
  */
+import { showNotification } from './utils.js';
+
 export class PomodoroTimer {
   constructor() {
     this.workTime = 25;
@@ -71,7 +73,7 @@ export class PomodoroTimer {
         this.timeLeft = (this.isBreak ? this.breakTime : this.workTime) * 60;
         // Update display to show the corrected (non-negative) value
         this.updateDisplay();
-        alert(this.isBreak ? 'Break time!' : 'Work time!');
+        showNotification(this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!', this.isBreak ? 'info' : 'info', 5000);
       } else {
         this.updateDisplay();
       }

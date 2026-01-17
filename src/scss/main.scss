@@ -369,3 +369,44 @@ footer {
   }
 }
 
+// ============================================
+// PREFER REDUCED MOTION SUPPORT
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    transition: none !important;
+  }
+
+  .card,
+  .card-close,
+  .buttons button,
+  .task-item,
+  .timezone-item,
+  .delete-btn,
+  .navbar-dropdown,
+  .navbar-menu,
+  .login-popup,
+  .social-btn,
+  .notification {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  // Reset hover effects for reduced motion
+  .card-close:hover,
+  .buttons button:hover,
+  .delete-btn:hover,
+  .social-btn:hover {
+    transform: none !important;
+  }
+}
+

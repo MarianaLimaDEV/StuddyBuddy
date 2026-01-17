@@ -1,0 +1,66 @@
+<parameter name="content">{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "module": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-unused-vars": [
+      "warn"
+    ],
+    "no-console": [
+      "warn"
+    ],
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "curly": [
+      "error",
+      "all"
+    ],
+    "no-else-return": [
+      "error"
+    ],
+    "no-multi-spaces": [
+      "error"
+    ],
+    "no-trailing-spaces": [
+      "error"
+    ],
+    "object-shorthand": [
+      "error",
+      "always"
+    ],
+    "prefer-const": [
+      "error"
+    ],
+    "space-infix-ops": [
+      "error"
+    ]
+  }
+}
+</parameter>

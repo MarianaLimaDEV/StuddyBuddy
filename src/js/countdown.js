@@ -2,6 +2,8 @@
  * Countdown Timer Module
  * Handles a countdown to a specific date/time with local storage persistence
  */
+import { showNotification } from './utils.js';
+
 export class CountdownTimer {
   constructor() {
     this.targetDate = null;
@@ -68,7 +70,7 @@ export class CountdownTimer {
 
     const dateValue = dateInput.value;
     if (!dateValue) {
-      this.showFeedback('Por favor, selecione uma data e hora', 'warning');
+      showNotification('Por favor, selecione uma data e hora', 'warning');
       return;
     }
 
@@ -94,7 +96,7 @@ export class CountdownTimer {
       this.updateDisplay();
     }, 1000);
 
-    this.showFeedback('Contagem regressiva iniciada!', 'success');
+    showNotification('Contagem regressiva iniciada!', 'success');
   }
 
   stop() {
@@ -102,7 +104,7 @@ export class CountdownTimer {
       clearInterval(this.interval);
       this.interval = null;
     }
-    this.showFeedback('Contagem regressiva parada', 'success');
+    showNotification('Contagem regressiva parada', 'info');
   }
 
   updateDisplay() {
@@ -115,7 +117,7 @@ export class CountdownTimer {
     if (distance < 0) {
       display.textContent = '00:00:00:00';
       this.stop();
-      this.showFeedback('A contagem regressiva terminou!', 'success');
+      showNotification('A contagem regressiva terminou!', 'success', 5000);
       return;
     }
 
