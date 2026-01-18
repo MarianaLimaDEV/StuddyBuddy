@@ -10,7 +10,8 @@
     <meta name="keywords" content="Pomodoro, Cozy, Lo-fi, Study">
     <meta name="author" content="Mariana Lima">
 
-    <link rel="icon" href="SB_B.png">
+    <link rel="icon" href="SB_B.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="SB_W.png" media="(prefers-color-scheme: light)">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/css/main.css">
@@ -20,7 +21,13 @@
 
     <nav class="navbar" role="navigation" aria-label="Menu principal">
         <div class="navbar-container">
-            <a href="index.html" class="navbar-logo" aria-label="StuddyBuddy - Página inicial">StuddyBuddy</a>
+            <a href="index.html" class="navbar-logo" aria-label="StuddyBuddy - Página inicial">
+                <picture>
+                    <source srcset="SB_W.png" data-theme="light">
+                    <source srcset="SB_B.png" data-theme="dark">
+                    <img src="SB_B.png" alt="StuddyBuddy Logo" class="navbar-logo-img">
+                </picture>
+            </a>
             <ul class="navbar-menu" role="menubar">
                 <li role="none">
                     <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="principal">

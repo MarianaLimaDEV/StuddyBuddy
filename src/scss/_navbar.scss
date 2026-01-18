@@ -14,6 +14,7 @@
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-color);
   z-index: 999;
+  font-family: map-get($fonts, "fredoka");
 
   &-container {
     display: flex;
@@ -24,11 +25,49 @@
   }
 
   &-logo {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text);
+    display: flex;
+    align-items: center;
     text-decoration: none;
     cursor: pointer;
+    
+    picture {
+      display: flex;
+    }
+    
+    source {
+      display: none;
+    }
+    
+    source[data-theme="light"] {
+      display: block;
+    }
+    
+    source[data-theme="dark"] {
+      display: none;
+    }
+    
+    img {
+      height: 2.5rem;
+      width: auto;
+    }
+  }
+  
+  // Logo visibility when body has light theme
+  body[data-theme="light"] &-logo source[data-theme="light"] {
+    display: none;
+  }
+  
+  body[data-theme="light"] &-logo source[data-theme="dark"] {
+    display: block;
+  }
+  
+  // Logo visibility when body has dark theme (default)
+  body[data-theme="dark"] &-logo source[data-theme="light"] {
+    display: block;
+  }
+  
+  body[data-theme="dark"] &-logo source[data-theme="dark"] {
+    display: none;
   }
 }
 
@@ -51,6 +90,7 @@
     transition: all $transition-speed ease;
     white-space: nowrap;
     position: relative;
+    font-family: map-get($fonts, "fredoka");
 
     &:hover {
       color: var(--accent);
@@ -234,6 +274,7 @@
   max-width: 90vw;
   text-align: center;
   color: var(--text);
+  font-family: map-get($fonts, "fredoka");
 
   &-close {
     position: absolute;
@@ -287,6 +328,7 @@
     background: var(--hover-overlay);
     color: var(--text);
     font-size: 1rem;
+    font-family: map-get($fonts, "fredoka");
     transition: all 0.2s ease;
 
     &::placeholder {
@@ -454,6 +496,7 @@
   transition: all $transition-speed ease;
   white-space: nowrap;
   position: relative;
+  font-family: map-get($fonts, "fredoka");
 
   &:hover {
     color: var(--accent);
