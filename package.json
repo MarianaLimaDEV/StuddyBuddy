@@ -23,5 +23,9 @@
     "concurrently": "^9.0.0",
     "sass": "^1.97.1",
     "vite": "^7.3.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.1.4"
   }
 }
