@@ -5,7 +5,7 @@
   display: flex;
   height: $navbar-height;
   position: sticky;
-  margin: 0 auto;
+  margin: auto;
   
   max-width: 85%;
   background-color: var(--surface);
@@ -47,7 +47,7 @@
     }
     
     img {
-      height: 2.5rem;
+      height: 3.5rem;
       width: auto;
     }
   }

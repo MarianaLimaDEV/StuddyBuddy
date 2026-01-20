@@ -14,7 +14,7 @@ body {
   font-size: map-get($font-sizes, "md");
   color: var(--text);
   margin: 0;
-  padding-top: $navbar-height;
+  padding-top: 30px;
   height: 100%;
   transition: background-color 0.4s ease, color 0.4s ease;
 }

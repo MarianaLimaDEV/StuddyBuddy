@@ -52,9 +52,9 @@
 /* Navbar (desktop) */
 .navbar {
   display: flex;
-  height: 64px;
+  height: 75px;
   position: sticky;
-  margin: 0 auto;
+  margin: auto;
   max-width: 85%;
   background-color: var(--surface);
   -webkit-backdrop-filter: blur(10px);
@@ -90,7 +90,7 @@
   display: none;
 }
 .navbar-logo img {
-  height: 2.5rem;
+  height: 3.5rem;
   width: auto;
 }
 body[data-theme=light] .navbar-logo source[data-theme=light] {
@@ -226,7 +226,7 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
     opacity: 0;
     transition: max-height 0.28s ease, opacity 0.2s ease;
     position: absolute;
-    top: calc(64px + 0.75rem);
+    top: calc(75px + 0.75rem);
     left: 1rem;
     right: 1rem;
     flex-direction: column;
@@ -242,7 +242,7 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
     display: flex;
     opacity: 1;
     pointer-events: auto;
-    max-height: calc(100vh - (64px + 4rem));
+    max-height: calc(100vh - (75px + 4rem));
   }
 }
 /* Desktop reset — garante que mobile overrides não vazem */
@@ -658,7 +658,7 @@ body {
   font-size: 1rem;
   color: var(--text);
   margin: 0;
-  padding-top: 64px;
+  padding-top: 30px;
   height: 100%;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
