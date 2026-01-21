@@ -518,11 +518,12 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   left: 50%;
   transform: translateX(-50%);
   background: var(--surface);
-  border-radius: 12px;
+  border-radius: 3px;
   padding: 1.5rem;
+  margin-top: 15px;
   min-width: 350px;
   max-width: 450px;
-  box-shadow: 0 12px 40px var(--shadow-color);
+  box-shadow: 0 6px 40px var(--shadow-color);
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
@@ -532,12 +533,12 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
 .navbar-dropdown::before {
   content: "";
   position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
+  border-radius: 5px;
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -575,6 +576,77 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   margin: 0 0 0.75rem 0;
   font-size: 1.2rem;
   color: var(--primary);
+}
+.navbar-dropdown .theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--hover-overlay);
+  border-radius: 8px;
+}
+.navbar-dropdown .theme-toggle-container label {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
+}
+.navbar-dropdown .theme-toggle-container theme-toggle {
+  --size: 2rem;
+}
+.navbar-dropdown .contact-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.navbar-dropdown .contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
+  transition: all 0.2s ease;
+  color: white;
+  flex: 1;
+  justify-content: center;
+  min-width: 100px;
+}
+.navbar-dropdown .contact-btn svg {
+  flex-shrink: 0;
+}
+.navbar-dropdown .contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.navbar-dropdown .contact-btn:active {
+  transform: translateY(0);
+}
+.navbar-dropdown .contact-btn.github {
+  background: #24292e;
+}
+.navbar-dropdown .contact-btn.github:hover {
+  background: #2f363d;
+  box-shadow: 0 4px 12px rgba(36, 41, 46, 0.4);
+}
+.navbar-dropdown .contact-btn.linkedin {
+  background: #0a66c2;
+}
+.navbar-dropdown .contact-btn.linkedin:hover {
+  background: #0b5ad1;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);
+}
+.navbar-dropdown .contact-btn.discord {
+  background: #5865f2;
+}
+.navbar-dropdown .contact-btn.discord:hover {
+  background: #6876f5;
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
 }
 .navbar-dropdown p {
   margin: 0;
