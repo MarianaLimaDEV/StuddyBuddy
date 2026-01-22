@@ -1,12 +1,18 @@
 /**
  * World Clock Module
  * Displays multiple timezones with local storage persistence
+ * Optimized for performance using requestAnimationFrame and Intl.DateTimeFormat
  */
 import { showNotification } from './utils.js';
 
 export class WorldClock {
   constructor() {
     this.timezones = [];
+    this.timeFormatters = new Map();
+    this.lastUpdate = 0;
+    this.updateInterval = 1000; // Update every second
+    this.animationFrameId = null;
+    this.isRunning = false;
     this.init();
   }
 
@@ -19,6 +25,9 @@ export class WorldClock {
       console.warn('Failed to load timezones from localStorage:', error);
       this.timezones = [];
     }
+
+    // Pre-create formatters for better performance
+    this.timezones.forEach(({ tz }) => this.getFormatter(tz));
 
     // Setup event listeners
     setTimeout(() => {
@@ -44,10 +53,56 @@ export class WorldClock {
       }
     }, 100);
 
-    // Update time display every second
-    setInterval(() => this.render(), 1000);
-
+    // Start the update loop
+    this.startUpdateLoop();
+    
     this.render();
+  }
+
+  /**
+   * Get or create a cached Intl.DateTimeFormat formatter
+   */
+  getFormatter(tz) {
+    if (!this.timeFormatters.has(tz)) {
+      this.timeFormatters.set(tz, new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }));
+    }
+    return this.timeFormatters.get(tz);
+  }
+
+  /**
+   * Start the update loop using requestAnimationFrame
+   */
+  startUpdateLoop() {
+    if (this.isRunning) return;
+    this.isRunning = true;
+    
+    const update = () => {
+      const now = Date.now();
+      if (now - this.lastUpdate >= this.updateInterval) {
+        this.render();
+        this.lastUpdate = now;
+      }
+      this.animationFrameId = requestAnimationFrame(update);
+    };
+    
+    this.animationFrameId = requestAnimationFrame(update);
+  }
+
+  /**
+   * Stop the update loop
+   */
+  stopUpdateLoop() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    this.isRunning = false;
   }
 
   addTimezone() {
@@ -72,6 +127,10 @@ export class WorldClock {
 
     // Add timezone
     this.timezones.push({ tz, name: tzName });
+    
+    // Pre-create formatter for new timezone
+    this.getFormatter(tz);
+    
     this.save();
     this.render();
     showNotification('Fuso horário adicionado!', 'success');
@@ -82,6 +141,10 @@ export class WorldClock {
     if (tzIndex === -1) return;
 
     this.timezones.splice(tzIndex, 1);
+    
+    // Remove formatter from cache
+    this.timeFormatters.delete(tz);
+    
     this.save();
     this.render();
     showNotification('Fuso horário removido', 'success');
@@ -100,29 +163,51 @@ export class WorldClock {
     const list = document.getElementById('timezoneList');
     if (!list) return;
 
-    list.innerHTML = '';
-
-    if (this.timezones.length === 0) {
+    // Don't re-render if nothing changed
+    const shouldRender = this.timezones.length > 0;
+    if (!shouldRender) {
       list.innerHTML = '<div class="empty-message">Nenhum fuso horário adicionado. Selecione um acima!</div>';
       return;
     }
 
-    list.innerHTML = this.timezones.map(({ tz, name }) => {
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+
+    this.timezones.forEach(({ tz, name }) => {
       let time;
       try {
-        time = new Date().toLocaleString('en-US', { timeZone: tz });
+        const formatter = this.getFormatter(tz);
+        time = formatter.format(new Date());
       } catch (error) {
-        time = 'Inválido';
+        time = '--:--:--';
       }
 
-      return `
-        <div class="timezone-item" role="listitem" data-tz="${tz}">
-          <span class="tz-name">${name}</span>
-          <span class="tz-time" aria-label="Hora em ${name}">${time}</span>
-          <button class="delete-btn" aria-label="Remover ${name}" data-action="remove-tz" data-tz="${tz}">×</button>
-        </div>
+      const item = document.createElement('div');
+      item.className = 'timezone-item';
+      item.setAttribute('role', 'listitem');
+      item.dataset.tz = tz;
+      
+      item.innerHTML = `
+        <span class="tz-name">${name}</span>
+        <span class="tz-time" aria-label="Hora em ${name}">${time}</span>
+        <button class="delete-btn" aria-label="Remover ${name}" data-action="remove-tz" data-tz="${tz}">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
       `;
-    }).join('');
+      
+      fragment.appendChild(item);
+    });
+
+    list.innerHTML = '';
+    list.appendChild(fragment);
+  }
+
+  /**
+   * Cleanup method to stop the update loop
+   */
+  destroy() {
+    this.stopUpdateLoop();
+    this.timeFormatters.clear();
   }
 }
 

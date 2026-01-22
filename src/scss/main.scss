@@ -242,77 +242,162 @@ body {
   flex-wrap: wrap;
 
   select {
-    padding: 0.5rem;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--border-subtle);
+    border-radius: 8px;
     background-color: var(--hover-overlay);
     color: var(--text);
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
+    font-family: map-get($fonts, "fredoka");
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all $transition-fast;
 
     &:hover {
+      border-color: var(--primary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+  }
+
+  button {
+    padding: 0.6rem 1.25rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: map-get($fonts, "fredoka");
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all $transition-fast;
+    white-space: nowrap;
+
+    &:hover {
       background-color: var(--primary-variant);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 }
 
 .timezone-list {
-  max-height: 300px;
+  max-height: 350px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--hover-overlay);
+
+  // Custom scrollbar for WebKit browsers
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--hover-overlay);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--primary-variant);
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem 1rem;
+    font-size: 0.95rem;
+    opacity: 0.8;
+  }
 
   .timezone-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0.35rem 0;
     background-color: var(--hover-overlay);
-    border-radius: 4px;
+    border-radius: 8px;
+    transition: all $transition-fast;
+    will-change: transform;
+
+    &:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      transform: translateX(4px);
+    }
 
     .tz-name {
       font-weight: 600;
       color: var(--primary);
-      min-width: 150px;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .tz-time {
       color: var(--text);
-      font-family: 'Courier New', monospace;
-      flex: 1;
-      text-align: right;
-      margin-right: 0.5rem;
+      font-family: 'SF Mono', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.35rem 0.75rem;
+      background: var(--surface);
+      border-radius: 6px;
+      min-width: 85px;
+      text-align: center;
+      box-shadow: 0 2px 4px var(--shadow-color);
     }
 
     .delete-btn {
-      padding: 0.25rem 0.5rem;
-      background-color: var(--danger);
-      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: transparent;
+      color: var(--muted);
       border: none;
-      border-radius: 3px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 1rem;
       transition: all $transition-fast;
 
+      svg {
+        opacity: 0.7;
+        transition: opacity $transition-fast;
+      }
+
       &:hover {
-        background-color: var(--btn-danger-hover);
+        background-color: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+
+        svg {
+          opacity: 1;
+        }
+      }
+
+      &:active {
+        transform: scale(0.95);
       }
     }
   }
 }
+
 
 /* Footer styles */
 footer {
