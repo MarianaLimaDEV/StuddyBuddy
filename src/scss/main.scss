@@ -41,10 +41,29 @@ body {
   color: var(--text);
   z-index: 900;
 
+  // Mobile responsiveness
+  @media (max-width: 768px) {
+    width: calc(100vw - 40px);
+    max-width: 350px;
+    padding: 15px;
+    top: 100px;
+  }
+
+  @media (max-width: 480px) {
+    width: calc(100vw - 20px);
+    max-width: 320px;
+    padding: 12px;
+    top: 90px;
+  }
+
   h2 {
     margin: 0 0 1rem 0;
     font-size: map-get($font-sizes, "xl");
     color: var(--primary);
+
+    @media (max-width: 480px) {
+      font-size: 1.3rem;
+    }
   }
 
   &:active {
@@ -89,6 +108,10 @@ body {
   color: var(--primary);
   margin: 1rem 0;
   font-family: 'Courier New', monospace;
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 }
 
 /* Controls */
@@ -399,6 +422,72 @@ body {
 }
 
 
+/* Theme toggle container */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background-color: var(--hover-overlay);
+  border-radius: 8px;
+  gap: 1rem;
+
+  label {
+    font-size: map-get($font-sizes, "md");
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+/* Sound toggle container */
+.sound-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background-color: var(--hover-overlay);
+  border-radius: 8px;
+  gap: 1rem;
+
+  label {
+    font-size: map-get($font-sizes, "md");
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+/* Mute toggle button */
+.mute-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: var(--surface);
+  border: 2px solid var(--border-subtle);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  [aria-pressed="false"] & {
+    opacity: 0.6;
+  }
+}
+
+
 /* Footer styles */
 footer {
   padding: 1.25rem;
@@ -486,12 +575,80 @@ footer {
     animation: none !important;
   }
 
-  // Reset hover effects for reduced motion
+// Reset hover effects for reduced motion
   .card-close:hover,
   .buttons button:hover,
   .delete-btn:hover,
   .social-btn:hover {
     transform: none !important;
+  }
+}
+
+/* Stopwatch Laps List */
+.laps-list {
+  list-style: none;
+  max-height: 250px;
+  overflow-y: auto;
+  text-align: left;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: var(--hover-overlay);
+  border-radius: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--hover-overlay);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--hover-overlay);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--primary-variant);
+    }
+  }
+
+  .lap-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem 0;
+    background-color: var(--surface);
+    border-radius: 6px;
+    transition: all $transition-fast;
+
+    &:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+
+    .lap-number {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 0.9rem;
+    }
+
+    .lap-time {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1rem;
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: var(--muted);
+    padding: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
   }
 }
 

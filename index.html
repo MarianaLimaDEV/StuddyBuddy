@@ -70,6 +70,7 @@
                             <label>Tema</label>
                             <theme-toggle theme="dark"></theme-toggle>
                         </div>
+
                         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
                     </div>
                 </li>
@@ -149,6 +150,20 @@
         </div>
     </section>
 
+    <!-- Stopwatch Card -->
+    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false">
+        <button class="card-close" data-card-id="stopwatchCard" aria-label="Fechar Cronómetro">&times;</button>
+        <h2 id="stopwatch-title">Cronómetro</h2>
+        <div class="timer-display" id="stopwatchDisplay" aria-live="polite" aria-label="Tempo decorrido">00:00.00</div>
+        <div class="buttons">
+            <button id="stopwatchStart" aria-label="Iniciar Cronómetro">Start</button>
+            <button id="stopwatchStop" aria-label="Parar Cronómetro">Stop</button>
+            <button id="stopwatchLap" aria-label="Marcar Volta">Lap</button>
+            <button id="stopwatchReset" aria-label="Reiniciar Cronómetro">Reset</button>
+        </div>
+        <ul id="stopwatchLaps" class="laps-list" aria-label="Lista de voltas"></ul>
+    </section>
+
     <!-- TaskList Card -->
     <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false">
         <button class="card-close" data-card-id="tasklistCard" aria-label="Fechar Lista de Tarefas">&times;</button>
@@ -202,6 +217,7 @@
     <div id="buttonContainer" class="buttonContainer">
         <button id="pomodoroButton" aria-pressed="false">Pomodoro</button>
         <button id="timerButton" aria-pressed="false">Timer</button>
+        <button id="stopwatchButton" aria-pressed="false">Cronómetro</button>
         <button id="tasklistButton" aria-pressed="false">TaskList</button>
         <button id="countdownButton" aria-pressed="false">Countdown</button>
         <button id="worldClockButton" aria-pressed="false">World Clock</button>

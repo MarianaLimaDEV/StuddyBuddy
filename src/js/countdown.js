@@ -3,6 +3,7 @@
  * Handles a countdown to a specific date/time with local storage persistence
  */
 import { showNotification } from './utils.js';
+import { playSound, playSoundWithOverlap } from './sound.js';
 
 export class CountdownTimer {
   constructor() {
@@ -22,31 +23,28 @@ export class CountdownTimer {
       console.warn('Failed to load countdown date from localStorage:', error);
     }
 
-    // Setup event listeners
-    setTimeout(() => {
-      const startBtn = document.getElementById('countdownStart');
-      const stopBtn = document.getElementById('countdownStop');
-      const dateInput = document.getElementById('countdownDate');
+    const startBtn = document.getElementById('countdownStart');
+    const stopBtn = document.getElementById('countdownStop');
+    const dateInput = document.getElementById('countdownDate');
 
-      if (startBtn) {
-        startBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.start();
-        });
-      }
+    if (startBtn) {
+      startBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.start();
+      });
+    }
 
-      if (stopBtn) {
-        stopBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.stop();
-        });
-      }
+    if (stopBtn) {
+      stopBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.stop();
+      });
+    }
 
-      if (dateInput && this.targetDate) {
-        // Set the input value to the saved date
-        dateInput.value = this.formatDateTimeLocal(this.targetDate);
-      }
-    }, 100);
+    if (dateInput && this.targetDate) {
+      // Set the input value to the saved date
+      dateInput.value = this.formatDateTimeLocal(this.targetDate);
+    }
 
     // Start updating display if we have a target date
     if (this.targetDate) {
@@ -96,7 +94,7 @@ export class CountdownTimer {
       this.updateDisplay();
     }, 1000);
 
-    showNotification('Contagem regressiva iniciada!', 'success');
+    playSound('open');
   }
 
   stop() {
@@ -104,7 +102,7 @@ export class CountdownTimer {
       clearInterval(this.interval);
       this.interval = null;
     }
-    showNotification('Contagem regressiva parada', 'info');
+    playSound('countdown_stop');
   }
 
   updateDisplay() {
@@ -117,7 +115,10 @@ export class CountdownTimer {
     if (distance < 0) {
       display.textContent = '00:00:00:00';
       this.stop();
-      showNotification('A contagem regressiva terminou!', 'success', 5000);
+      // Play alarm sound first (with overlap allowed so it can complete)
+      playSoundWithOverlap('alarm');
+      // Show notification without notification sound
+      this.showCustomNotification('A contagem regressiva terminou!', 'success', 5000);
       return;
     }
 
@@ -130,48 +131,46 @@ export class CountdownTimer {
   }
 
   /**
-   * Show user feedback notification
-   * @param {string} message - Message to display
-   * @param {string} type - Notification type: 'success', 'warning', 'error'
+   * Show notification without playing notification sound (for timer end)
    */
-  showFeedback(message, type = 'success') {
-    const feedback = document.createElement('div');
-    feedback.className = `feedback feedback-${type}`;
-    feedback.setAttribute('role', 'alert');
-    feedback.setAttribute('aria-live', 'polite');
-    feedback.textContent = message;
+  showCustomNotification(message, type = 'success', duration = 5000) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
 
     const colors = {
       success: 'var(--success)',
       warning: 'var(--warning)',
-      error: 'var(--danger)'
+      error: 'var(--danger)',
+      info: 'var(--primary)'
     };
 
-    feedback.style.cssText = `
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
       background-color: ${colors[type] || colors.success};
       color: white;
       padding: 0.75rem 1.5rem;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      z-index: 9999;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: auto;
     `;
 
-    document.body.appendChild(feedback);
+    container.appendChild(notification);
 
     requestAnimationFrame(() => {
-      feedback.style.opacity = '1';
+      notification.style.opacity = '1';
+      notification.style.transform = 'translateY(0)';
     });
 
     setTimeout(() => {
-      feedback.style.opacity = '0';
-      setTimeout(() => feedback.remove(), 300);
-    }, 3000);
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateY(20px)';
+      setTimeout(() => notification.remove(), 300);
+    }, duration);
   }
 }
 

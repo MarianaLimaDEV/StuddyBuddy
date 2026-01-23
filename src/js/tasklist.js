@@ -1,8 +1,11 @@
 /**
  * Task List Module
- * Manages a todo list with local storage persistence
+ * Agora guarda as tarefas no backend (MongoDB) via API /api/tasks
  */
 import { showNotification } from './utils.js';
+import { playSound } from './sound.js';
+
+const TASKS_API_URL = '/api/tasks';
 
 export class TaskList {
   constructor() {
@@ -11,16 +14,7 @@ export class TaskList {
   }
 
   init() {
-    // Load tasks from localStorage with error handling
-    try {
-      const storedTasks = localStorage.getItem('tasks');
-      this.tasks = storedTasks ? JSON.parse(storedTasks) : [];
-    } catch (error) {
-      console.warn('Failed to load tasks from localStorage:', error);
-      this.tasks = [];
-    }
-
-    // Setup event listeners with proper error handling
+    // Setup event listeners com tratamento de erros
     setTimeout(() => {
       const addBtn = document.getElementById('addTaskBtn');
       const input = document.getElementById('taskInput');
@@ -42,14 +36,41 @@ export class TaskList {
       }
     }, 100);
 
-    this.render();
+    // Carrega tarefas iniciais do backend
+    this.loadTasksFromApi();
   }
 
-  addTask() {
+  async loadTasksFromApi() {
+    try {
+      const response = await fetch(TASKS_API_URL);
+      if (!response.ok) {
+        throw new Error(`Erro HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      // Normaliza id (_id vem do Mongo)
+      this.tasks = (data || []).map((t) => ({
+        id: t._id,
+        text: t.text,
+        done: Boolean(t.done),
+        createdAt: t.createdAt,
+        completedAt: t.completedAt ?? null,
+      }));
+      this.render();
+    } catch (error) {
+      console.warn('Falha ao carregar tarefas da API, lista começará vazia:', error);
+      this.tasks = [];
+      this.render();
+      showNotification('Não foi possível carregar as tarefas do servidor', 'warning');
+    }
+  }
+
+  async addTask() {
     const input = document.getElementById('taskInput');
+    if (!input) return;
+
     const taskText = input.value.trim();
 
-    // Validate input
+    // Validação
     if (!taskText) {
       showNotification('Por favor, insira uma tarefa', 'warning');
       return;
@@ -60,53 +81,108 @@ export class TaskList {
       return;
     }
 
-    // Check for duplicate tasks
-    const isDuplicate = this.tasks.some(t => t.text.toLowerCase() === taskText.toLowerCase());
+    // Verificar duplicados localmente (UX mais rápida)
+    const isDuplicate = this.tasks.some(
+      (t) => t.text.toLowerCase() === taskText.toLowerCase()
+    );
     if (isDuplicate) {
       showNotification('Esta tarefa já existe', 'warning');
       return;
     }
 
-    // Add new task
-    this.tasks.push({
-      text: taskText,
-      done: false,
-      id: Date.now(),
-      createdAt: new Date().toISOString()
-    });
+    try {
+      const response = await fetch(TASKS_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: taskText }),
+      });
 
-    input.value = '';
-    this.save();
-    this.render();
-    showNotification('Tarefa adicionada com sucesso!', 'success');
-  }
+      if (!response.ok) {
+        throw new Error(`Erro HTTP ${response.status}`);
+      }
 
-  deleteTask(id) {
-    const taskIndex = this.tasks.findIndex(t => t.id === id);
-    if (taskIndex === -1) return;
+      const created = await response.json();
+      const newTask = {
+        id: created._id,
+        text: created.text,
+        done: Boolean(created.done),
+        createdAt: created.createdAt,
+        completedAt: created.completedAt ?? null,
+      };
 
-    this.tasks.splice(taskIndex, 1);
-    this.save();
-    this.render();
-    showNotification('Tarefa eliminada', 'success');
-  }
-
-  toggleTask(id) {
-    const task = this.tasks.find(t => t.id === id);
-    if (task) {
-      task.done = !task.done;
-      task.completedAt = task.done ? new Date().toISOString() : null;
-      this.save();
+      this.tasks.push(newTask);
+      input.value = '';
       this.render();
+      playSound('task_add');
+    } catch (error) {
+      console.error('Erro ao criar tarefa na API:', error);
+      showNotification('Não foi possível criar a tarefa no servidor', 'error');
     }
   }
 
-  save() {
+  async deleteTask(id) {
+    // Atualiza UI primeiro para sensação de rapidez
+    const previousTasks = [...this.tasks];
+    this.tasks = this.tasks.filter((t) => t.id !== id);
+    this.render();
+    playSound('task_delete');
+
     try {
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      const response = await fetch(`${TASKS_API_URL}/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP ${response.status}`);
+      }
     } catch (error) {
-      console.warn('Failed to save tasks to localStorage:', error);
-      showNotification('Falha ao guardar tarefas. O armazenamento pode estar cheio.', 'error');
+      console.error('Erro ao eliminar tarefa na API:', error);
+      // Reverte em caso de erro
+      this.tasks = previousTasks;
+      this.render();
+      showNotification('Não foi possível eliminar a tarefa no servidor', 'error');
+    }
+  }
+
+  async toggleTask(id) {
+    const task = this.tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    const previousDone = task.done;
+    const previousCompletedAt = task.completedAt;
+
+    // Atualiza estado localmente
+    task.done = !task.done;
+    task.completedAt = task.done ? new Date().toISOString() : null;
+    this.render();
+
+    try {
+      const response = await fetch(`${TASKS_API_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ done: task.done }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP ${response.status}`);
+      }
+
+      const updated = await response.json();
+      task.done = Boolean(updated.done);
+      task.completedAt = updated.completedAt ?? null;
+      this.render();
+      playSound('task_toggle');
+    } catch (error) {
+      console.error('Erro ao atualizar tarefa na API:', error);
+      // Reverte em caso de erro
+      task.done = previousDone;
+      task.completedAt = previousCompletedAt;
+      this.render();
+      showNotification('Não foi possível atualizar a tarefa no servidor', 'error');
     }
   }
 
@@ -116,12 +192,13 @@ export class TaskList {
 
     list.innerHTML = '';
 
-    if (this.tasks.length === 0) {
-      list.innerHTML = '<li class="empty-message">Nenhuma tarefa ainda. Adicione uma acima!</li>';
+    if (!this.tasks.length) {
+      list.innerHTML =
+        '<li class="empty-message">Nenhuma tarefa ainda. Adicione uma acima!</li>';
       return;
     }
 
-    this.tasks.forEach(task => {
+    this.tasks.forEach((task) => {
       const li = document.createElement('li');
       li.className = `task-item ${task.done ? 'done' : ''}`;
       li.setAttribute('role', 'listitem');
@@ -129,7 +206,10 @@ export class TaskList {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.checked = task.done;
-      checkbox.setAttribute('aria-label', `Marcar tarefa "${task.text}" como ${task.done ? 'não concluída' : 'concluída'}`);
+      checkbox.setAttribute(
+        'aria-label',
+        `Marcar tarefa "${task.text}" como ${task.done ? 'não concluída' : 'concluída'}`
+      );
       checkbox.addEventListener('change', () => this.toggleTask(task.id));
 
       const span = document.createElement('span');

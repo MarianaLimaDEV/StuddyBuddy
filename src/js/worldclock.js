@@ -4,6 +4,7 @@
  * Optimized for performance using requestAnimationFrame and Intl.DateTimeFormat
  */
 import { showNotification } from './utils.js';
+import { playSound } from './sound.js';
 
 export class WorldClock {
   constructor() {
@@ -29,29 +30,26 @@ export class WorldClock {
     // Pre-create formatters for better performance
     this.timezones.forEach(({ tz }) => this.getFormatter(tz));
 
-    // Setup event listeners
-    setTimeout(() => {
-      const addBtn = document.getElementById('addTimezoneBtn');
-      const timezoneList = document.getElementById('timezoneList');
-      
-      if (addBtn) {
-        addBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.addTimezone();
-        });
-      }
+    const addBtn = document.getElementById('addTimezoneBtn');
+    const timezoneList = document.getElementById('timezoneList');
+    
+    if (addBtn) {
+      addBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.addTimezone();
+      });
+    }
 
-      // Event delegation for delete buttons
-      if (timezoneList) {
-        timezoneList.addEventListener('click', (e) => {
-          const deleteBtn = e.target.closest('[data-action="remove-tz"]');
-          if (deleteBtn) {
-            const tz = deleteBtn.dataset.tz;
-            this.removeTimezone(tz);
-          }
-        });
-      }
-    }, 100);
+    // Event delegation for delete buttons
+    if (timezoneList) {
+      timezoneList.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('[data-action="remove-tz"]');
+        if (deleteBtn) {
+          const tz = deleteBtn.dataset.tz;
+          this.removeTimezone(tz);
+        }
+      });
+    }
 
     // Start the update loop
     this.startUpdateLoop();
@@ -133,7 +131,9 @@ export class WorldClock {
     
     this.save();
     this.render();
-    showNotification('Fuso horário adicionado!', 'success');
+    playSound('timezone_add');
+    // Reduced notifications
+    // showNotification('Fuso horário adicionado!', 'success');
   }
 
   removeTimezone(tz) {
@@ -147,7 +147,9 @@ export class WorldClock {
     
     this.save();
     this.render();
-    showNotification('Fuso horário removido', 'success');
+    playSound('timezone_remove');
+    // Reduced notifications
+    // showNotification('Fuso horário removido', 'success');
   }
 
   save() {

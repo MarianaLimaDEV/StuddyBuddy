@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "concurrently \"vite\" \"sass --watch src/scss/main.scss:src/css/main.css --style=expanded\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node backend/server.js",
+    "start": "concurrently \"npm run server\" \"npm run dev\""
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   },
   "dependencies": {
     "dotenv": "^17.2.3",
-    "mongoose": "^9.1.4"
+    "mongoose": "^9.1.4",
+    "express": "^4.21.2"
   }
 }

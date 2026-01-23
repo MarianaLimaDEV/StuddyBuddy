@@ -1,0 +1,51 @@
+const express = require('express');
+const path = require('path');
+const connectDB = require('./db');
+
+const tasksRoutes = require('./routes/tasks');
+const countdownRoutes = require('./routes/countdown');
+const worldclockRoutes = require('./routes/worldclock');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Liga ao MongoDB
+connectDB();
+
+// CORS middleware - permitir requests do Vite dev server
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+// Middleware para JSON
+app.use(express.json());
+
+// Rota de teste/health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'StuddyBuddy API a funcionar 🚀' });
+});
+
+// Rotas principais da API
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/countdown', countdownRoutes);
+app.use('/api/worldclock', worldclockRoutes);
+
+// Fallback simples para erros 404 de API
+app.use('/api', (req, res) => {
+  res.status(404).json({ message: 'Endpoint não encontrado' });
+});
+
+// Arranque do servidor
+app.listen(PORT, () => {
+  console.log(`🌐 Servidor API a correr em http://localhost:${PORT}`);
+});
+

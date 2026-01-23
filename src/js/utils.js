@@ -2,6 +2,52 @@
  * Utility Functions Module
  * Shared utilities for drag functionality and UI interactions
  */
+import { playSound } from './sound.js';
+
+// ==================== GLOBAL CLICK SOUND ====================
+// Add click2 sound to ALL mouse clicks (except on specific elements)
+let globalClickHandler = null;
+
+export function initGlobalClickSound() {
+  // Remove existing handler if any
+  if (globalClickHandler) {
+    document.removeEventListener('click', globalClickHandler);
+  }
+
+  // Create new handler
+  globalClickHandler = (e) => {
+    // Don't play sound on these elements (they have their own sounds)
+    if (
+      e.target.closest('.card-close') ||
+      e.target.closest('#muteToggle') ||
+      e.target.closest('button') ||
+      e.target.tagName === 'INPUT' ||
+      e.target.tagName === 'TEXTAREA' ||
+      e.target.tagName === 'SELECT' ||
+      e.target.closest('input') ||
+      e.target.closest('textarea') ||
+      e.target.closest('select') ||
+      e.target.closest('.navbar-dropdown') ||
+      e.target.closest('.login-popup') ||
+      e.target.closest('.contact-btn') ||
+      e.target.closest('.social-btn') ||
+      e.target.closest('a')
+    ) {
+      // These elements play their own specific sounds
+      return;
+    }
+
+    // Play interact sound on any mouse click
+    playSound('interact');
+  };
+
+  // Add to document
+  document.addEventListener('click', globalClickHandler, { passive: true });
+  console.info('🔊 Global click sound initialized (any_click on all clicks)');
+}
+
+// Note: initGlobalClickSound() is called from main.js AFTER the opening sound plays
+// This prevents overlap between the opening sound and click sounds
 
 // ==================== DRAG FUNCTIONALITY ====================
 let activeCard = null;
@@ -13,8 +59,17 @@ const DRAG_THRESHOLD = 5; // pixels - minimum movement to start dragging
 export function initDragFunctionality() {
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('pointerdown', (e) => {
-      // Don't start drag if clicking on close buttons or internal buttons
-      if (e.target.closest('.card-close') || e.target.closest('button')) return;
+      // Don't start drag if clicking on interactive elements
+      if (
+        e.target.closest('.card-close') || 
+        e.target.closest('button') ||
+        e.target.tagName === 'INPUT' ||
+        e.target.tagName === 'TEXTAREA' ||
+        e.target.tagName === 'SELECT' ||
+        e.target.closest('input') ||
+        e.target.closest('textarea') ||
+        e.target.closest('select')
+      ) return;
       
       activeCard = card;
       startX = e.clientX;
@@ -116,6 +171,7 @@ export function setupToggle(buttonId, cardId) {
     if (isPressed) {
       button.classList.add('pressed');
       card.classList.remove('hidden');
+      playSound('open');
     } else {
       button.classList.remove('pressed');
       card.classList.add('hidden');
@@ -127,6 +183,7 @@ export function setupToggle(buttonId, cardId) {
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
+      playSound('close');
       isPressed = false;
       button.classList.remove('pressed');
       card.classList.add('hidden');
@@ -153,6 +210,7 @@ export function setupLoginPopup() {
     isPopupOpen = true;
     loginPopup.classList.remove('hidden');
     loginButton.setAttribute('aria-expanded', 'true');
+    playSound('open');
     // Focus on email input for accessibility
     const emailInput = document.getElementById('loginEmail');
     if (emailInput) emailInput.focus();
@@ -169,6 +227,7 @@ export function setupLoginPopup() {
   // Toggle popup
   loginButton.addEventListener('click', (e) => {
     e.stopPropagation();
+    playSound('open');
     if (isPopupOpen) {
       closePopup();
     } else {
@@ -194,6 +253,7 @@ export function setupLoginPopup() {
       const rememberMe = document.getElementById('rememberMe').checked;
 
       console.log('Login attempt:', { email, rememberMe });
+      playSound('login');
       // Simulate successful login
       alert('Login functionality would be implemented here!');
       closePopup();
@@ -250,6 +310,9 @@ function getNotificationContainer() {
  * @param {number} duration - Duration in ms (default: 3000)
  */
 export function showNotification(message, type = 'success', duration = 3000) {
+  // Play notification sound
+  playSound('notification');
+
   const container = getNotificationContainer();
   const notification = document.createElement('div');
   
@@ -404,6 +467,7 @@ export function setupNavbarDropdowns() {
       dropdown.classList.remove('hidden');
       button.classList.add('active');
       button.setAttribute('aria-expanded', 'true');
+      playSound('open');
     }
   };
 
@@ -411,6 +475,7 @@ export function setupNavbarDropdowns() {
   dropdownButtons.forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
+      playSound('open');
       toggleDropdown(button);
     });
   });
@@ -420,6 +485,7 @@ export function setupNavbarDropdowns() {
   closeButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      playSound('close');
       const dropdown = btn.closest('.navbar-dropdown');
       const button = document.querySelector(`.navbar-dropdown-btn[data-dropdown="${dropdown.id.replace('dropdown-', '')}"]`);
       if (dropdown) dropdown.classList.add('hidden');
