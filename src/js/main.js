@@ -99,7 +99,7 @@ async function initializeApp() {
     showErrorNotification('Failed to load timer functionality');
   }
 
-  try {
+try {
     // Initialize sound manager
     initSoundManager();
     console.info('🔊 Sound manager initialized');
@@ -112,6 +112,14 @@ async function initializeApp() {
     // This prevents overlap between opening sound and click sounds
     initGlobalClickSound();
     console.info('🔊 Global click sound initialized');
+
+    // Setup logo click handler (after DOM is ready)
+    const logoLink = document.querySelector('.navbar-logo');
+    if (logoLink) {
+      logoLink.addEventListener('click', () => {
+        playSound('intro');
+      });
+    }
   } catch (error) {
     console.error('Failed to initialize sound manager:', error);
   }
@@ -215,14 +223,3 @@ function updateMuteButtonUI(muted) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);
-
-// ==================== LOGO CLICK SOUND ====================
-// Play opening sound when clicking the logo to refresh
-const logoLink = document.querySelector('.navbar-logo');
-if (logoLink) {
-  logoLink.addEventListener('click', (e) => {
-    // Only play if it's actually refreshing (not just navigation)
-    // The href is "index.html" so it will refresh the page
-    playSound('intro');
-  });
-}

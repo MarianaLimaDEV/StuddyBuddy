@@ -10,6 +10,7 @@ const TASKS_API_URL = '/api/tasks';
 export class TaskList {
   constructor() {
     this.tasks = [];
+    this.inFlight = new Set(); // Track in-flight toggle requests
     this.init();
   }
 
@@ -122,12 +123,13 @@ export class TaskList {
     }
   }
 
-  async deleteTask(id) {
-    // Atualiza UI primeiro para sensação de rapidez
+async deleteTask(id) {
+    // Save previous state for revert on error
     const previousTasks = [...this.tasks];
+
+    // Optimistic UI update
     this.tasks = this.tasks.filter((t) => t.id !== id);
     this.render();
-    playSound('task_delete');
 
     try {
       const response = await fetch(`${TASKS_API_URL}/${id}`, {
@@ -137,26 +139,37 @@ export class TaskList {
       if (!response.ok) {
         throw new Error(`Erro HTTP ${response.status}`);
       }
+
+      // Play sound only after API confirms success
+      playSound('task_delete');
     } catch (error) {
       console.error('Erro ao eliminar tarefa na API:', error);
-      // Reverte em caso de erro
+      // Revert in case of error
       this.tasks = previousTasks;
       this.render();
       showNotification('Não foi possível eliminar a tarefa no servidor', 'error');
     }
   }
 
-  async toggleTask(id) {
+async toggleTask(id) {
     const task = this.tasks.find((t) => t.id === id);
     if (!task) return;
+
+    // Check if a request is already in-flight for this task
+    if (this.inFlight.has(id)) {
+      return; // Ignore rapid toggle attempts
+    }
 
     const previousDone = task.done;
     const previousCompletedAt = task.completedAt;
 
-    // Atualiza estado localmente
+    // Optimistic UI update
     task.done = !task.done;
     task.completedAt = task.done ? new Date().toISOString() : null;
     this.render();
+
+    // Mark as in-flight
+    this.inFlight.add(id);
 
     try {
       const response = await fetch(`${TASKS_API_URL}/${id}`, {
@@ -174,15 +187,17 @@ export class TaskList {
       const updated = await response.json();
       task.done = Boolean(updated.done);
       task.completedAt = updated.completedAt ?? null;
-      this.render();
       playSound('task_toggle');
     } catch (error) {
       console.error('Erro ao atualizar tarefa na API:', error);
-      // Reverte em caso de erro
+      // Revert in case of error
       task.done = previousDone;
       task.completedAt = previousCompletedAt;
-      this.render();
       showNotification('Não foi possível atualizar a tarefa no servidor', 'error');
+    } finally {
+      // Clear in-flight marker and re-render
+      this.inFlight.delete(id);
+      this.render();
     }
   }
 

@@ -627,7 +627,7 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   }
 }
 
-h3 {
+.nav-dropdown__heading {
   margin: 0 0 0.75rem 0;
   font-size: 1.2rem;
   color: var(--primary);

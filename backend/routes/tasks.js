@@ -37,6 +37,11 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { done } = req.body;
 
+    // Validate that done is present and is a boolean
+    if (typeof done === 'undefined') {
+      return res.status(400).json({ message: 'O campo done é obrigatório' });
+    }
+
     const task = await Task.findById(id);
     if (!task) {
       return res.status(404).json({ message: 'Tarefa não encontrada' });
@@ -49,6 +54,10 @@ router.put('/:id', async (req, res) => {
     res.json(task);
   } catch (err) {
     console.error('Erro ao atualizar tarefa:', err);
+    // Handle invalid ObjectId (CastError)
+    if (err.name === 'CastError') {
+      return res.status(400).json({ message: 'ID de tarefa inválido' });
+    }
     res.status(500).json({ message: 'Erro ao atualizar tarefa' });
   }
 });

@@ -482,7 +482,7 @@ body {
     transform: scale(0.95);
   }
 
-  [aria-pressed="false"] & {
+  &[aria-pressed="false"] {
     opacity: 0.6;
   }
 }
