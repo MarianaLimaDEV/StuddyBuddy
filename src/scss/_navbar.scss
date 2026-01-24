@@ -1,4 +1,5 @@
 @use '_variables' as *;
+@use "sass:map";
 
 /* Navbar (desktop) */
 .navbar {
@@ -14,7 +15,7 @@
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-color);
   z-index: 999;
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
 
   &-container {
     display: flex;
@@ -91,7 +92,7 @@
     transition: all $transition-speed ease;
     white-space: nowrap;
     position: relative;
-    font-family: map-get($fonts, "fredoka");
+    font-family: map.get($fonts, "fredoka");
 
     &:hover {
       color: var(--accent);
@@ -183,7 +184,7 @@
 }
 
 /* Hamburger menu (sandwich) for screens without enough width */
-@media (max-width: 1299px) {
+@include respond-to('lg') {
   .navbar-toggle {
     display: flex; /* show hamburger on smaller screens */
   }
@@ -245,9 +246,9 @@
 
 /* Login button in navbar */
 .navbar-login-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
+  background: var(--btn-soft-bg);
+  color: var(--text);
+  border: 1px solid var(--btn-soft-border);
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 1.1rem;
@@ -257,17 +258,22 @@
   white-space: nowrap;
 
   &:hover {
-    background: var(--primary-variant);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    background: var(--btn-soft-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px var(--shadow-color);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
   }
 
   // Mobile: full width button dentro do hambúrguer
-  @media (max-width: 1299px) {
+  @include respond-to('lg') {
     width: 100%;
     display: block;
     padding: 0.75rem 1rem;
@@ -292,7 +298,7 @@
   max-width: 90vw;
   text-align: center;
   color: var(--text);
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
 
   &-close {
     position: absolute;
@@ -346,7 +352,7 @@
     background: var(--hover-overlay);
     color: var(--text);
     font-size: 1rem;
-    font-family: map-get($fonts, "fredoka");
+    font-family: map.get($fonts, "fredoka");
     transition: all 0.2s ease;
 
     &::placeholder {
@@ -504,7 +510,7 @@
 /* Navbar dropdown buttons (replacing links) */
 .navbar-dropdown-btn {
   background: transparent;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   color: var(--text);
   font-size: 1.2rem;
   font-weight: 500;
@@ -514,22 +520,27 @@
   transition: all $transition-speed ease;
   white-space: nowrap;
   position: relative;
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
 
   &:hover {
-    color: var(--accent);
+    color: var(--text);
     background: var(--hover-overlay);
-    border: 2px solid var(--border-subtle);
+    border-color: var(--border-subtle);
   }
 
   &.active {
-    color: var(--accent);
+    color: var(--text);
     background: var(--hover-overlay);
-    border: 2px solid var(--border-subtle);
+    border-color: var(--border-subtle);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring);
   }
 
   // Mobile: full width buttons dentro do hambúrguer
-  @media (max-width: 1299px) {
+  @include respond-to('lg') {
     width: 100%;
     text-align: left;
     display: block;
@@ -610,30 +621,12 @@
 }
 
   .dropdown-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
+    @include close-button(28px);
     font-size: 1.25rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-
-    &:hover {
-      background: var(--hover-overlay);
-      color: var(--danger);
-      transform: rotate(90deg);
-    }
+    color: var(--muted);
 
     // Mobile: hide close button (dropdown fecha clicando no botão novamente)
-    @media (max-width: 1299px) {
+    @include respond-to('lg') {
       display: none;
     }
   }
@@ -657,7 +650,7 @@
       color: var(--text);
       font-size: 1rem;
       font-weight: 500;
-      font-family: map-get($fonts, "fredoka");
+      font-family: map.get($fonts, "fredoka");
     }
 
     theme-toggle {
@@ -681,7 +674,7 @@
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
-    font-family: map-get($fonts, "fredoka");
+    font-family: map.get($fonts, "fredoka");
     transition: all $transition-fast;
     color: white;
     flex: 1;

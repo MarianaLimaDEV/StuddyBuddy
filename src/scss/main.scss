@@ -2,6 +2,7 @@
 @use '_variables' as *;
 @use '_navbar';
 @use 'button';
+@use "sass:map";
 
 body {
   min-height: 100vh;
@@ -10,8 +11,8 @@ body {
     linear-gradient(var(--hover-overlay) 1px, transparent 1px),
     linear-gradient(90deg, var(--hover-overlay) 1px, transparent 1px);
   background-size: 4em 4em;
-  font-family: map-get($fonts, "fredoka");
-  font-size: map-get($font-sizes, "md");
+  font-family: map.get($fonts, "fredoka");
+  font-size: map.get($font-sizes, "md");
   color: var(--text);
   margin: 0;
   padding-top: 30px;
@@ -42,14 +43,14 @@ body {
   z-index: 900;
 
   // Mobile responsiveness
-  @media (max-width: 768px) {
+  @include respond-to('sm') {
     width: calc(100vw - 40px);
     max-width: 350px;
     padding: 15px;
     top: 100px;
   }
 
-  @media (max-width: 480px) {
+  @include respond-to('xs') {
     width: calc(100vw - 20px);
     max-width: 320px;
     padding: 12px;
@@ -58,10 +59,10 @@ body {
 
   h2 {
     margin: 0 0 1rem 0;
-    font-size: map-get($font-sizes, "xl");
+    font-size: map.get($font-sizes, "xl");
     color: var(--primary);
 
-    @media (max-width: 480px) {
+    @include respond-to('xs') {
       font-size: 1.3rem;
     }
   }
@@ -74,31 +75,7 @@ body {
 
 /* Close button */
 .card-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all $transition-fast;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-
-  &:hover {
-    background-color: var(--hover-overlay);
-    color: var(--danger);
-    transform: rotate(90deg);
-  }
-
-  &:active {
-    transform: rotate(90deg) scale(0.9);
-  }
+  @include close-button(30px);
 }
 
 /* Timer Display */
@@ -109,7 +86,7 @@ body {
   margin: 1rem 0;
   font-family: 'Courier New', monospace;
 
-  @media (max-width: 480px) {
+  @include respond-to('xs') {
     font-size: 2rem;
   }
 }
@@ -124,22 +101,7 @@ body {
 
   input {
     width: 100px;
-    padding: 0.5rem;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    background-color: var(--hover-overlay);
-    color: var(--text);
-    font-size: 0.9rem;
-
-    &::placeholder {
-      color: var(--muted);
-    }
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary);
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+    @include input-base;
   }
 }
 
@@ -152,24 +114,7 @@ body {
   margin-top: 1rem;
 
   button {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all $transition-fast;
-
-    &:hover {
-      background-color: var(--primary-variant);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--primary);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
+    @include button-base;
   }
 }
 
@@ -181,31 +126,11 @@ body {
 
   input {
     flex: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    background-color: var(--hover-overlay);
-    color: var(--text);
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary);
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+    @include input-base;
   }
 
   button {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all $transition-fast;
-
-    &:hover {
-      background-color: var(--primary-variant);
-    }
+    @include button-base;
   }
 }
 
@@ -240,18 +165,7 @@ body {
     }
 
     .delete-btn {
-      padding: 0.25rem 0.5rem;
-      background-color: var(--danger);
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: all $transition-fast;
-
-      &:hover {
-        background-color: var(--btn-danger-hover);
-      }
+      @include delete-button;
     }
   }
 }
@@ -273,7 +187,7 @@ body {
     border-radius: 8px;
     background-color: var(--hover-overlay);
     color: var(--text);
-    font-family: map-get($fonts, "fredoka");
+    font-family: map.get($fonts, "fredoka");
     font-size: 0.9rem;
     cursor: pointer;
     transition: all $transition-fast;
@@ -296,7 +210,7 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-family: map-get($fonts, "fredoka");
+    font-family: map.get($fonts, "fredoka");
     font-size: 0.9rem;
     font-weight: 600;
     transition: all $transition-fast;
@@ -314,30 +228,106 @@ body {
   }
 }
 
+.countdown-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+
+  input[type="text"],
+  input[type="datetime-local"] {
+    @include input-base;
+    width: 100%;
+  }
+
+  .buttons {
+    margin-top: 0;
+    button {
+      @include button-base;
+    }
+  }
+}
+
+.countdown-list {
+  max-height: 350px;
+  overflow-y: auto;
+  @include custom-scrollbar;
+
+  .empty-message {
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem 1rem;
+    font-size: 0.95rem;
+    opacity: 0.8;
+  }
+
+  .countdown-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0.35rem 0;
+    background-color: var(--hover-overlay);
+    border-radius: 8px;
+    transition: all $transition-fast;
+
+    &.is-done {
+      opacity: 0.75;
+    }
+
+    .cd-name {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cd-time {
+      color: var(--text);
+      font-family: 'SF Mono', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 0.35rem 0.75rem;
+      background: var(--surface);
+      border-radius: 6px;
+      min-width: 120px;
+      text-align: center;
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .delete-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: transparent;
+      color: var(--muted);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &:hover {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+}
+
 .timezone-list {
   max-height: 350px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary) var(--hover-overlay);
-
-  // Custom scrollbar for WebKit browsers
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--hover-overlay);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-
-    &:hover {
-      background: var(--primary-variant);
-    }
-  }
+  @include custom-scrollbar;
 
   .empty-message {
     text-align: center;
@@ -422,8 +412,8 @@ body {
 }
 
 
-/* Theme toggle container */
-.theme-toggle-container {
+// Toggle container mixin
+@mixin toggle-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -434,28 +424,20 @@ body {
   gap: 1rem;
 
   label {
-    font-size: map-get($font-sizes, "md");
+    font-size: map.get($font-sizes, "md");
     font-weight: 600;
     color: var(--text);
   }
 }
 
+/* Theme toggle container */
+.theme-toggle-container {
+  @include toggle-container;
+}
+
 /* Sound toggle container */
 .sound-toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  margin: 0.5rem 0;
-  background-color: var(--hover-overlay);
-  border-radius: 8px;
-  gap: 1rem;
-
-  label {
-    font-size: map-get($font-sizes, "md");
-    font-weight: 600;
-    color: var(--text);
-  }
+  @include toggle-container;
 }
 
 /* Mute toggle button */
@@ -493,7 +475,7 @@ footer {
   padding: 1.25rem;
   text-align: center;
   color: var(--muted);
-  font-size: map-get($font-sizes, "sm");
+  font-size: map.get($font-sizes, "sm");
   
   a { 
     color: var(--primary); 
@@ -594,26 +576,7 @@ footer {
   padding: 0.5rem;
   background-color: var(--hover-overlay);
   border-radius: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary) var(--hover-overlay);
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--hover-overlay);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-
-    &:hover {
-      background: var(--primary-variant);
-    }
-  }
+  @include custom-scrollbar;
 
   .lap-item {
     display: flex;

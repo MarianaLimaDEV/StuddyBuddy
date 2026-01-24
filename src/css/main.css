@@ -12,40 +12,50 @@
   }
 }
 :root {
-  --primary: #3498db;
-  --primary-variant: #2b82c8;
-  --secondary: #AFDA9F;
-  --accent: #F6C667;
-  --success: #34D399;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --bg-color: #212228;
-  --surface: #2b2f36;
-  --text: #F4F7FA;
-  --muted: #9AA3AD;
-  --shadow-color: rgba(0, 0, 0, 0.35);
-  --hover-overlay: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --btn-bg: #f0f0f0;
-  --btn-border: #ccc;
-  --btn-hover-bg: #e0e0e0;
-  --btn-hover-border: #999;
-  --btn-pressed: #4CAF50;
-  --btn-danger-hover: #d63438;
+  --primary: #7aa7ff;
+  --primary-variant: #5f8ff5;
+  --secondary: #9fd3c7;
+  --accent: #f2c6de;
+  --success: #42c7a6;
+  --warning: #f2b66d;
+  --danger: #f27a7a;
+  --bg-color: #171922;
+  --surface: #202432;
+  --text: #eef2ff;
+  --muted: rgba(238, 242, 255, 0.7);
+  --shadow-color: rgba(0, 0, 0, 0.28);
+  --hover-overlay: rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --btn-bg: rgba(122, 167, 255, 0.14);
+  --btn-border: rgba(122, 167, 255, 0.22);
+  --btn-hover-bg: rgba(122, 167, 255, 0.20);
+  --btn-hover-border: rgba(122, 167, 255, 0.30);
+  --btn-pressed: rgba(159, 211, 199, 0.35);
+  --btn-danger-hover: #e75f5f;
+  --btn-soft-bg: rgba(122, 167, 255, 0.14);
+  --btn-soft-border: rgba(255, 255, 255, 0.12);
+  --btn-soft-hover-bg: rgba(122, 167, 255, 0.20);
+  --btn-soft-text: var(--text);
+  --focus-ring: rgba(122, 167, 255, 0.45);
 }
 
 [data-theme=light] {
-  --bg-color: #F5F5F5;
-  --surface: #FFFFFF;
-  --text: #212228;
-  --muted: #666666;
-  --shadow-color: rgba(0, 0, 0, 0.15);
-  --hover-overlay: rgba(0, 0, 0, 0.03);
-  --border-subtle: rgba(0, 0, 0, 0.1);
-  --btn-bg: #ffffff;
-  --btn-border: #ddd;
-  --btn-hover-bg: #efefef;
-  --btn-hover-border: #999;
+  --bg-color: #f6f7fb;
+  --surface: #ffffff;
+  --text: #1d2330;
+  --muted: rgba(29, 35, 48, 0.65);
+  --shadow-color: rgba(18, 24, 38, 0.10);
+  --hover-overlay: rgba(18, 24, 38, 0.04);
+  --border-subtle: rgba(18, 24, 38, 0.10);
+  --btn-bg: rgba(95, 143, 245, 0.10);
+  --btn-border: rgba(18, 24, 38, 0.12);
+  --btn-hover-bg: rgba(95, 143, 245, 0.14);
+  --btn-hover-border: rgba(18, 24, 38, 0.18);
+  --btn-soft-bg: rgba(95, 143, 245, 0.10);
+  --btn-soft-border: rgba(18, 24, 38, 0.12);
+  --btn-soft-hover-bg: rgba(95, 143, 245, 0.14);
+  --btn-soft-text: var(--text);
+  --focus-ring: rgba(95, 143, 245, 0.35);
 }
 
 /* Navbar (desktop) */
@@ -215,7 +225,7 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
 }
 
 /* Hamburger menu (sandwich) for screens without enough width */
-@media (max-width: 1299px) {
+@media (max-width: 1300px) {
   .navbar-toggle {
     display: flex; /* show hamburger on smaller screens */
   }
@@ -270,9 +280,9 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
 }
 /* Login button in navbar */
 .navbar-login-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
+  background: var(--btn-soft-bg);
+  color: var(--text);
+  border: 1px solid var(--btn-soft-border);
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 1.1rem;
@@ -282,14 +292,18 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   white-space: nowrap;
 }
 .navbar-login-btn:hover {
-  background: var(--primary-variant);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+  background: var(--btn-soft-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px var(--shadow-color);
 }
 .navbar-login-btn:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
-@media (max-width: 1299px) {
+.navbar-login-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
+}
+@media (max-width: 1300px) {
   .navbar-login-btn {
     width: 100%;
     display: block;
@@ -502,7 +516,7 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
 /* Navbar dropdown buttons (replacing links) */
 .navbar-dropdown-btn {
   background: transparent;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   color: var(--text);
   font-size: 1.2rem;
   font-weight: 500;
@@ -515,16 +529,20 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
 }
 .navbar-dropdown-btn:hover {
-  color: var(--accent);
+  color: var(--text);
   background: var(--hover-overlay);
-  border: 2px solid var(--border-subtle);
+  border-color: var(--border-subtle);
 }
 .navbar-dropdown-btn.active {
-  color: var(--accent);
+  color: var(--text);
   background: var(--hover-overlay);
-  border: 2px solid var(--border-subtle);
+  border-color: var(--border-subtle);
 }
-@media (max-width: 1299px) {
+.navbar-dropdown-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+@media (max-width: 1300px) {
   .navbar-dropdown-btn {
     width: 100%;
     text-align: left;
@@ -607,8 +625,8 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   height: 28px;
   background: transparent;
   border: none;
-  color: var(--muted);
-  font-size: 1.25rem;
+  color: var(--text);
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -617,17 +635,24 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   border-radius: 50%;
 }
 .dropdown-close:hover {
-  background: var(--hover-overlay);
+  background-color: var(--hover-overlay);
   color: var(--danger);
   transform: rotate(90deg);
 }
-@media (max-width: 1299px) {
+.dropdown-close:active {
+  transform: rotate(90deg) scale(0.9);
+}
+.dropdown-close {
+  font-size: 1.25rem;
+  color: var(--muted);
+}
+@media (max-width: 1300px) {
   .dropdown-close {
     display: none;
   }
 }
 
-.nav-dropdown__heading {
+h3 {
   margin: 0 0 0.75rem 0;
   font-size: 1.2rem;
   color: var(--primary);
@@ -761,23 +786,32 @@ p {
   transform: scale(0.95);
 }
 
-#pomodoroButton, #timerButton, #tasklistButton, #countdownButton, #worldClockButton {
+#pomodoroButton, #timerButton, #stopwatchButton, #tasklistButton, #countdownButton, #worldClockButton {
   padding: 10px 20px;
   background: var(--btn-bg);
   border: 2px solid var(--btn-border);
-  border-radius: 5px;
+  border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
+  color: var(--text);
 }
-#pomodoroButton:hover, #timerButton:hover, #tasklistButton:hover, #countdownButton:hover, #worldClockButton:hover {
+#pomodoroButton:hover, #timerButton:hover, #stopwatchButton:hover, #tasklistButton:hover, #countdownButton:hover, #worldClockButton:hover {
   background: var(--btn-hover-bg);
+  border-color: var(--btn-hover-border);
+  box-shadow: 0 8px 22px var(--shadow-color);
+  transform: translateY(-1px);
 }
-#pomodoroButton.pressed, #timerButton.pressed, #tasklistButton.pressed, #countdownButton.pressed, #worldClockButton.pressed {
+#pomodoroButton.pressed, #timerButton.pressed, #stopwatchButton.pressed, #tasklistButton.pressed, #countdownButton.pressed, #worldClockButton.pressed {
   background: var(--btn-pressed);
-  color: white;
-  border-color: var(--btn-pressed);
+  color: var(--text);
+  border-color: var(--btn-hover-border);
+  box-shadow: 0 10px 26px var(--shadow-color);
+}
+#pomodoroButton:focus-visible, #timerButton:focus-visible, #stopwatchButton:focus-visible, #tasklistButton:focus-visible, #countdownButton:focus-visible, #worldClockButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
 }
 
 body {
@@ -904,6 +938,7 @@ body {
   background-color: var(--hover-overlay);
   color: var(--text);
   font-size: 0.9rem;
+  transition: all 0.2s ease;
 }
 .controls input::placeholder {
   color: var(--muted);
@@ -924,21 +959,26 @@ body {
 }
 .buttons button {
   padding: 0.5rem 1rem;
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background-color: var(--btn-soft-bg);
+  color: var(--btn-soft-text);
+  border: 1px solid var(--btn-soft-border);
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s ease;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
 }
 .buttons button:hover {
-  background-color: var(--primary-variant);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--primary);
+  background-color: var(--btn-soft-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--shadow-color);
 }
 .buttons button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+}
+.buttons button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
 }
 
 /* Task List */
@@ -954,6 +994,11 @@ body {
   border-radius: 4px;
   background-color: var(--hover-overlay);
   color: var(--text);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.task-input input::placeholder {
+  color: var(--muted);
 }
 .task-input input:focus {
   outline: none;
@@ -962,15 +1007,26 @@ body {
 }
 .task-input button {
   padding: 0.5rem 1rem;
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background-color: var(--btn-soft-bg);
+  color: var(--btn-soft-text);
+  border: 1px solid var(--btn-soft-border);
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
 }
 .task-input button:hover {
-  background-color: var(--primary-variant);
+  background-color: var(--btn-soft-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--shadow-color);
+}
+.task-input button:active {
+  transform: translateY(0) scale(0.98);
+}
+.task-input button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
 }
 
 .task-list {
@@ -1064,6 +1120,146 @@ body {
 }
 .timezone-container button:active {
   transform: translateY(0);
+}
+
+.countdown-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.countdown-controls input[type=text],
+.countdown-controls input[type=datetime-local] {
+  padding: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background-color: var(--hover-overlay);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.countdown-controls input[type=text]::placeholder,
+.countdown-controls input[type=datetime-local]::placeholder {
+  color: var(--muted);
+}
+.countdown-controls input[type=text]:focus,
+.countdown-controls input[type=datetime-local]:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.countdown-controls input[type=text],
+.countdown-controls input[type=datetime-local] {
+  width: 100%;
+}
+.countdown-controls .buttons {
+  margin-top: 0;
+}
+.countdown-controls .buttons button {
+  padding: 0.5rem 1rem;
+  background-color: var(--btn-soft-bg);
+  color: var(--btn-soft-text);
+  border: 1px solid var(--btn-soft-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
+}
+.countdown-controls .buttons button:hover {
+  background-color: var(--btn-soft-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--shadow-color);
+}
+.countdown-controls .buttons button:active {
+  transform: translateY(0) scale(0.98);
+}
+.countdown-controls .buttons button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
+}
+
+.countdown-list {
+  max-height: 350px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--hover-overlay);
+}
+.countdown-list::-webkit-scrollbar {
+  width: 8px;
+}
+.countdown-list::-webkit-scrollbar-track {
+  background: var(--hover-overlay);
+  border-radius: 4px;
+}
+.countdown-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+.countdown-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-variant);
+}
+.countdown-list .empty-message {
+  text-align: center;
+  color: var(--muted);
+  padding: 2rem 1rem;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+.countdown-list .countdown-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin: 0.35rem 0;
+  background-color: var(--hover-overlay);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.countdown-list .countdown-item.is-done {
+  opacity: 0.75;
+}
+.countdown-list .countdown-item .cd-name {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.countdown-list .countdown-item .cd-time {
+  color: var(--text);
+  font-family: "SF Mono", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.35rem 0.75rem;
+  background: var(--surface);
+  border-radius: 6px;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+.countdown-list .countdown-item .delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  color: var(--muted);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.countdown-list .countdown-item .delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+.countdown-list .countdown-item .delete-btn:active {
+  transform: scale(0.95);
 }
 
 .timezone-list {
@@ -1214,7 +1410,7 @@ body {
 .mute-toggle-btn:active {
   transform: scale(0.95);
 }
-[aria-pressed=false] .mute-toggle-btn {
+.mute-toggle-btn[aria-pressed=false] {
   opacity: 0.6;
 }
 
@@ -1361,113 +1557,6 @@ footer a {
   padding: 1rem;
   font-size: 0.9rem;
   opacity: 0.8;
-}
-
-/* Clear All Laps Button */
-.clear-laps-btn {
-  display: block;
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  background-color: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.clear-laps-btn:hover {
-  background-color: var(--danger);
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* Enhanced Lap Item */
-.laps-list .lap-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.6rem 0.75rem;
-  margin: 0.35rem 0;
-  background-color: var(--surface);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-.laps-list .lap-item:hover {
-  background-color: rgba(52, 152, 219, 0.1);
-}
-.laps-list .lap-item.best-lap {
-  background-color: rgba(52, 152, 219, 0.15);
-  border: 1px solid var(--primary);
-}
-.laps-list .lap-item.best-lap .lap-number {
-  color: var(--accent);
-}
-
-.laps-list .lap-item .lap-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.laps-list .lap-item .lap-number {
-  font-weight: 600;
-  color: var(--primary);
-  font-size: 0.9rem;
-}
-.laps-list .lap-item .best-badge {
-  font-size: 1rem;
-  animation: pulse 1s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-.laps-list .lap-item .lap-times {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem;
-}
-.laps-list .lap-item .lap-total {
-  font-family: "Courier New", monospace;
-  font-weight: 700;
-  color: var(--text);
-  font-size: 0.95rem;
-}
-.laps-list .lap-item .lap-split {
-  font-family: "Courier New", monospace;
-  font-size: 0.8rem;
-  color: var(--success);
-  font-weight: 600;
-}
-
-/* Lap Delete Button */
-.laps-list .lap-item .lap-delete-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background-color: transparent;
-  color: var(--muted);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.25rem;
-  transition: all 0.2s ease;
-  margin-left: 0.5rem;
-}
-.laps-list .lap-item .lap-delete-btn:hover {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
-  transform: scale(1.1);
-}
-.laps-list .lap-item .lap-delete-btn:active {
-  transform: scale(0.95);
 }
 
 /*# sourceMappingURL=main.css.map */

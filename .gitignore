@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Generated CSS (Vite builds from SCSS)
+src/css/
+
 # Environment files
 .env
 .env.local

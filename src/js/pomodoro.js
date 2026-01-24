@@ -2,68 +2,94 @@
  * Pomodoro Timer Module
  * Handles the Pomodoro timer functionality with work/break cycles
  */
-import { showNotification } from './utils.js';
+import { showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
+
+// Constants
+const POMODORO_UPDATE_INTERVAL = 1000; // 1 second
+const DEFAULT_WORK_TIME = 25;
+const DEFAULT_BREAK_TIME = 5;
+const MAX_WORK_TIME = 60;
+const MAX_BREAK_TIME = 30;
 
 export class PomodoroTimer {
   constructor() {
-    this.workTime = 25;
-    this.breakTime = 5;
-    this.timeLeft = 25 * 60;
+    this.workTime = DEFAULT_WORK_TIME;
+    this.breakTime = DEFAULT_BREAK_TIME;
+    this.timeLeft = DEFAULT_WORK_TIME * 60;
     this.isRunning = false;
     this.isBreak = false;
     this.interval = null;
+    // Cache DOM elements
+    this.elements = {};
     this.init();
   }
 
   init() {
-    const workInput = document.getElementById('pomodoroWork');
-    const breakInput = document.getElementById('pomodoroBreak');
-    const startBtn = document.getElementById('pomodoroStart');
-    const stopBtn = document.getElementById('pomodoroStop');
-    const resetBtn = document.getElementById('pomodoroReset');
+    // Cache DOM elements for better performance
+    this.elements.workInput = document.getElementById('pomodoroWork');
+    this.elements.breakInput = document.getElementById('pomodoroBreak');
+    this.elements.startBtn = document.getElementById('pomodoroStart');
+    this.elements.stopBtn = document.getElementById('pomodoroStop');
+    this.elements.resetBtn = document.getElementById('pomodoroReset');
+    this.elements.display = document.getElementById('pomodoroDisplay');
 
-    if (workInput) {
-      workInput.addEventListener('change', (e) => {
+    if (this.elements.workInput) {
+      this.elements.workInput.addEventListener('change', (e) => {
         const value = parseInt(e.target.value, 10);
-        // Validate: must be positive integer, default to 25 if invalid
+        // Validate: must be positive integer, default to DEFAULT_WORK_TIME if invalid
         if (isNaN(value) || value <= 0) {
-          this.workTime = 25;
-          e.target.value = 25;
-        } else if (value > 60) {
-          this.workTime = 60;
-          e.target.value = 60;
+          this.workTime = DEFAULT_WORK_TIME;
+          e.target.value = DEFAULT_WORK_TIME;
+        } else if (value > MAX_WORK_TIME) {
+          this.workTime = MAX_WORK_TIME;
+          e.target.value = MAX_WORK_TIME;
         } else {
           this.workTime = value;
         }
         if (!this.isRunning) this.reset();
       });
     }
-    if (breakInput) {
-      breakInput.addEventListener('change', (e) => {
+    if (this.elements.breakInput) {
+      this.elements.breakInput.addEventListener('change', (e) => {
         const value = parseInt(e.target.value, 10);
-        // Validate: must be positive integer, default to 5 if invalid
+        // Validate: must be positive integer, default to DEFAULT_BREAK_TIME if invalid
         if (isNaN(value) || value <= 0) {
-          this.breakTime = 5;
-          e.target.value = 5;
-        } else if (value > 30) {
-          this.breakTime = 30;
-          e.target.value = 30;
+          this.breakTime = DEFAULT_BREAK_TIME;
+          e.target.value = DEFAULT_BREAK_TIME;
+        } else if (value > MAX_BREAK_TIME) {
+          this.breakTime = MAX_BREAK_TIME;
+          e.target.value = MAX_BREAK_TIME;
         } else {
           this.breakTime = value;
         }
       });
     }
-    if (startBtn) startBtn.addEventListener('click', (e) => { e.stopPropagation(); this.start(); });
-    if (stopBtn) stopBtn.addEventListener('click', (e) => { e.stopPropagation(); this.stop(); });
-    if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); this.reset(); });
+    if (this.elements.startBtn) {
+      this.elements.startBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        this.start(); 
+      });
+    }
+    if (this.elements.stopBtn) {
+      this.elements.stopBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        this.stop(); 
+      });
+    }
+    if (this.elements.resetBtn) {
+      this.elements.resetBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        this.reset(); 
+      });
+    }
     this.updateDisplay();
   }
 
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
-    playSound('interact');
+    playSound('click');
     this.interval = setInterval(() => {
       this.timeLeft--;
       if (this.timeLeft <= 0) {
@@ -76,17 +102,24 @@ export class PomodoroTimer {
         // Play alarm sound first (with overlap allowed so it can complete)
         playSoundWithOverlap('alarm');
         // Then show notification (without playing notification sound)
-        this.showCustomNotification(this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!', 'info', 5000);
+        showCustomNotification(
+          this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!', 
+          'info', 
+          5000
+        );
       } else {
         this.updateDisplay();
       }
-    }, 1000);
+    }, POMODORO_UPDATE_INTERVAL);
   }
 
   stop() {
     this.isRunning = false;
-    clearInterval(this.interval);
-    playSound('interact');
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    playSound('reset');
   }
 
   reset() {
@@ -98,55 +131,19 @@ export class PomodoroTimer {
   }
 
   updateDisplay() {
+    const display = this.elements.display;
+    if (!display) return;
+    
     const mins = Math.floor(this.timeLeft / 60);
     const secs = this.timeLeft % 60;
-    const el = document.getElementById('pomodoroDisplay');
-    if (el) {
-      el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
+    display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 
   /**
-   * Show notification without playing notification sound (for timer end)
+   * Cleanup method to clear interval when component is destroyed
    */
-  showCustomNotification(message, type = 'success', duration = 5000) {
-    const container = document.getElementById('notification-container');
-    if (!container) return;
-
-    const colors = {
-      success: 'var(--success)',
-      warning: 'var(--warning)',
-      error: 'var(--danger)',
-      info: 'var(--primary)'
-    };
-
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-      background-color: ${colors[type] || colors.success};
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      pointer-events: auto;
-    `;
-
-    container.appendChild(notification);
-
-    requestAnimationFrame(() => {
-      notification.style.opacity = '1';
-      notification.style.transform = 'translateY(0)';
-    });
-
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateY(20px)';
-      setTimeout(() => notification.remove(), 300);
-    }, duration);
+  destroy() {
+    this.stop();
   }
 }
 

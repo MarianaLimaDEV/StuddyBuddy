@@ -16,26 +16,24 @@ export class TaskList {
 
   init() {
     // Setup event listeners com tratamento de erros
-    setTimeout(() => {
-      const addBtn = document.getElementById('addTaskBtn');
-      const input = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addTaskBtn');
+    const input = document.getElementById('taskInput');
 
-      if (addBtn) {
-        addBtn.addEventListener('click', (e) => {
+    if (addBtn) {
+      addBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.addTask();
+      });
+    }
+
+    if (input) {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
           e.stopPropagation();
           this.addTask();
-        });
-      }
-
-      if (input) {
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            e.stopPropagation();
-            this.addTask();
-          }
-        });
-      }
-    }, 100);
+        }
+      });
+    }
 
     // Carrega tarefas iniciais do backend
     this.loadTasksFromApi();
@@ -205,42 +203,47 @@ async toggleTask(id) {
     const list = document.getElementById('taskList');
     if (!list) return;
 
-    list.innerHTML = '';
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
 
     if (!this.tasks.length) {
-      list.innerHTML =
-        '<li class="empty-message">Nenhuma tarefa ainda. Adicione uma acima!</li>';
-      return;
+      const emptyMsg = document.createElement('li');
+      emptyMsg.className = 'empty-message';
+      emptyMsg.textContent = 'Nenhuma tarefa ainda. Adicione uma acima!';
+      fragment.appendChild(emptyMsg);
+    } else {
+      this.tasks.forEach((task) => {
+        const li = document.createElement('li');
+        li.className = `task-item ${task.done ? 'done' : ''}`;
+        li.setAttribute('role', 'listitem');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.done;
+        checkbox.setAttribute(
+          'aria-label',
+          `Marcar tarefa "${task.text}" como ${task.done ? 'não concluída' : 'concluída'}`
+        );
+        checkbox.addEventListener('change', () => this.toggleTask(task.id));
+
+        const span = document.createElement('span');
+        span.textContent = task.text;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '×';
+        deleteBtn.setAttribute('aria-label', `Eliminar tarefa "${task.text}"`);
+        deleteBtn.addEventListener('click', () => this.deleteTask(task.id));
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+        fragment.appendChild(li);
+      });
     }
 
-    this.tasks.forEach((task) => {
-      const li = document.createElement('li');
-      li.className = `task-item ${task.done ? 'done' : ''}`;
-      li.setAttribute('role', 'listitem');
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = task.done;
-      checkbox.setAttribute(
-        'aria-label',
-        `Marcar tarefa "${task.text}" como ${task.done ? 'não concluída' : 'concluída'}`
-      );
-      checkbox.addEventListener('change', () => this.toggleTask(task.id));
-
-      const span = document.createElement('span');
-      span.textContent = task.text;
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = '×';
-      deleteBtn.setAttribute('aria-label', `Eliminar tarefa "${task.text}"`);
-      deleteBtn.addEventListener('click', () => this.deleteTask(task.id));
-
-      li.appendChild(checkbox);
-      li.appendChild(span);
-      li.appendChild(deleteBtn);
-      list.appendChild(li);
-    });
+    list.innerHTML = '';
+    list.appendChild(fragment);
   }
 }
 

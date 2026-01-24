@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // ============================================
 // 1. Configurações Globais
 // ============================================
@@ -28,47 +30,60 @@ $font-sizes: (
 // 3. Sistema de Cores e Temas (CSS Variables)
 // ============================================
 :root {
-  // Cores de Marca (Fixas)
-  --primary: #3498db;
-  --primary-variant: #2b82c8;
-  --secondary: #AFDA9F;
-  --accent: #F6C667;
-  --success: #34D399;
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  // Cores de Marca (Fixas) - mais suaves/cozy
+  --primary: #7aa7ff;            // soft blue
+  --primary-variant: #5f8ff5;    // hover/active
+  --secondary: #9fd3c7;          // mint
+  --accent: #f2c6de;             // pastel pink
+  --success: #42c7a6;            // teal-green
+  --warning: #f2b66d;            // warm amber
+  --danger: #f27a7a;             // soft red
 
   // Tema Dark (Padrão)
-  --bg-color: #212228;
-  --surface: #2b2f36;
-  --text: #F4F7FA;
-  --muted: #9AA3AD;
-  --shadow-color: rgba(0, 0, 0, 0.35);
-  --hover-overlay: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.1);
+  --bg-color: #171922;
+  --surface: #202432;
+  --text: #eef2ff;
+  --muted: rgba(238, 242, 255, 0.7);
+  --shadow-color: rgba(0, 0, 0, 0.28);
+  --hover-overlay: rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(255, 255, 255, 0.12);
 
   // Cores de botões
-  --btn-bg: #f0f0f0;
-  --btn-border: #ccc;
-  --btn-hover-bg: #e0e0e0;
-  --btn-hover-border: #999;
-  --btn-pressed: #4CAF50;
-  --btn-danger-hover: #d63438;
+  --btn-bg: rgba(122, 167, 255, 0.14);          // soft primary tint
+  --btn-border: rgba(122, 167, 255, 0.22);
+  --btn-hover-bg: rgba(122, 167, 255, 0.20);
+  --btn-hover-border: rgba(122, 167, 255, 0.30);
+  --btn-pressed: rgba(159, 211, 199, 0.35);     // mint tint
+  --btn-danger-hover: #e75f5f;
+
+  // Botões "gentis" (usados nos cards)
+  --btn-soft-bg: rgba(122, 167, 255, 0.14);
+  --btn-soft-border: rgba(255, 255, 255, 0.12);
+  --btn-soft-hover-bg: rgba(122, 167, 255, 0.20);
+  --btn-soft-text: var(--text);
+  --focus-ring: rgba(122, 167, 255, 0.45);
 }
 
 [data-theme="light"] {
-  --bg-color: #F5F5F5;
-  --surface: #FFFFFF;
-  --text: #212228;
-  --muted: #666666;
-  --shadow-color: rgba(0, 0, 0, 0.15);
-  --hover-overlay: rgba(0, 0, 0, 0.03);
-  --border-subtle: rgba(0, 0, 0, 0.1);
+  --bg-color: #f6f7fb;
+  --surface: #ffffff;
+  --text: #1d2330;
+  --muted: rgba(29, 35, 48, 0.65);
+  --shadow-color: rgba(18, 24, 38, 0.10);
+  --hover-overlay: rgba(18, 24, 38, 0.04);
+  --border-subtle: rgba(18, 24, 38, 0.10);
 
   // Cores de botões (light)
-  --btn-bg: #ffffff;
-  --btn-border: #ddd;
-  --btn-hover-bg: #efefef;
-  --btn-hover-border: #999;
+  --btn-bg: rgba(95, 143, 245, 0.10);
+  --btn-border: rgba(18, 24, 38, 0.12);
+  --btn-hover-bg: rgba(95, 143, 245, 0.14);
+  --btn-hover-border: rgba(18, 24, 38, 0.18);
+
+  --btn-soft-bg: rgba(95, 143, 245, 0.10);
+  --btn-soft-border: rgba(18, 24, 38, 0.12);
+  --btn-soft-hover-bg: rgba(95, 143, 245, 0.14);
+  --btn-soft-text: var(--text);
+  --focus-ring: rgba(95, 143, 245, 0.35);
 }
 
 // Alias para compatibilidade com código existente
@@ -91,7 +106,37 @@ $btn-pressed: var(--btn-pressed);
 $btn-danger-hover: var(--btn-danger-hover);
 
 // ============================================
-// 4. Mixins Úteis
+// 4. Breakpoints
+// ============================================
+$breakpoints: (
+  'xs': 480px,
+  'sm': 768px,
+  'md': 1024px,
+  'lg': 1300px
+);
+
+@mixin respond-to($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (max-width: map.get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint `#{$breakpoint}` não encontrado.";
+  }
+}
+
+@mixin respond-above($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (min-width: map.get($breakpoints, $breakpoint) + 1px) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint `#{$breakpoint}` não encontrado.";
+  }
+}
+
+// ============================================
+// 5. Mixins Úteis
 // ============================================
 @mixin flex-center {
   display: flex;
@@ -100,14 +145,130 @@ $btn-danger-hover: var(--btn-danger-hover);
 }
 
 @mixin font-style($family, $size) {
-  font-family: map-get($fonts, $family);
-  font-size: map-get($font-sizes, $size);
+  font-family: map.get($fonts, $family);
+  font-size: map.get($font-sizes, $size);
+}
+
+// Scrollbar styling mixin
+@mixin custom-scrollbar($width: 8px, $thumb-color: var(--primary), $track-color: var(--hover-overlay)) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color $track-color;
+
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--primary-variant);
+    }
+  }
+}
+
+// Button base styles mixin
+@mixin button-base {
+  padding: 0.5rem 1rem;
+  background-color: var(--btn-soft-bg);
+  color: var(--btn-soft-text);
+  border: 1px solid var(--btn-soft-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all $transition-fast;
+  font-family: map.get($fonts, "fredoka");
+
+  &:hover {
+    background-color: var(--btn-soft-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px var(--shadow-color);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
+  }
+}
+
+// Input base styles mixin
+@mixin input-base {
+  padding: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background-color: var(--hover-overlay);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: all $transition-fast;
+
+  &::placeholder {
+    color: var(--muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// Delete button mixin
+@mixin delete-button {
+  padding: 0.25rem 0.5rem;
+  background-color: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: var(--btn-danger-hover);
+  }
+}
+
+// Close button mixin
+@mixin close-button($size: 30px) {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: $size;
+  height: $size;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all $transition-fast;
+  @include flex-center;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: var(--hover-overlay);
+    color: var(--danger);
+    transform: rotate(90deg);
+  }
+
+  &:active {
+    transform: rotate(90deg) scale(0.9);
+  }
 }
 
 // ============================================
 // 5. Seletores de Botões
 // ============================================
-$btn-selector: '#pomodoroButton, #timerButton, #tasklistButton, #countdownButton, #worldClockButton';
+$btn-selector: '#pomodoroButton, #timerButton, #stopwatchButton, #tasklistButton, #countdownButton, #worldClockButton';
 
 // ============================================
 // 6. Utilidades

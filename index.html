@@ -12,9 +12,10 @@
 
     <link rel="icon" href="SB_B.png" media="(prefers-color-scheme: dark)">
     <link rel="icon" href="SB_W.png" media="(prefers-color-scheme: light)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./src/css/main.css">
 </head>
 <body data-theme="dark">
     <a href="#main-content" class="skip-link">Saltar para o conteúdo principal</a>
@@ -69,6 +70,13 @@
                         <div class="theme-toggle-container">
                             <label>Tema</label>
                             <theme-toggle theme="dark"></theme-toggle>
+                        </div>
+                        <div class="sound-toggle-container">
+                            <label>Som</label>
+                            <button id="muteToggle" class="mute-toggle-btn" type="button" aria-label="Ativar/desativar som" aria-pressed="false">
+                                <span class="mute-icon" aria-hidden="true">🔊</span>
+                                <span class="unmute-icon" aria-hidden="true" style="display:none;">🔇</span>
+                            </button>
                         </div>
 
                         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
@@ -180,15 +188,17 @@
     <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false">
         <button class="card-close" data-card-id="countdownCard" aria-label="Fechar Contagem Regressiva">&times;</button>
         <h2 id="countdown-title">Countdown</h2>
-        <div class="timer-display" id="countdownDisplay" aria-live="polite" aria-label="Tempo restante">00:00:00:00</div>
-        <div class="controls">
+        <div class="countdown-controls">
+            <label for="countdownLabel" class="sr-only">Nome do countdown</label>
+            <input type="text" id="countdownLabel" placeholder="Título (opcional)" aria-label="Nome do countdown">
             <label for="countdownDate" class="sr-only">Data e hora de destino</label>
             <input type="datetime-local" id="countdownDate" aria-label="Data e hora de destino">
+            <div class="buttons">
+                <button id="countdownAdd" aria-label="Adicionar countdown">Add</button>
+                <button id="countdownResetAll" aria-label="Resetar todos os countdowns">Reset</button>
+            </div>
         </div>
-        <div class="buttons">
-            <button id="countdownStart" aria-label="Iniciar Contagem Regressiva">Start</button>
-            <button id="countdownStop" aria-label="Parar Contagem Regressiva">Stop</button>
-        </div>
+        <div id="countdownList" class="countdown-list" aria-label="Lista de countdowns"></div>
     </section>
 
     <!-- World Clock Card -->

@@ -10,15 +10,25 @@ const cardPositions = {
 };
 
 // Import all modules
+import '../scss/main.scss';
 import { PomodoroTimer } from './pomodoro.js';
 import { SimpleTimer } from './timer.js';
 import { Stopwatch } from './stopwatch.js';
-import { TaskList } from './tasklist.js';
 import { CountdownTimer } from './countdown.js';
+import { TaskList } from './tasklist.js';
 import { WorldClock } from './worldclock.js';
-import { initDragFunctionality, initNavbarToggle, setupToggle, setupLoginPopup, setupNavbarDropdowns, initKeyboardShortcuts, showNotification, initGlobalClickSound } from './utils.js';
-import { initSoundManager, toggleSound, isSoundMuted, playSound } from './sound.js';
-
+import { initSoundManager, playSound, toggleSound, isSoundMuted } from './sound.js';
+import { 
+  initDragFunctionality, 
+  initNavbarToggle, 
+  setupLoginPopup, 
+  setupNavbarDropdowns, 
+  initKeyboardShortcuts,
+  initGlobalClickSound,
+  initGlobalInputFocusSound,
+  setupToggle,
+  showNotification
+} from './utils.js';
 /**
  * Initialize all features on DOM ready
  */
@@ -75,9 +85,10 @@ async function initializeApp() {
 
     // Reposition on window resize with debounce
     let resizeTimeout;
+    const RESIZE_DEBOUNCE_DELAY = 150;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(positionCards, 150);
+      resizeTimeout = setTimeout(positionCards, RESIZE_DEBOUNCE_DELAY);
     });
 
     console.info('Card positions configured with viewport boundaries');
@@ -104,21 +115,56 @@ try {
     initSoundManager();
     console.info('🔊 Sound manager initialized');
 
-    // Play intro sound when app starts
-    playSound('intro');
-    console.info('🔊 Opening sound played');
-
-    // Initialize global click sounds AFTER opening sound
-    // This prevents overlap between opening sound and click sounds
+    // Initialize global click sounds
     initGlobalClickSound();
     console.info('🔊 Global click sound initialized');
+    
+    // Play interact sound when focusing inputs/selects/textareas
+    initGlobalInputFocusSound();
+ 
+    // Intro should play ONLY on page load/refresh.
+    // Browsers may block autoplay until the user interacts at least once.
+    // Strategy:
+    // - Try to play on load/refresh.
+    // - If blocked, play once on first user interaction (still "this refresh"),
+    //   and remember that autoplay is allowed for future refreshes.
+    const INTRO_AUTOPLAY_KEY = 'introAutoplayAllowed';
+    let introPlayedThisLoad = false;
 
-    // Setup logo click handler (after DOM is ready)
-    const logoLink = document.querySelector('.navbar-logo');
-    if (logoLink) {
-      logoLink.addEventListener('click', () => {
-        playSound('intro');
-      });
+    const tryPlayIntro = () => {
+      if (introPlayedThisLoad) return;
+      if (isSoundMuted()) return;
+
+      // Use a direct Audio() here so we can detect autoplay blocking via the promise.
+      const a = new Audio('/sfx/INTRO.mp3');
+      a.volume = 0.7;
+
+      a.play()
+        .then(() => {
+          introPlayedThisLoad = true;
+          try { localStorage.setItem(INTRO_AUTOPLAY_KEY, 'true'); } catch (_) {}
+        })
+        .catch(() => {
+          // Autoplay blocked (or other issue). We'll try once on first interaction.
+        });
+    };
+
+    // Attempt immediately on load/refresh
+    tryPlayIntro();
+
+    // If autoplay isn't allowed yet, unlock on first interaction and play intro once.
+    const autoplayAllowed = (() => {
+      try { return localStorage.getItem(INTRO_AUTOPLAY_KEY) === 'true'; } catch (_) { return false; }
+    })();
+
+    if (!autoplayAllowed) {
+      const unlockAndPlayIntro = () => {
+        // Only attempt if it hasn't played yet for this load
+        if (!introPlayedThisLoad) tryPlayIntro();
+      };
+      document.addEventListener('click', unlockAndPlayIntro, { once: true });
+      document.addEventListener('keydown', unlockAndPlayIntro, { once: true });
+      document.addEventListener('touchstart', unlockAndPlayIntro, { once: true });
     }
   } catch (error) {
     console.error('Failed to initialize sound manager:', error);
@@ -213,11 +259,12 @@ function updateMuteButtonUI(muted) {
   if (muted) {
     if (muteIcon) muteIcon.style.display = 'none';
     if (unmuteIcon) unmuteIcon.style.display = 'inline';
-    muteToggleBtn.setAttribute('aria-pressed', 'false');
+    // pressed = muted
+    muteToggleBtn.setAttribute('aria-pressed', 'true');
   } else {
     if (muteIcon) muteIcon.style.display = 'inline';
     if (unmuteIcon) unmuteIcon.style.display = 'none';
-    muteToggleBtn.setAttribute('aria-pressed', 'true');
+    muteToggleBtn.setAttribute('aria-pressed', 'false');
   }
 }
 

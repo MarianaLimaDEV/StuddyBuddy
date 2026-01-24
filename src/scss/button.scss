@@ -1,4 +1,5 @@
 @use '_variables' as *;
+@use "sass:map";
 
 .buttonContainer {
   display: flex;
@@ -13,7 +14,7 @@
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-color);
   transition: background-color 0.4s ease, box-shadow 0.4s ease;
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
 }
 
 /* Theme toggle button */
@@ -36,7 +37,7 @@
   transition: all 0.4s ease;
   z-index: 998;
   box-shadow: 0 4px 12px var(--shadow-color);
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
 
   &:hover {
     transform: scale(1.1) rotate(20deg);
@@ -52,20 +53,30 @@
   padding: 10px 20px;
   background: var(--btn-bg);
   border: 2px solid var(--btn-border);
-  border-radius: 5px;
+  border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
   transition: all $transition-fast;
-  font-family: map-get($fonts, "fredoka");
+  font-family: map.get($fonts, "fredoka");
+  color: var(--text);
 
   &:hover {
     background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
+    box-shadow: 0 8px 22px var(--shadow-color);
+    transform: translateY(-1px);
   }
 
   &.pressed {
     background: var(--btn-pressed);
-    color: white;
-    border-color: var(--btn-pressed);
+    color: var(--text);
+    border-color: var(--btn-hover-border);
+    box-shadow: 0 10px 26px var(--shadow-color);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
   }
 }
 

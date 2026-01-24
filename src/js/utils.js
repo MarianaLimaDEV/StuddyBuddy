@@ -7,6 +7,7 @@ import { playSound } from './sound.js';
 // ==================== GLOBAL CLICK SOUND ====================
 // Add click2 sound to ALL mouse clicks (except on specific elements)
 let globalClickHandler = null;
+let globalInputFocusHandler = null;
 
 export function initGlobalClickSound() {
   // Remove existing handler if any
@@ -16,38 +17,68 @@ export function initGlobalClickSound() {
 
   // Create new handler
   globalClickHandler = (e) => {
-    // Don't play sound on these elements (they have their own sounds)
+    // Don't play sound on these elements (they have their own sounds or shouldn't play sounds)
     if (
-      e.target.closest('.card-close') ||
-      e.target.closest('#muteToggle') ||
-      e.target.closest('button') ||
+      e.target.closest('.card-close') ||  // Has close sound
+      e.target.closest('.dropdown-close') ||  // Has close sound
+      e.target.closest('.login-popup-close') ||  // Has close sound
+      e.target.closest('#muteToggle') ||  // Has mute_toggle sound
       e.target.tagName === 'INPUT' ||
       e.target.tagName === 'TEXTAREA' ||
       e.target.tagName === 'SELECT' ||
       e.target.closest('input') ||
       e.target.closest('textarea') ||
-      e.target.closest('select') ||
-      e.target.closest('.navbar-dropdown') ||
-      e.target.closest('.login-popup') ||
-      e.target.closest('.contact-btn') ||
-      e.target.closest('.social-btn') ||
-      e.target.closest('a')
+      e.target.closest('select')
     ) {
-      // These elements play their own specific sounds
+      // These elements play their own specific sounds or shouldn't play sounds
       return;
     }
 
-    // Play interact sound on any mouse click
-    playSound('interact');
+    // Play click sound on any mouse click (including buttons, links, etc.)
+    playSound('click');
   };
 
   // Add to document
   document.addEventListener('click', globalClickHandler, { passive: true });
-  console.info('🔊 Global click sound initialized (any_click on all clicks)');
+  console.info('🔊 Global click sound initialized (CLICK.mp3 on all clicks)');
 }
 
 // Note: initGlobalClickSound() is called from main.js AFTER the opening sound plays
 // This prevents overlap between the opening sound and click sounds
+
+// ==================== GLOBAL INPUT FOCUS SOUND ====================
+// Play "interact" whenever the user is prompted for input (focus enters a field)
+export function initGlobalInputFocusSound() {
+  if (globalInputFocusHandler) {
+    document.removeEventListener('focusin', globalInputFocusHandler);
+  }
+
+  const isTextLikeInput = (el) => {
+    if (!el) return false;
+    if (el.disabled) return false;
+    // readonly inputs are still "input prompts" sometimes, but usually shouldn't beep
+    if (el.readOnly) return false;
+
+    if (el.tagName === 'TEXTAREA') return true;
+    if (el.tagName === 'SELECT') return true;
+    if (el.tagName !== 'INPUT') return false;
+
+    const t = (el.getAttribute('type') || 'text').toLowerCase();
+    // Exclude non-prompt types
+    return !['checkbox', 'radio', 'button', 'submit', 'reset', 'range', 'color', 'file', 'hidden'].includes(t);
+  };
+
+  globalInputFocusHandler = (e) => {
+    const target = e.target;
+    if (isTextLikeInput(target)) {
+      playSound('interact');
+    }
+  };
+
+  // focusin bubbles, so we can attach once to document
+  document.addEventListener('focusin', globalInputFocusHandler, { passive: true });
+  console.info('🔊 Global input focus sound initialized (INTERACT on focus)');
+}
 
 // ==================== DRAG FUNCTIONALITY ====================
 let activeCard = null;
@@ -221,13 +252,15 @@ export function setupLoginPopup() {
     isPopupOpen = false;
     loginPopup.classList.add('hidden');
     loginButton.setAttribute('aria-expanded', 'false');
+    playSound('close');
     loginButton.focus();
   };
 
   // Toggle popup
   loginButton.addEventListener('click', (e) => {
     e.stopPropagation();
-    playSound('open');
+    // Feedback sound on press (distinct from open/close)
+    playSound('click');
     if (isPopupOpen) {
       closePopup();
     } else {
@@ -303,31 +336,43 @@ function getNotificationContainer() {
   return notificationContainer;
 }
 
+// Constants
+const INITIALIZATION_DELAY = 2000; // 2 seconds
+const RESIZE_DEBOUNCE_DELAY = 150; // 150ms
+
+// Track if app is still initializing (to prevent notification sounds during startup)
+let isInitializing = true;
+setTimeout(() => { isInitializing = false; }, INITIALIZATION_DELAY);
+
+// Notification colors cache
+const NOTIFICATION_COLORS = {
+  success: 'var(--success)',
+  warning: 'var(--warning)',
+  error: 'var(--danger)',
+  info: 'var(--primary)'
+};
+
 /**
  * Show a notification toast
  * @param {string} message - Message to display
- * @param {string} type - Notification type: 'success', 'warning', 'error'
+ * @param {string} type - Notification type: 'success', 'warning', 'error', 'info'
  * @param {number} duration - Duration in ms (default: 3000)
+ * @param {boolean} playSoundOnNotification - Whether to play notification sound (default: true, false during initialization)
  */
-export function showNotification(message, type = 'success', duration = 3000) {
-  // Play notification sound
-  playSound('notification');
+export function showNotification(message, type = 'success', duration = 3000, playSoundOnNotification = true) {
+  // Play notification sound only if not during initialization (to avoid conflict with intro sound)
+  if (playSoundOnNotification && !isInitializing) {
+    playSound('notification');
+  }
 
   const container = getNotificationContainer();
   const notification = document.createElement('div');
   
-  const colors = {
-    success: 'var(--success)',
-    warning: 'var(--warning)',
-    error: 'var(--danger)',
-    info: 'var(--primary)'
-  };
-
   notification.className = `notification notification-${type}`;
   notification.textContent = message;
   notification.setAttribute('role', 'alert');
   notification.style.cssText = `
-    background-color: ${colors[type] || colors.success};
+    background-color: ${NOTIFICATION_COLORS[type] || NOTIFICATION_COLORS.success};
     color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
@@ -352,6 +397,17 @@ export function showNotification(message, type = 'success', duration = 3000) {
     notification.style.transform = 'translateY(20px)';
     setTimeout(() => notification.remove(), 300);
   }, duration);
+}
+
+/**
+ * Show notification without playing notification sound (for timer end, etc.)
+ * Shared utility to avoid code duplication
+ * @param {string} message - Message to display
+ * @param {string} type - Notification type: 'success', 'warning', 'error', 'info'
+ * @param {number} duration - Duration in ms (default: 5000)
+ */
+export function showCustomNotification(message, type = 'success', duration = 5000) {
+  showNotification(message, type, duration, false);
 }
 
 // ==================== KEYBOARD SHORTCUTS ====================
