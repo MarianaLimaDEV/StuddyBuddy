@@ -29,50 +29,50 @@
                     <img src="SB_B.png" alt="StuddyBuddy Logo" class="navbar-logo-img">
                 </picture>
             </a>
-            <ul class="navbar-menu" role="menubar">
-                <li role="none">
-                    <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="principal">
+            <ul class="navbar-menu" id="navbar-menu">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-principal" data-dropdown="principal">
                         Principal
                     </button>
-<div id="dropdown-principal" class="navbar-dropdown hidden" role="menu">
-                        <button class="dropdown-close" aria-label="Fechar">&times;</button>
-                        <h3 class="nav-dropdown__heading">Principal</h3>
+<div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-principal-heading">Principal</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                     </div>
                 </li>
-                <li role="none">
-                    <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="sobre">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-sobre" data-dropdown="sobre">
                         Sobre
                     </button>
-<div id="dropdown-sobre" class="navbar-dropdown hidden" role="menu">
-                        <button class="dropdown-close" aria-label="Fechar">&times;</button>
-                        <h3 class="nav-dropdown__heading">Sobre</h3>
+<div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading">Sobre</h3>
                         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                     </div>
                 </li>
-                <li role="none">
-                    <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="servicos">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos">
                         Serviços
                     </button>
-<div id="dropdown-servicos" class="navbar-dropdown hidden" role="menu">
-                        <button class="dropdown-close" aria-label="Fechar">&times;</button>
-                        <h3 class="nav-dropdown__heading">Serviços</h3>
+<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading">Serviços</h3>
                         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
                     </div>
                 </li>
-                <li role="none">
-                    <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="configuracoes">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-configuracoes" data-dropdown="configuracoes">
                         Configurações
                     </button>
-<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="menu">
-                        <button class="dropdown-close" aria-label="Fechar">&times;</button>
-                        <h3 class="nav-dropdown__heading">Configurações</h3>
-                        <div class="theme-toggle-container">
-                            <label>Tema</label>
-                            <theme-toggle theme="dark"></theme-toggle>
+<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-configuracoes-heading">Configurações</h3>
+                        <div class="theme-toggle-container" role="group" aria-labelledby="theme-toggle-label">
+                            <span id="theme-toggle-label">Tema</span>
+                            <theme-toggle theme="dark" aria-label="Tema"></theme-toggle>
                         </div>
-                        <div class="sound-toggle-container">
-                            <label>Som</label>
+                        <div class="sound-toggle-container" role="group" aria-labelledby="sound-toggle-label">
+                            <span id="sound-toggle-label">Som</span>
                             <button id="muteToggle" class="mute-toggle-btn" type="button" aria-label="Ativar/desativar som" aria-pressed="false">
                                 <span class="mute-icon" aria-hidden="true">🔊</span>
                                 <span class="unmute-icon" aria-hidden="true" style="display:none;">🔇</span>
@@ -82,13 +82,13 @@
                         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
                     </div>
                 </li>
-                <li role="none">
-                    <button class="navbar-dropdown-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false" data-dropdown="contacto">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-contacto" data-dropdown="contacto">
                         Contacto
                     </button>
-<div id="dropdown-contacto" class="navbar-dropdown hidden" role="menu">
-                        <button class="dropdown-close" aria-label="Fechar">&times;</button>
-                        <h3 class="nav-dropdown__heading">Contacto</h3>
+<div id="dropdown-contacto" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-contacto-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-contacto-heading">Contacto</h3>
                         <p>Entre em contacto!</p>
                         <div class="contact-buttons">
                             <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-btn github" aria-label="GitHub">
@@ -106,13 +106,13 @@
                         </div>
                     </div>
                 </li>
-                <li role="none">
-                    <button id="loginButton" class="navbar-login-btn" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <li>
+                    <button id="loginButton" class="navbar-login-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="loginPopup">
                         Login
                     </button>
                 </li>
             </ul>
-            <button class="navbar-toggle" aria-label="Alternar menu de navegação" aria-expanded="false" aria-controls="navbar-menu">
+            <button class="navbar-toggle" type="button" aria-label="Alternar menu de navegação" aria-expanded="false" aria-controls="navbar-menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -121,10 +121,11 @@
     </nav>
 
     <main id="main-content" role="main">
+    <h1 class="sr-only">StuddyBuddy</h1>
 
     <!-- Pomodoro Card -->
-    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="pomodoroCard" aria-label="Fechar Pomodoro Timer">&times;</button>
+    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="pomodoroCard" aria-label="Fechar Pomodoro Timer">&times;</button>
         <h2 id="pomodoro-title">Pomodoro Timer</h2>
         <div class="timer-display" id="pomodoroDisplay" aria-live="polite" aria-label="Tempo restante">25:00</div>
         <div class="controls">
@@ -141,8 +142,8 @@
     </section>
 
     <!-- Timer Card -->
-    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="timerCard" aria-label="Fechar Timer">&times;</button>
+    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="timerCard" aria-label="Fechar Timer">&times;</button>
         <h2 id="timer-title">Timer</h2>
         <div class="timer-display" id="timerDisplay" aria-live="polite" aria-label="Tempo restante">00:00</div>
         <div class="controls">
@@ -159,8 +160,8 @@
     </section>
 
     <!-- Stopwatch Card -->
-    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="stopwatchCard" aria-label="Fechar Cronómetro">&times;</button>
+    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="stopwatchCard" aria-label="Fechar Cronómetro">&times;</button>
         <h2 id="stopwatch-title">Cronómetro</h2>
         <div class="timer-display" id="stopwatchDisplay" aria-live="polite" aria-label="Tempo decorrido">00:00.00</div>
         <div class="buttons">
@@ -173,8 +174,8 @@
     </section>
 
     <!-- TaskList Card -->
-    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="tasklistCard" aria-label="Fechar Lista de Tarefas">&times;</button>
+    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="tasklistCard" aria-label="Fechar Lista de Tarefas">&times;</button>
         <h2 id="tasklist-title">Task List</h2>
         <div class="task-input">
             <label for="taskInput" class="sr-only">Nova tarefa</label>
@@ -185,8 +186,8 @@
     </section>
 
     <!-- Countdown Card -->
-    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="countdownCard" aria-label="Fechar Contagem Regressiva">&times;</button>
+    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="countdownCard" aria-label="Fechar Contagem Regressiva">&times;</button>
         <h2 id="countdown-title">Countdown</h2>
         <div class="countdown-controls">
             <label for="countdownLabel" class="sr-only">Nome do countdown</label>
@@ -202,8 +203,8 @@
     </section>
 
     <!-- World Clock Card -->
-    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false">
-        <button class="card-close" data-card-id="worldClockCard" aria-label="Fechar Relógio Mundial">&times;</button>
+    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="worldClockCard" aria-label="Fechar Relógio Mundial">&times;</button>
         <h2 id="worldclock-title">World Clock</h2>
         <div class="timezone-container">
             <label for="timezoneSelect" class="sr-only">Selecionar fuso horário</label>
@@ -234,8 +235,8 @@
     </div>
 
     <!-- Login Popup -->
-    <section id="loginPopup" class="login-popup hidden" aria-labelledby="login-title" role="dialog" aria-modal="false">
-        <button class="login-popup-close" id="loginPopupClose" aria-label="Fechar Login">&times;</button>
+    <section id="loginPopup" class="login-popup hidden" aria-labelledby="login-title" role="dialog" aria-modal="true" aria-hidden="true">
+        <button class="login-popup-close" type="button" id="loginPopupClose" aria-label="Fechar Login">&times;</button>
         <h2 id="login-title">Welcome Back!</h2>
         <p class="login-subtitle">Sign in to access your study dashboard</p>
         <form id="loginForm" class="login-form">
@@ -260,13 +261,13 @@
             <span>or continue with</span>
         </div>
         <div class="social-login">
-            <button class="social-btn google" aria-label="Sign in with Google">
+            <button class="social-btn google" type="button" aria-label="Sign in with Google">
                 <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
             </button>
-            <button class="social-btn github" aria-label="Sign in with GitHub">
+            <button class="social-btn github" type="button" aria-label="Sign in with GitHub">
                 <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
             </button>
-            <button class="social-btn microsoft" aria-label="Sign in with Microsoft">
+            <button class="social-btn microsoft" type="button" aria-label="Sign in with Microsoft">
                 <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M13 1h10v10H13z"/><path fill="#05a6f0" d="M1 13h10v10H1z"/><path fill="#ffba08" d="M13 13h10v10H13z"/></svg>
             </button>
         </div>

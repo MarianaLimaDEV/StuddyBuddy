@@ -4,6 +4,37 @@
  */
 import { playSound } from './sound.js';
 
+// ==================== A11Y HELPERS ====================
+function getFocusableElements(container) {
+  if (!container) return [];
+  return Array.from(
+    container.querySelectorAll(
+      [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])'
+      ].join(',')
+    )
+  ).filter(el => {
+    // Basic visibility check (avoid focusing hidden elements)
+    const style = window.getComputedStyle(el);
+    return style.visibility !== 'hidden' && style.display !== 'none';
+  });
+}
+
+function setExpanded(el, expanded) {
+  if (!el) return;
+  el.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+}
+
+function setAriaHidden(el, hidden) {
+  if (!el) return;
+  el.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+}
+
 // ==================== GLOBAL CLICK SOUND ====================
 // Add click2 sound to ALL mouse clicks (except on specific elements)
 let globalClickHandler = null;
@@ -153,22 +184,23 @@ export function initNavbarToggle() {
   const menu = document.getElementById('navbar-menu') || document.querySelector('.navbar-menu');
   if (!toggle || !menu) return;
 
-  toggle.setAttribute('aria-expanded', 'false');
-  menu.setAttribute('aria-hidden', 'true');
+  setExpanded(toggle, false);
+  setAriaHidden(menu, true);
 
   const openMenu = () => {
     menu.classList.add('open');
     toggle.classList.add('is-open');
-    menu.setAttribute('aria-hidden', 'false');
-    toggle.setAttribute('aria-expanded', 'true');
-    const firstLink = menu.querySelector('a'); if (firstLink) firstLink.focus();
+    setAriaHidden(menu, false);
+    setExpanded(toggle, true);
+    const focusables = getFocusableElements(menu);
+    if (focusables[0]) focusables[0].focus();
   };
 
   const closeMenu = () => {
     menu.classList.remove('open');
     toggle.classList.remove('is-open');
-    menu.setAttribute('aria-hidden', 'true');
-    toggle.setAttribute('aria-expanded', 'false');
+    setAriaHidden(menu, true);
+    setExpanded(toggle, false);
     toggle.focus();
   };
 
@@ -196,17 +228,38 @@ export function setupToggle(buttonId, cardId) {
   const card = document.getElementById(cardId);
   if (!button || !card) return;
 
-  let isPressed = false;
-  button.addEventListener('click', () => {
-    isPressed = !isPressed;
-    if (isPressed) {
-      button.classList.add('pressed');
-      card.classList.remove('hidden');
-      playSound('open');
-    } else {
-      button.classList.remove('pressed');
-      card.classList.add('hidden');
+  // Initialize ARIA from initial DOM state
+  const isInitiallyOpen = !card.classList.contains('hidden');
+  button.setAttribute('aria-pressed', isInitiallyOpen ? 'true' : 'false');
+  setAriaHidden(card, !isInitiallyOpen);
+
+  const openCard = () => {
+    button.classList.add('pressed');
+    button.setAttribute('aria-pressed', 'true');
+    card.classList.remove('hidden');
+    setAriaHidden(card, false);
+    playSound('open');
+
+    // Focus first meaningful element inside the dialog (close button first)
+    const closeBtn = card.querySelector('.card-close');
+    if (closeBtn) closeBtn.focus();
+    else {
+      const focusables = getFocusableElements(card);
+      if (focusables[0]) focusables[0].focus();
     }
+  };
+
+  const closeCard = ({ returnFocus = true } = {}) => {
+    button.classList.remove('pressed');
+    button.setAttribute('aria-pressed', 'false');
+    card.classList.add('hidden');
+    setAriaHidden(card, true);
+    if (returnFocus) button.focus();
+  };
+
+  button.addEventListener('click', () => {
+    const isOpen = !card.classList.contains('hidden');
+    isOpen ? closeCard({ returnFocus: false }) : openCard();
   });
 
   // Close card when clicking the close button
@@ -215,9 +268,7 @@ export function setupToggle(buttonId, cardId) {
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       playSound('close');
-      isPressed = false;
-      button.classList.remove('pressed');
-      card.classList.add('hidden');
+      closeCard({ returnFocus: true });
     });
   }
 
@@ -235,11 +286,38 @@ export function setupLoginPopup() {
   if (!loginButton || !loginPopup) return;
 
   let isPopupOpen = false;
+  let lastFocusedElement = null;
+
+  // Focus trap for modal dialog
+  const handleTrapFocus = (e) => {
+    if (!isPopupOpen) return;
+    if (e.key !== 'Tab') return;
+    const focusables = getFocusableElements(loginPopup);
+    if (!focusables.length) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey) {
+      if (active === first || !loginPopup.contains(active)) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
 
   // Open popup
   const openPopup = () => {
     isPopupOpen = true;
+    lastFocusedElement = document.activeElement;
     loginPopup.classList.remove('hidden');
+    setAriaHidden(loginPopup, false);
     loginButton.setAttribute('aria-expanded', 'true');
     playSound('open');
     // Focus on email input for accessibility
@@ -251,9 +329,15 @@ export function setupLoginPopup() {
   const closePopup = () => {
     isPopupOpen = false;
     loginPopup.classList.add('hidden');
+    setAriaHidden(loginPopup, true);
     loginButton.setAttribute('aria-expanded', 'false');
     playSound('close');
-    loginButton.focus();
+    // Prefer returning focus to where the user was, otherwise fallback to login button
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
+    } else {
+      loginButton.focus();
+    }
   };
 
   // Toggle popup
@@ -306,6 +390,9 @@ export function setupLoginPopup() {
       closePopup();
     }
   });
+
+  // Trap focus inside popup when open (modal)
+  document.addEventListener('keydown', handleTrapFocus);
 }
 
 // ==================== SHARED NOTIFICATION SYSTEM ====================
@@ -485,10 +572,12 @@ function closeAllCards() {
 
   cards.forEach(card => {
     card.classList.add('hidden');
+    setAriaHidden(card, true);
   });
 
   buttons.forEach(button => {
     button.classList.remove('pressed');
+    button.setAttribute('aria-pressed', 'false');
   });
 }
 
@@ -496,16 +585,28 @@ function closeAllCards() {
 export function setupNavbarDropdowns() {
   const dropdownButtons = document.querySelectorAll('.navbar-dropdown-btn');
   const dropdowns = document.querySelectorAll('.navbar-dropdown');
+  let lastActiveButton = null;
+
+  // Initialize aria-hidden based on current state
+  dropdowns.forEach(dropdown => {
+    setAriaHidden(dropdown, dropdown.classList.contains('hidden'));
+  });
 
   // Close all dropdowns
-  const closeAllDropdowns = () => {
+  const closeAllDropdowns = ({ returnFocus = false } = {}) => {
     dropdowns.forEach(dropdown => {
       dropdown.classList.add('hidden');
+      setAriaHidden(dropdown, true);
     });
     dropdownButtons.forEach(btn => {
       btn.classList.remove('active');
       btn.setAttribute('aria-expanded', 'false');
     });
+
+    if (returnFocus && lastActiveButton) {
+      lastActiveButton.focus();
+      lastActiveButton = null;
+    }
   };
 
   // Toggle specific dropdown
@@ -517,13 +618,18 @@ export function setupNavbarDropdowns() {
     const isOpen = !dropdown.classList.contains('hidden');
 
     // Close all dropdowns first
-    closeAllDropdowns();
+    closeAllDropdowns({ returnFocus: false });
 
     if (!isOpen) {
       dropdown.classList.remove('hidden');
       button.classList.add('active');
       button.setAttribute('aria-expanded', 'true');
-      playSound('open');
+      setAriaHidden(dropdown, false);
+      lastActiveButton = button;
+
+      // Move focus into dropdown for keyboard users
+      const focusables = getFocusableElements(dropdown);
+      if (focusables[0]) focusables[0].focus();
     }
   };
 
@@ -531,8 +637,8 @@ export function setupNavbarDropdowns() {
   dropdownButtons.forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
-      playSound('open');
       toggleDropdown(button);
+      playSound('open');
     });
   });
 
@@ -543,11 +649,17 @@ export function setupNavbarDropdowns() {
       e.stopPropagation();
       playSound('close');
       const dropdown = btn.closest('.navbar-dropdown');
-      const button = document.querySelector(`.navbar-dropdown-btn[data-dropdown="${dropdown.id.replace('dropdown-', '')}"]`);
-      if (dropdown) dropdown.classList.add('hidden');
+      const button = dropdown
+        ? document.querySelector(`.navbar-dropdown-btn[data-dropdown="${dropdown.id.replace('dropdown-', '')}"]`)
+        : null;
+      if (dropdown) {
+        dropdown.classList.add('hidden');
+        setAriaHidden(dropdown, true);
+      }
       if (button) {
         button.classList.remove('active');
         button.setAttribute('aria-expanded', 'false');
+        button.focus();
       }
     });
   });
@@ -555,14 +667,14 @@ export function setupNavbarDropdowns() {
   // Close dropdowns when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.navbar-dropdown') && !e.target.closest('.navbar-dropdown-btn')) {
-      closeAllDropdowns();
+      closeAllDropdowns({ returnFocus: false });
     }
   });
 
   // Close dropdowns on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      closeAllDropdowns();
+      closeAllDropdowns({ returnFocus: true });
     }
   });
 }
