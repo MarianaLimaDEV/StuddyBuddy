@@ -165,9 +165,9 @@
   }
 
   /* Accessible focus state */
-  &:focus {
+  &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px var(--primary);
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
   }
 
   /* When toggled (hamburger -> X) */
@@ -304,8 +304,8 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     background: transparent;
     border: none;
     color: var(--muted);
@@ -321,6 +321,11 @@
       background: var(--hover-overlay);
       color: var(--danger);
       transform: rotate(90deg);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
     }
   }
 
@@ -344,6 +349,13 @@
 }
 
 .login-input-group {
+  .password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   input {
     width: 100%;
     padding: 0.875rem 1rem;
@@ -363,6 +375,39 @@
       outline: none;
       border-color: var(--primary);
       background: rgba(52, 152, 219, 0.1);
+    }
+  }
+
+  // Make room for the toggle button in password fields
+  .password-field input {
+    padding-right: 6rem;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 44px;
+    height: 36px;
+    padding: 0 0.75rem;
+    border-radius: 10px;
+    border: 2px solid var(--border-subtle);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-family: map.get($fonts, "fredoka");
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--primary);
+      background: var(--hover-overlay);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
     }
   }
 }
@@ -400,6 +445,12 @@
     &:hover {
       color: var(--primary-variant);
       text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 3px;
+      border-radius: 6px;
     }
   }
 }
@@ -503,6 +554,12 @@
     &:hover {
       color: var(--primary-variant);
       text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 3px;
+      border-radius: 6px;
     }
   }
 }
@@ -692,6 +749,11 @@
 
     &:active {
       transform: translateY(0);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--focus-ring), 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     &.github {

@@ -4,6 +4,151 @@
  */
 import { playSound } from './sound.js';
 
+// ==================== AUTH / USER SETTINGS (MongoDB) ====================
+const AUTH_TOKEN_STORAGE_KEY = 'authToken';
+const USER_EMAIL_STORAGE_KEY = 'userEmail';
+
+export function getAuthToken() {
+  try {
+    return localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token) {
+  try {
+    if (!token) localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+    else localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+  } catch {
+    // ignore
+  }
+}
+
+export function getStoredUserEmail() {
+  try {
+    return localStorage.getItem(USER_EMAIL_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function formatUserLabel(email) {
+  const value = String(email || '').trim();
+  if (!value) return 'Conta';
+  const beforeAt = value.split('@')[0];
+  return beforeAt || value;
+}
+
+export function setStoredUserEmail(email) {
+  try {
+    if (!email) localStorage.removeItem(USER_EMAIL_STORAGE_KEY);
+    else localStorage.setItem(USER_EMAIL_STORAGE_KEY, email);
+  } catch {
+    // ignore
+  }
+}
+
+export function clearAuth() {
+  setAuthToken(null);
+  setStoredUserEmail(null);
+}
+
+export function isAuthenticated() {
+  return Boolean(getAuthToken());
+}
+
+export async function authFetch(url, options = {}) {
+  const token = getAuthToken();
+  const headers = new Headers(options.headers || {});
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401) {
+    // Token expirado/ inválido: limpa estado local para evitar loops
+    clearAuth();
+  }
+  return res;
+}
+
+export async function loginOrRegister({ email, password, rememberMe }) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const pwd = String(password || '');
+
+  if (!normalizedEmail) throw new Error('Email é obrigatório');
+  if (!pwd) throw new Error('Password é obrigatória');
+
+  const tryLogin = async () => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalizedEmail, password: pwd, rememberMe: Boolean(rememberMe) }),
+    });
+    return res;
+  };
+
+  let res = await tryLogin();
+  if (res.status === 401) {
+    // UX: se não existir conta, regista automaticamente
+    res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalizedEmail, password: pwd }),
+    });
+  }
+
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  const data = await res.json();
+  if (!data?.token) throw new Error('Resposta de login inválida (token em falta)');
+
+  setAuthToken(data.token);
+  setStoredUserEmail(data?.user?.email || normalizedEmail);
+  return data;
+}
+
+export async function fetchUserSettings() {
+  const res = await authFetch('/api/user/settings');
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+  return await res.json();
+}
+
+export async function updateUserSettings(partial) {
+  const res = await authFetch('/api/user/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(partial || {}),
+  });
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+  return await res.json();
+}
+
 // ==================== A11Y HELPERS ====================
 function getFocusableElements(container) {
   if (!container) return [];
@@ -282,11 +427,36 @@ export function setupLoginPopup() {
   const loginPopup = document.getElementById('loginPopup');
   const loginPopupClose = document.getElementById('loginPopupClose');
   const loginForm = document.getElementById('loginForm');
+  const loginFormView = document.getElementById('loginFormView');
+  const loginConnectedView = document.getElementById('loginConnectedView');
+  const loginConnectedMessage = document.getElementById('loginConnectedMessage');
+  const loginConnectedOk = document.getElementById('loginConnectedOk');
+  const passwordInput = document.getElementById('loginPassword');
+  const togglePasswordBtn = document.getElementById('togglePassword');
 
   if (!loginButton || !loginPopup) return;
 
   let isPopupOpen = false;
   let lastFocusedElement = null;
+
+  const showConnectedView = (email) => {
+    if (loginFormView) loginFormView.classList.add('hidden');
+    if (loginConnectedView) loginConnectedView.classList.remove('hidden');
+    if (loginConnectedMessage) {
+      const safeEmail = String(email || '').trim();
+      loginConnectedMessage.textContent = safeEmail
+        ? `Você (${safeEmail}) está conectado!`
+        : 'Você está conectado!';
+    }
+    // Focus something sensible
+    if (loginConnectedOk) loginConnectedOk.focus();
+    else if (loginPopupClose) loginPopupClose.focus();
+  };
+
+  const showLoginFormView = () => {
+    if (loginConnectedView) loginConnectedView.classList.add('hidden');
+    if (loginFormView) loginFormView.classList.remove('hidden');
+  };
 
   // Focus trap for modal dialog
   const handleTrapFocus = (e) => {
@@ -320,8 +490,19 @@ export function setupLoginPopup() {
     setAriaHidden(loginPopup, false);
     loginButton.setAttribute('aria-expanded', 'true');
     playSound('open');
+
+    // If already authenticated, show connected message instead of the form
+    if (isAuthenticated()) {
+      const storedEmail = getStoredUserEmail();
+      showConnectedView(storedEmail);
+      return;
+    }
+
+    showLoginFormView();
     // Focus on email input for accessibility
     const emailInput = document.getElementById('loginEmail');
+    const stored = getStoredUserEmail();
+    if (emailInput && stored && !emailInput.value) emailInput.value = stored;
     if (emailInput) emailInput.focus();
   };
 
@@ -332,6 +513,13 @@ export function setupLoginPopup() {
     setAriaHidden(loginPopup, true);
     loginButton.setAttribute('aria-expanded', 'false');
     playSound('close');
+    // Reset password visibility (privacy + predictable UX)
+    if (passwordInput) passwordInput.type = 'password';
+    if (togglePasswordBtn) {
+      togglePasswordBtn.setAttribute('aria-pressed', 'false');
+      togglePasswordBtn.setAttribute('aria-label', 'Mostrar password');
+      togglePasswordBtn.textContent = 'Mostrar';
+    }
     // Prefer returning focus to where the user was, otherwise fallback to login button
     if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
       lastFocusedElement.focus();
@@ -362,17 +550,71 @@ export function setupLoginPopup() {
 
   // Handle form submission
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Here you would typically handle the login logic
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const rememberMe = document.getElementById('rememberMe').checked;
+      const email = document.getElementById('loginEmail')?.value;
+      const password = document.getElementById('loginPassword')?.value;
+      const rememberMe = Boolean(document.getElementById('rememberMe')?.checked);
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
 
-      console.log('Login attempt:', { email, rememberMe });
-      playSound('login');
-      // Simulate successful login
-      alert('Login functionality would be implemented here!');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const data = await loginOrRegister({ email, password, rememberMe });
+        playSound('login');
+
+        const userEmail = data?.user?.email || String(email || '').trim();
+        if (userEmail) {
+          loginButton.textContent = formatUserLabel(userEmail);
+          loginButton.setAttribute('aria-label', `Conta: ${userEmail}`);
+        }
+
+        showNotification('Sessão iniciada.', 'success', 2000);
+
+        // Best-effort: envia settings atuais (tema/som) para a DB
+        const theme = (() => {
+          try { return localStorage.getItem('theme'); } catch { return null; }
+        })();
+        const soundMuted = (() => {
+          try { return localStorage.getItem('soundMuted') === 'true'; } catch { return undefined; }
+        })();
+        const payload = {};
+        if (theme === 'dark' || theme === 'light') payload.theme = theme;
+        if (typeof soundMuted !== 'undefined') payload.soundMuted = soundMuted;
+        if (Object.keys(payload).length) {
+          try { await updateUserSettings(payload); } catch (_) { /* ignore */ }
+        }
+
+        // Replace the login form with a connected message
+        showConnectedView(userEmail);
+      } catch (err) {
+        console.error('Login failed:', err);
+        showNotification(err?.message || 'Falha ao iniciar sessão', 'error', 4000);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  // Password visibility toggle
+  if (togglePasswordBtn && passwordInput) {
+    togglePasswordBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = passwordInput.type === 'text';
+      const nextVisible = !isVisible;
+
+      passwordInput.type = nextVisible ? 'text' : 'password';
+      togglePasswordBtn.setAttribute('aria-pressed', nextVisible ? 'true' : 'false');
+      togglePasswordBtn.setAttribute('aria-label', nextVisible ? 'Ocultar password' : 'Mostrar password');
+      togglePasswordBtn.textContent = nextVisible ? 'Ocultar' : 'Mostrar';
+      try { passwordInput.focus(); } catch (_) {}
+    });
+  }
+
+  // Connected screen "Ok" closes the popup
+  if (loginConnectedOk) {
+    loginConnectedOk.addEventListener('click', (e) => {
+      e.stopPropagation();
       closePopup();
     });
   }
@@ -500,10 +742,11 @@ export function showCustomNotification(message, type = 'success', duration = 500
 // ==================== KEYBOARD SHORTCUTS ====================
 export function initKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
-    // Don't trigger shortcuts when typing in input fields
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-      return;
-    }
+    // Don't trigger shortcuts when typing in input fields (but allow Escape to close UI)
+    const isFormField =
+      e.target &&
+      (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT');
+    if (isFormField && e.key !== 'Escape') return;
 
     // Ctrl/Cmd + Shift + P: Toggle Pomodoro
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {

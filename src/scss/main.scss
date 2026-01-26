@@ -20,6 +20,13 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+/* Global keyboard focus (fallback) */
+a:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 /* Card styles */
 .card {
   width: 400px;
@@ -303,8 +310,8 @@ body {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       background-color: transparent;
       color: var(--muted);
       border: none;
@@ -319,6 +326,11 @@ body {
 
       &:active {
         transform: scale(0.95);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--focus-ring), 0 2px 4px var(--shadow-color);
       }
     }
   }
@@ -381,8 +393,8 @@ body {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       background-color: transparent;
       color: var(--muted);
       border: none;
@@ -406,6 +418,11 @@ body {
 
       &:active {
         transform: scale(0.95);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--focus-ring), 0 2px 4px var(--shadow-color);
       }
     }
   }

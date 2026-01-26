@@ -224,6 +224,8 @@ $breakpoints: (
 
 // Delete button mixin
 @mixin delete-button {
+  min-width: 44px;
+  min-height: 44px;
   padding: 0.25rem 0.5rem;
   background-color: var(--danger);
   color: white;
@@ -232,9 +234,17 @@ $breakpoints: (
   cursor: pointer;
   font-size: 1rem;
   transition: all $transition-fast;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: var(--btn-danger-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
   }
 }
 
@@ -262,6 +272,11 @@ $breakpoints: (
 
   &:active {
     transform: rotate(90deg) scale(0.9);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
   }
 }
 

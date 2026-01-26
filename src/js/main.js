@@ -17,7 +17,7 @@ import { Stopwatch } from './stopwatch.js';
 import { CountdownTimer } from './countdown.js';
 import { TaskList } from './tasklist.js';
 import { WorldClock } from './worldclock.js';
-import { initSoundManager, playSound, toggleSound, isSoundMuted } from './sound.js';
+import { initSoundManager, playSound, toggleSound, isSoundMuted, setSoundMuted } from './sound.js';
 import { 
   initDragFunctionality, 
   initNavbarToggle, 
@@ -27,7 +27,12 @@ import {
   initGlobalClickSound,
   initGlobalInputFocusSound,
   setupToggle,
-  showNotification
+  showNotification,
+  fetchUserSettings,
+  updateUserSettings,
+  isAuthenticated,
+  getStoredUserEmail,
+  formatUserLabel
 } from './utils.js';
 /**
  * Initialize all features on DOM ready
@@ -40,6 +45,37 @@ async function initializeApp() {
   } catch (error) {
     console.error('Failed to initialize theme toggle:', error);
     showErrorNotification('Failed to load theme toggle functionality');
+  }
+
+  // If already logged in, hydrate settings from DB
+  try {
+    const storedEmail = getStoredUserEmail();
+    const loginButton = document.getElementById('loginButton');
+    if (storedEmail && loginButton) {
+      loginButton.textContent = formatUserLabel(storedEmail);
+      loginButton.setAttribute('aria-label', `Conta: ${storedEmail}`);
+    }
+
+    if (isAuthenticated()) {
+      const settings = await fetchUserSettings();
+
+      if (settings?.theme === 'dark' || settings?.theme === 'light') {
+        const themeToggle = document.querySelector('theme-toggle');
+        if (themeToggle && typeof themeToggle.setTheme === 'function') {
+          themeToggle.setTheme(settings.theme);
+        } else {
+          document.body.setAttribute('data-theme', settings.theme);
+          try { localStorage.setItem('theme', settings.theme); } catch (_) {}
+        }
+      }
+
+      if (typeof settings?.soundMuted !== 'undefined') {
+        setSoundMuted(Boolean(settings.soundMuted));
+        updateMuteButtonUI(Boolean(settings.soundMuted));
+      }
+    }
+  } catch (error) {
+    console.warn('Could not load user settings from API:', error);
   }
 
   try {
@@ -179,11 +215,16 @@ try {
         updateMuteButtonUI(true);
       }
 
-      muteToggleBtn.addEventListener('click', () => {
+      muteToggleBtn.addEventListener('click', async () => {
         const muted = toggleSound();
         updateMuteButtonUI(muted);
         playSound('mute_toggle');
         showNotification(muted ? 'Som desativado' : 'Som ativado', 'info', 2000);
+
+        // Sync to DB (best-effort)
+        if (isAuthenticated()) {
+          try { await updateUserSettings({ soundMuted: muted }); } catch (_) { /* ignore */ }
+        }
       });
     }
     console.info('Mute toggle configured');
@@ -202,6 +243,24 @@ try {
     console.info('Toggle buttons configured');
   } catch (error) {
     console.error('Failed to configure toggle buttons:', error);
+  }
+
+  // Sync theme changes to DB (best-effort, debounced)
+  try {
+    let themeSyncTimeout = null;
+    const observer = new MutationObserver(() => {
+      if (!isAuthenticated()) return;
+      const theme = document.body.getAttribute('data-theme');
+      if (theme !== 'dark' && theme !== 'light') return;
+
+      clearTimeout(themeSyncTimeout);
+      themeSyncTimeout = setTimeout(async () => {
+        try { await updateUserSettings({ theme }); } catch (_) { /* ignore */ }
+      }, 300);
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+  } catch (e) {
+    // ignore
   }
 }
 
