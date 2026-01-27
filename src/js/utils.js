@@ -149,6 +149,62 @@ export async function updateUserSettings(partial) {
   return await res.json();
 }
 
+// ==================== COOKIE CONSENT ====================
+const COOKIE_CONSENT_KEY = 'cookieConsent';
+
+export function getCookieConsent() {
+  try {
+    return localStorage.getItem(COOKIE_CONSENT_KEY); // 'accepted' | 'rejected' | null
+  } catch {
+    return null;
+  }
+}
+
+export function setCookieConsent(value) {
+  try {
+    if (!value) localStorage.removeItem(COOKIE_CONSENT_KEY);
+    else localStorage.setItem(COOKIE_CONSENT_KEY, value);
+  } catch {
+    // ignore
+  }
+}
+
+export function initCookieBanner() {
+  const banner = document.getElementById('cookieBanner');
+  const acceptBtn = document.getElementById('cookieAccept');
+  const rejectBtn = document.getElementById('cookieReject');
+
+  if (!banner || !acceptBtn || !rejectBtn) return;
+
+  const show = () => {
+    banner.classList.remove('hidden');
+    banner.setAttribute('aria-hidden', 'false');
+    // Non-blocking dialog: focus primary action for keyboard users
+    acceptBtn.focus();
+  };
+
+  const hide = () => {
+    banner.classList.add('hidden');
+    banner.setAttribute('aria-hidden', 'true');
+  };
+
+  const existing = getCookieConsent();
+  if (!existing) show();
+  else hide();
+
+  acceptBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setCookieConsent('accepted');
+    hide();
+  });
+
+  rejectBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setCookieConsent('rejected');
+    hide();
+  });
+}
+
 // ==================== A11Y HELPERS ====================
 function getFocusableElements(container) {
   if (!container) return [];

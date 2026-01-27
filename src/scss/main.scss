@@ -20,6 +20,50 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+// Ensure native date/time/select widgets match theme
+body[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body[data-theme="light"] {
+  color-scheme: light;
+}
+
+// Fix "weird" native rendering for datetime/time inputs across browsers
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  min-height: 44px;
+  color: var(--text);
+  background-color: var(--hover-overlay);
+  border-color: var(--border-subtle);
+}
+
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus {
+  background-color: var(--surface);
+}
+
+// Chrome/Edge calendar icon + editable parts (dark theme)
+body[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+body[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator,
+body[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.85);
+}
+
+body[data-theme="dark"] input[type="datetime-local"]::-webkit-datetime-edit,
+body[data-theme="dark"] input[type="date"]::-webkit-datetime-edit,
+body[data-theme="dark"] input[type="time"]::-webkit-datetime-edit {
+  color: var(--text);
+}
+
+// Make select dropdown options readable in dark/light
+select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
 /* Global keyboard focus (fallback) */
 a:focus-visible {
   outline: 3px solid var(--primary);
@@ -125,6 +169,72 @@ a:focus-visible {
   }
 }
 
+/* FAQ (accordion) */
+.faq-accordion {
+  margin-top: 0.75rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.faq-item {
+  background: var(--hover-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: clip;
+}
+
+.faq-question {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  color: var(--text);
+  position: relative;
+  user-select: none;
+}
+
+// Remove the default disclosure triangle
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+// Custom chevron
+.faq-question::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-55%) rotate(45deg);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.faq-item[open] > .faq-question::after {
+  transform: translateY(-35%) rotate(-135deg);
+  border-color: var(--text);
+}
+
+.faq-question:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.faq-answer {
+  padding: 0 1rem 1rem 1rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.faq-answer p {
+  margin: 0.25rem 0 0 0;
+  color: var(--text);
+}
+
 /* Task List */
 .task-input {
   display: flex;
@@ -198,6 +308,7 @@ a:focus-visible {
     font-size: 0.9rem;
     cursor: pointer;
     transition: all $transition-fast;
+    min-height: 44px;
 
     &:hover {
       border-color: var(--primary);
@@ -206,7 +317,7 @@ a:focus-visible {
     &:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+      box-shadow: 0 0 0 4px var(--focus-ring);
     }
   }
 
@@ -497,6 +608,75 @@ footer {
   a { 
     color: var(--primary); 
     text-decoration: none; 
+  }
+}
+
+/* Cookie banner */
+.cookie-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10000;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 16px 60px var(--shadow-color);
+}
+
+.cookie-banner__content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cookie-banner__title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.cookie-banner__text {
+  margin: 0;
+  color: var(--text);
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.cookie-btn {
+  @include button-base;
+  min-height: 44px;
+}
+
+.cookie-btn--primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+
+  &:hover {
+    background-color: var(--primary-variant);
+    border-color: var(--primary-variant);
+  }
+}
+
+@include respond-above('sm') {
+  .cookie-banner__content {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .cookie-banner__actions {
+    justify-content: flex-end;
   }
 }
 

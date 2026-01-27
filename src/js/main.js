@@ -7,6 +7,7 @@ const cardPositions = {
   tasklistCard: -300,    // 300px to the left of center
   countdownCard: null,   // Centered (default)
   worldClockCard: 600,   // 600px to the right of center
+  faqCard: null,         // Centered (default)
 };
 
 // Import all modules
@@ -28,6 +29,7 @@ import {
   initGlobalInputFocusSound,
   setupToggle,
   showNotification,
+  initCookieBanner,
   fetchUserSettings,
   updateUserSettings,
   isAuthenticated,
@@ -85,6 +87,7 @@ async function initializeApp() {
     setupLoginPopup();
     setupNavbarDropdowns();
     initKeyboardShortcuts();
+    initCookieBanner();
     console.info('UI utilities initialized');
   } catch (error) {
     console.error('Failed to initialize UI utilities:', error);
@@ -240,6 +243,7 @@ try {
     setupToggle('tasklistButton', 'tasklistCard');
     setupToggle('countdownButton', 'countdownCard');
     setupToggle('worldClockButton', 'worldClockCard');
+    setupToggle('faqConfigButton', 'faqCard');
     console.info('Toggle buttons configured');
   } catch (error) {
     console.error('Failed to configure toggle buttons:', error);

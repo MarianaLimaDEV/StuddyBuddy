@@ -79,6 +79,10 @@
                             </button>
                         </div>
 
+                        <button id="faqConfigButton" class="config-action-btn" type="button" aria-label="Abrir FAQ" aria-pressed="false">
+                            FAQ
+                        </button>
+
                         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
                     </div>
                 </li>
@@ -225,6 +229,56 @@
         <div id="timezoneList" class="timezone-list" aria-label="Lista de fusos horários"></div>
     </section>
 
+    <!-- FAQ Card -->
+    <section id="faqCard" class="card hidden" aria-labelledby="faq-title" role="dialog" aria-modal="false" aria-hidden="true">
+        <button class="card-close" type="button" data-card-id="faqCard" aria-label="Fechar FAQ">&times;</button>
+        <h2 id="faq-title">FAQ</h2>
+
+        <div class="faq-accordion" aria-label="Perguntas frequentes">
+            <details class="faq-item">
+                <summary class="faq-question">Como faço login?</summary>
+                <div class="faq-answer">
+                    <p>Abre o menu <strong>Login</strong>, escreve o teu email e password, e confirma. Se ainda não existir conta, o sistema cria automaticamente (exemplo fictício).</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Como alterar o tema (claro/escuro)?</summary>
+                <div class="faq-answer">
+                    <p>Vai em <strong>Configurações</strong> e muda o <strong>Tema</strong>. Ao estar conectado, o tema é guardado para a próxima vez (texto fictício).</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Como ativar/desativar o som?</summary>
+                <div class="faq-answer">
+                    <p>Em <strong>Configurações</strong>, clica no botão de <strong>Som</strong>. Exemplo: ao desativar, o ícone muda e o estado fica guardado.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Os meus dados ficam guardados?</summary>
+                <div class="faq-answer">
+                    <p>Sim: as <strong>configurações</strong> ficam associadas ao teu email (texto fictício). As ferramentas podem ter comportamentos diferentes dependendo do módulo.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Posso abrir várias ferramentas ao mesmo tempo?</summary>
+                <div class="faq-answer">
+                    <p>Sim. Podes abrir mais do que um card e organizar no ecrã. Exemplo fictício: Pomodoro + TaskList lado a lado.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Perdi a password. E agora?</summary>
+                <div class="faq-answer">
+                    <p>Exemplo fictício: clica em <strong>Forgot password?</strong> e segue as instruções. (Ainda pode ser uma funcionalidade futura.)</p>
+                </div>
+            </details>
+        </div>
+    </section>
+
     <div id="buttonContainer" class="buttonContainer">
         <button id="pomodoroButton" aria-pressed="false">Pomodoro</button>
         <button id="timerButton" aria-pressed="false">Timer</button>
@@ -294,6 +348,20 @@
             <p>&copy; 2026 StuddyBuddy. Desenvolvido por Mariana Lima.</p>
         </div>
     </footer>
+
+    <!-- Cookie consent (footer popup) -->
+    <section id="cookieBanner" class="cookie-banner hidden" role="dialog" aria-modal="false" aria-labelledby="cookie-title" aria-describedby="cookie-desc" aria-hidden="true">
+        <div class="cookie-banner__content">
+            <h2 id="cookie-title" class="cookie-banner__title">Cookies</h2>
+            <p id="cookie-desc" class="cookie-banner__text">
+                Usamos cookies essenciais para o funcionamento do site e cookies de preferência para guardar opções como tema e som.
+            </p>
+            <div class="cookie-banner__actions">
+                <button type="button" id="cookieAccept" class="cookie-btn cookie-btn--primary">Aceitar</button>
+                <button type="button" id="cookieReject" class="cookie-btn">Recusar</button>
+            </div>
+        </div>
+    </section>
 
     
 
