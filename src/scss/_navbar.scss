@@ -52,6 +52,19 @@
       width: auto;
     }
   }
+
+  // Mobile spacing: wider navbar + less padding + smaller logo
+  @include respond-to('sm') {
+    max-width: 95%;
+
+    &-container {
+      padding: 0 1rem;
+    }
+
+    &-logo img {
+      height: 3rem;
+    }
+  }
   
   // Logo visibility when body has light theme
   body[data-theme="light"] &-logo source[data-theme="light"] {
@@ -214,6 +227,11 @@
     opacity: 1;
     pointer-events: auto;
     max-height: calc(100vh - (#{$navbar-height} + 4rem));
+    // Allow scrolling inside the opened mobile menu
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
 

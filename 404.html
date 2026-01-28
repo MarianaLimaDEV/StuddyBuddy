@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StuddyBuddy — Página não encontrada (404)</title>
+    <meta name="description" content="Página não encontrada." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #171922;
+        --surface: #202432;
+        --text: #eef2ff;
+        --muted: rgba(238, 242, 255, 0.7);
+        --primary: #7aa7ff;
+        --border: rgba(255, 255, 255, 0.12);
+        --shadow: rgba(0, 0, 0, 0.28);
+        --grid: rgba(255, 255, 255, 0.07);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f6f7fb;
+          --surface: #ffffff;
+          --text: #1d2330;
+          --muted: rgba(29, 35, 48, 0.65);
+          --border: rgba(18, 24, 38, 0.12);
+          --shadow: rgba(18, 24, 38, 0.10);
+          --grid: rgba(18, 24, 38, 0.04);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: "Fredoka", system-ui, -apple-system, sans-serif;
+        color: var(--text);
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 4em 4em;
+        display: grid;
+        place-items: center;
+        padding: 1.25rem;
+      }
+
+      main {
+        width: min(720px, 100%);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 16px 60px var(--shadow);
+        padding: 1.5rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        gap: .5rem;
+        align-items: center;
+        padding: .35rem .7rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-weight: 600;
+        font-size: .85rem;
+        letter-spacing: .2px;
+      }
+
+      h1 {
+        margin: .75rem 0 .25rem 0;
+        font-size: 1.6rem;
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 0.25rem 0 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+        margin-top: 1.25rem;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(122, 167, 255, 0.14);
+        color: var(--text);
+        border-radius: 12px;
+        padding: .75rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        min-height: 44px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn--primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+
+      .btn:focus-visible {
+        outline: 3px solid var(--primary);
+        outline-offset: 3px;
+      }
+
+      .hint {
+        margin-top: 1rem;
+        font-size: .9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main role="main">
+      <span class="badge" aria-label="Erro 404">
+        404
+        <span aria-hidden="true">•</span>
+        Página não encontrada
+      </span>
+
+      <h1>Ops… esta página não existe.</h1>
+      <p>
+        Pode ser que o link esteja errado, a página tenha sido movida, ou você tenha chegado aqui por um endereço antigo.
+      </p>
+
+      <div class="actions">
+        <a class="btn btn--primary" href="./index.html">Voltar ao início</a>
+        <a class="btn" href="./index.html#main-content">Ir para o conteúdo</a>
+      </div>
+
+      <p class="hint">
+        Dica: se isso continuar acontecendo, volta e tenta abrir pelo menu principal.
+      </p>
+    </main>
+  </body>
+</html>
+
