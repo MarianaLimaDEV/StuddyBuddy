@@ -695,6 +695,71 @@
   }
 }
 
+// Config dropdown can get long (FAQ etc.) → allow scroll
+#dropdown-configuracoes {
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-dropdown__subheading {
+  margin: 0.75rem 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text);
+  opacity: 0.9;
+}
+
+// FAQ as a collapsible section inside Configurações
+.config-faq {
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--hover-overlay);
+  overflow: clip;
+}
+
+.config-faq__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  color: var(--text);
+  position: relative;
+  user-select: none;
+}
+
+.config-faq__summary::-webkit-details-marker {
+  display: none;
+}
+
+.config-faq__summary::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-55%) rotate(45deg);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.config-faq[open] > .config-faq__summary::after {
+  transform: translateY(-35%) rotate(-135deg);
+  border-color: var(--text);
+}
+
+.config-faq__summary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.config-faq .faq-accordion {
+  margin: 0;
+  padding: 0 0.75rem 0.75rem 0.75rem;
+}
+
   .dropdown-close {
     @include close-button(28px);
     font-size: 1.25rem;

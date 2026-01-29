@@ -319,8 +319,32 @@ let initialLeft = 0, initialTop = 0;
 let isDragging = false;
 const DRAG_THRESHOLD = 5; // pixels - minimum movement to start dragging
 
+// Keep cards stacked: last interacted card comes to front (below navbar/login)
+const CARD_Z_BASE = 900;
+const CARD_Z_MAX = 995; // keep below navbar dropdowns (1000+) and login (2000)
+let currentCardZ = CARD_Z_BASE;
+
+function bringCardToFront(card) {
+  if (!card) return;
+  currentCardZ += 1;
+  if (currentCardZ > CARD_Z_MAX) {
+    // Rebase z-indexes for visible cards to avoid overflowing above navbar
+    currentCardZ = CARD_Z_BASE;
+    const openCards = Array.from(document.querySelectorAll('.card:not(.hidden)'));
+    openCards.forEach((c) => {
+      currentCardZ += 1;
+      c.style.zIndex = String(currentCardZ);
+    });
+  }
+  card.style.zIndex = String(currentCardZ);
+}
+
 export function initDragFunctionality() {
   document.querySelectorAll('.card').forEach(card => {
+    // Any interaction should bring the card to the front
+    card.addEventListener('pointerdown', () => bringCardToFront(card), { passive: true });
+    card.addEventListener('focusin', () => bringCardToFront(card), { passive: true });
+
     card.addEventListener('pointerdown', (e) => {
       // Don't start drag if clicking on interactive elements
       if (
@@ -335,6 +359,7 @@ export function initDragFunctionality() {
       ) return;
       
       activeCard = card;
+      bringCardToFront(card);
       startX = e.clientX;
       startY = e.clientY;
       initialLeft = card.offsetLeft;

@@ -79,9 +79,52 @@
                             </button>
                         </div>
 
-                        <button id="faqConfigButton" class="config-action-btn" type="button" aria-label="Abrir FAQ" aria-pressed="false">
-                            FAQ
-                        </button>
+                        <details class="config-faq">
+                            <summary class="config-faq__summary">FAQ</summary>
+                            <div class="faq-accordion" aria-label="Perguntas frequentes">
+                                <details class="faq-item">
+                                    <summary class="faq-question">Como faço login?</summary>
+                                    <div class="faq-answer">
+                                        <p>Abre o menu <strong>Login</strong>, escreve o teu email e password, e confirma. Se ainda não existir conta, o sistema cria automaticamente (exemplo fictício).</p>
+                                    </div>
+                                </details>
+
+                                <details class="faq-item">
+                                    <summary class="faq-question">Como alterar o tema (claro/escuro)?</summary>
+                                    <div class="faq-answer">
+                                        <p>Vai em <strong>Configurações</strong> e muda o <strong>Tema</strong>. Ao estar conectado, o tema é guardado para a próxima vez (texto fictício).</p>
+                                    </div>
+                                </details>
+
+                                <details class="faq-item">
+                                    <summary class="faq-question">Como ativar/desativar o som?</summary>
+                                    <div class="faq-answer">
+                                        <p>Em <strong>Configurações</strong>, clica no botão de <strong>Som</strong>. Exemplo: ao desativar, o ícone muda e o estado fica guardado.</p>
+                                    </div>
+                                </details>
+
+                                <details class="faq-item">
+                                    <summary class="faq-question">Os meus dados ficam guardados?</summary>
+                                    <div class="faq-answer">
+                                        <p>Sim: as <strong>configurações</strong> ficam associadas ao teu email (texto fictício). As ferramentas podem ter comportamentos diferentes dependendo do módulo.</p>
+                                    </div>
+                                </details>
+
+                                <details class="faq-item">
+                                    <summary class="faq-question">Posso abrir várias ferramentas ao mesmo tempo?</summary>
+                                    <div class="faq-answer">
+                                        <p>Sim. Podes abrir mais do que um card e organizar no ecrã. Exemplo fictício: Pomodoro + TaskList lado a lado.</p>
+                                    </div>
+                                </details>
+
+                                <details class="faq-item">
+                                    <summary class="faq-question">Perdi a password. E agora?</summary>
+                                    <div class="faq-answer">
+                                        <p>Exemplo fictício: clica em <strong>Forgot password?</strong> e segue as instruções. (Ainda pode ser uma funcionalidade futura.)</p>
+                                    </div>
+                                </details>
+                            </div>
+                        </details>
 
                         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
                     </div>
@@ -227,56 +270,6 @@
             <button id="addTimezoneBtn" aria-label="Adicionar fuso horário">Add</button>
         </div>
         <div id="timezoneList" class="timezone-list" aria-label="Lista de fusos horários"></div>
-    </section>
-
-    <!-- FAQ Card -->
-    <section id="faqCard" class="card hidden" aria-labelledby="faq-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="faqCard" aria-label="Fechar FAQ">&times;</button>
-        <h2 id="faq-title">FAQ</h2>
-
-        <div class="faq-accordion" aria-label="Perguntas frequentes">
-            <details class="faq-item">
-                <summary class="faq-question">Como faço login?</summary>
-                <div class="faq-answer">
-                    <p>Abre o menu <strong>Login</strong>, escreve o teu email e password, e confirma. Se ainda não existir conta, o sistema cria automaticamente (exemplo fictício).</p>
-                </div>
-            </details>
-
-            <details class="faq-item">
-                <summary class="faq-question">Como alterar o tema (claro/escuro)?</summary>
-                <div class="faq-answer">
-                    <p>Vai em <strong>Configurações</strong> e muda o <strong>Tema</strong>. Ao estar conectado, o tema é guardado para a próxima vez (texto fictício).</p>
-                </div>
-            </details>
-
-            <details class="faq-item">
-                <summary class="faq-question">Como ativar/desativar o som?</summary>
-                <div class="faq-answer">
-                    <p>Em <strong>Configurações</strong>, clica no botão de <strong>Som</strong>. Exemplo: ao desativar, o ícone muda e o estado fica guardado.</p>
-                </div>
-            </details>
-
-            <details class="faq-item">
-                <summary class="faq-question">Os meus dados ficam guardados?</summary>
-                <div class="faq-answer">
-                    <p>Sim: as <strong>configurações</strong> ficam associadas ao teu email (texto fictício). As ferramentas podem ter comportamentos diferentes dependendo do módulo.</p>
-                </div>
-            </details>
-
-            <details class="faq-item">
-                <summary class="faq-question">Posso abrir várias ferramentas ao mesmo tempo?</summary>
-                <div class="faq-answer">
-                    <p>Sim. Podes abrir mais do que um card e organizar no ecrã. Exemplo fictício: Pomodoro + TaskList lado a lado.</p>
-                </div>
-            </details>
-
-            <details class="faq-item">
-                <summary class="faq-question">Perdi a password. E agora?</summary>
-                <div class="faq-answer">
-                    <p>Exemplo fictício: clica em <strong>Forgot password?</strong> e segue as instruções. (Ainda pode ser uma funcionalidade futura.)</p>
-                </div>
-            </details>
-        </div>
     </section>
 
     <div id="buttonContainer" class="buttonContainer">
