@@ -70,31 +70,17 @@ export async function authFetch(url, options = {}) {
   return res;
 }
 
-export async function loginOrRegister({ email, password, rememberMe }) {
+export async function loginUser({ email, password, rememberMe }) {
   const normalizedEmail = String(email || '').trim().toLowerCase();
   const pwd = String(password || '');
-
   if (!normalizedEmail) throw new Error('Email é obrigatório');
   if (!pwd) throw new Error('Password é obrigatória');
 
-  const tryLogin = async () => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: normalizedEmail, password: pwd, rememberMe: Boolean(rememberMe) }),
-    });
-    return res;
-  };
-
-  let res = await tryLogin();
-  if (res.status === 401) {
-    // UX: se não existir conta, regista automaticamente
-    res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: normalizedEmail, password: pwd }),
-    });
-  }
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: normalizedEmail, password: pwd, rememberMe: Boolean(rememberMe) }),
+  });
 
   if (!res.ok) {
     let message = `Erro HTTP ${res.status}`;
@@ -109,10 +95,51 @@ export async function loginOrRegister({ email, password, rememberMe }) {
 
   const data = await res.json();
   if (!data?.token) throw new Error('Resposta de login inválida (token em falta)');
-
   setAuthToken(data.token);
   setStoredUserEmail(data?.user?.email || normalizedEmail);
   return data;
+}
+
+export async function registerUser({ email, password }) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const pwd = String(password || '');
+  if (!normalizedEmail) throw new Error('Email é obrigatório');
+  if (!pwd || pwd.length < 8) throw new Error('Password deve ter pelo menos 8 caracteres');
+
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: normalizedEmail, password: pwd }),
+  });
+
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  const data = await res.json();
+  if (!data?.token) throw new Error('Resposta de registo inválida (token em falta)');
+  setAuthToken(data.token);
+  setStoredUserEmail(data?.user?.email || normalizedEmail);
+  return data;
+}
+
+export async function loginOrRegister({ email, password, rememberMe }) {
+  try {
+    return await loginUser({ email, password, rememberMe });
+  } catch (err) {
+    // Backwards-compatible behavior: if login fails with 401, try register
+    if (String(err?.message || '').includes('401')) {
+      return await registerUser({ email, password });
+    }
+    throw err;
+  }
 }
 
 export async function fetchUserSettings() {
@@ -512,13 +539,53 @@ export function setupLoginPopup() {
   const loginConnectedView = document.getElementById('loginConnectedView');
   const loginConnectedMessage = document.getElementById('loginConnectedMessage');
   const loginConnectedOk = document.getElementById('loginConnectedOk');
+  const signOutBtn = document.getElementById('signOutBtn');
   const passwordInput = document.getElementById('loginPassword');
   const togglePasswordBtn = document.getElementById('togglePassword');
+  const passwordConfirmInput = document.getElementById('loginPasswordConfirm');
+  const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+  const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
+  const rememberMe = document.getElementById('rememberMe');
+  const loginOptions = loginPopup.querySelector('.login-options');
+  const loginTitle = document.getElementById('login-title');
+  const loginSubtitle = document.getElementById('loginSubtitle');
+  const submitBtn = document.getElementById('loginSubmitBtn');
+  const tabLogin = document.getElementById('authTabLogin');
+  const tabSignup = document.getElementById('authTabSignup');
 
   if (!loginButton || !loginPopup) return;
 
   let isPopupOpen = false;
   let lastFocusedElement = null;
+  let authMode = 'login'; // 'login' | 'signup'
+
+  const setAuthMode = (mode) => {
+    authMode = mode === 'signup' ? 'signup' : 'login';
+
+    const isSignup = authMode === 'signup';
+    if (tabLogin) {
+      tabLogin.classList.toggle('is-active', !isSignup);
+      tabLogin.setAttribute('aria-selected', isSignup ? 'false' : 'true');
+    }
+    if (tabSignup) {
+      tabSignup.classList.toggle('is-active', isSignup);
+      tabSignup.setAttribute('aria-selected', isSignup ? 'true' : 'false');
+    }
+
+    if (confirmPasswordGroup) confirmPasswordGroup.classList.toggle('hidden', !isSignup);
+    if (loginOptions) loginOptions.classList.toggle('hidden', isSignup); // remember/forgot only for login
+
+    if (loginTitle) loginTitle.textContent = isSignup ? 'Criar conta' : 'Entrar';
+    if (loginSubtitle) {
+      loginSubtitle.textContent = isSignup
+        ? 'Crie sua conta para sincronizar tema e som.'
+        : 'Acesse sua conta para sincronizar suas configurações.';
+    }
+    if (submitBtn) submitBtn.textContent = isSignup ? 'Criar conta' : 'Entrar';
+
+    // Autocomplete hint
+    if (passwordInput) passwordInput.setAttribute('autocomplete', isSignup ? 'new-password' : 'current-password');
+  };
 
   const showConnectedView = (email) => {
     if (loginFormView) loginFormView.classList.add('hidden');
@@ -580,6 +647,7 @@ export function setupLoginPopup() {
     }
 
     showLoginFormView();
+    setAuthMode('login');
     // Focus on email input for accessibility
     const emailInput = document.getElementById('loginEmail');
     const stored = getStoredUserEmail();
@@ -635,13 +703,22 @@ export function setupLoginPopup() {
       e.preventDefault();
       const email = document.getElementById('loginEmail')?.value;
       const password = document.getElementById('loginPassword')?.value;
-      const rememberMe = Boolean(document.getElementById('rememberMe')?.checked);
-      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      const confirmPassword = document.getElementById('loginPasswordConfirm')?.value;
+      const remember = Boolean(document.getElementById('rememberMe')?.checked);
 
       if (submitBtn) submitBtn.disabled = true;
 
       try {
-        const data = await loginOrRegister({ email, password, rememberMe });
+        const isSignup = authMode === 'signup';
+        if (isSignup) {
+          if (!confirmPassword || String(confirmPassword) !== String(password || '')) {
+            throw new Error('As passwords não coincidem');
+          }
+        }
+
+        const data = isSignup
+          ? await registerUser({ email, password })
+          : await loginUser({ email, password, rememberMe: remember });
         playSound('login');
 
         const userEmail = data?.user?.email || String(email || '').trim();
@@ -692,10 +769,53 @@ export function setupLoginPopup() {
     });
   }
 
+  if (togglePasswordConfirmBtn && passwordConfirmInput) {
+    togglePasswordConfirmBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = passwordConfirmInput.type === 'text';
+      const nextVisible = !isVisible;
+      passwordConfirmInput.type = nextVisible ? 'text' : 'password';
+      togglePasswordConfirmBtn.setAttribute('aria-pressed', nextVisible ? 'true' : 'false');
+      togglePasswordConfirmBtn.setAttribute('aria-label', nextVisible ? 'Ocultar confirmação de password' : 'Mostrar confirmação de password');
+      togglePasswordConfirmBtn.textContent = nextVisible ? 'Ocultar' : 'Mostrar';
+      try { passwordConfirmInput.focus(); } catch (_) {}
+    });
+  }
+
+  // Tabs
+  if (tabLogin) {
+    tabLogin.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setAuthMode('login');
+      document.getElementById('loginEmail')?.focus();
+    });
+  }
+  if (tabSignup) {
+    tabSignup.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setAuthMode('signup');
+      document.getElementById('loginEmail')?.focus();
+    });
+  }
+
   // Connected screen "Ok" closes the popup
   if (loginConnectedOk) {
     loginConnectedOk.addEventListener('click', (e) => {
       e.stopPropagation();
+      closePopup();
+    });
+  }
+
+  // Sign out
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearAuth();
+      loginButton.textContent = 'Login';
+      loginButton.setAttribute('aria-label', 'Login');
+      showNotification('Sessão terminada.', 'info', 2000);
+      showLoginFormView();
+      setAuthMode('login');
       closePopup();
     });
   }

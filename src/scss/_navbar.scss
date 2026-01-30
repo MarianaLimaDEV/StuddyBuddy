@@ -360,6 +360,36 @@
   }
 }
 
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.auth-tab {
+  border: 2px solid var(--border-subtle);
+  background: var(--hover-overlay);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  min-height: 44px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: map.get($fonts, "fredoka");
+}
+
+.auth-tab.is-active {
+  border-color: var(--primary);
+  background: rgba(122, 167, 255, 0.18);
+}
+
+.auth-tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -495,6 +525,44 @@
   &:active {
     transform: translateY(0);
   }
+}
+
+.connected-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.login-secondary-btn {
+  width: auto;
+  min-height: 44px;
+  padding: 0.875rem 1.25rem;
+  background: var(--btn-soft-bg);
+  color: var(--text);
+  border: 2px solid var(--border-subtle);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: map.get($fonts, "fredoka");
+}
+
+.login-secondary-btn:hover {
+  background: var(--btn-soft-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.2);
+}
+
+.login-secondary-btn:active {
+  transform: translateY(0);
+}
+
+.login-secondary-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
 }
 
 .login-divider {
