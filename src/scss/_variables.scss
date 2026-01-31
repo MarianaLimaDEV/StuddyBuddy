@@ -65,25 +65,30 @@ $font-sizes: (
 }
 
 [data-theme="light"] {
-  --bg-color: #f6f7fb;
-  --surface: #ffffff;
-  --text: #1d2330;
-  --muted: rgba(29, 35, 48, 0.65);
-  --shadow-color: rgba(18, 24, 38, 0.10);
-  --hover-overlay: rgba(18, 24, 38, 0.04);
-  --border-subtle: rgba(18, 24, 38, 0.10);
+  // Light theme: more neutral, less saturated
+  --bg-color: #f3f4f6;            // neutral background
+  --surface: #ffffff;            // white surface
+  --text: #111827;               // neutral-900
+  --muted: rgba(17, 24, 39, 0.62);
+  --shadow-color: rgba(17, 24, 39, 0.08);
+  --hover-overlay: rgba(17, 24, 39, 0.04);
+  --border-subtle: rgba(17, 24, 39, 0.12);
+
+  // Slightly more neutral primary in light mode
+  --primary: #4f7ddf;
+  --primary-variant: #3f6fd6;
 
   // Cores de botões (light)
-  --btn-bg: rgba(95, 143, 245, 0.10);
-  --btn-border: rgba(18, 24, 38, 0.12);
-  --btn-hover-bg: rgba(95, 143, 245, 0.14);
-  --btn-hover-border: rgba(18, 24, 38, 0.18);
+  --btn-bg: rgba(79, 125, 223, 0.10);
+  --btn-border: rgba(17, 24, 39, 0.14);
+  --btn-hover-bg: rgba(79, 125, 223, 0.14);
+  --btn-hover-border: rgba(17, 24, 39, 0.22);
 
-  --btn-soft-bg: rgba(95, 143, 245, 0.10);
-  --btn-soft-border: rgba(18, 24, 38, 0.12);
-  --btn-soft-hover-bg: rgba(95, 143, 245, 0.14);
+  --btn-soft-bg: rgba(79, 125, 223, 0.10);
+  --btn-soft-border: rgba(17, 24, 39, 0.14);
+  --btn-soft-hover-bg: rgba(79, 125, 223, 0.14);
   --btn-soft-text: var(--text);
-  --focus-ring: rgba(95, 143, 245, 0.35);
+  --focus-ring: rgba(79, 125, 223, 0.32);
 }
 
 // Alias para compatibilidade com código existente

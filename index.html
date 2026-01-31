@@ -375,6 +375,23 @@
         </div>
     </section>
 
+    <!-- Chatbot -->
+    <button id="chatbotFab" class="chatbot-fab" type="button" aria-label="Abrir chat de ajuda" aria-expanded="false" aria-controls="chatbotPanel">
+        Chat
+    </button>
+    <section id="chatbotPanel" class="chatbot-panel hidden" role="dialog" aria-modal="false" aria-label="Chat de ajuda" aria-hidden="true">
+        <div class="chatbot-panel__chrome">
+            <span class="chatbot-panel__title">Ajuda</span>
+            <button id="chatbotClose" class="chatbot-panel__close" type="button" aria-label="Fechar chat">&times;</button>
+        </div>
+        <div id="chatbotMessages" class="chatbot-panel__messages" aria-label="Mensagens"></div>
+        <form id="chatbotForm" class="chatbot-panel__form">
+            <label class="sr-only" for="chatbotInput">Mensagem</label>
+            <input id="chatbotInput" class="chatbot-panel__input" type="text" placeholder="Digite sua pergunta..." autocomplete="off" />
+            <button class="chatbot-panel__send" type="submit">Enviar</button>
+        </form>
+    </section>
+
     
 
 </body>

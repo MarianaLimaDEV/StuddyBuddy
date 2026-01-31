@@ -73,9 +73,11 @@ a:focus-visible {
 
 /* Card styles */
 .card {
+  --card-chrome-height: 28px;
   width: 400px;
   min-height: 200px;
   padding: 20px;
+  padding-top: calc(20px + var(--card-chrome-height));
   background-color: var(--surface);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
@@ -92,12 +94,14 @@ a:focus-visible {
   text-align: center;
   color: var(--text);
   z-index: 900;
+  overflow: hidden;
 
   // Mobile responsiveness
   @include respond-to('sm') {
     width: calc(100vw - 40px);
     max-width: 350px;
     padding: 15px;
+    padding-top: calc(15px + var(--card-chrome-height));
     top: 100px;
   }
 
@@ -105,7 +109,21 @@ a:focus-visible {
     width: calc(100vw - 20px);
     max-width: 320px;
     padding: 12px;
+    padding-top: calc(12px + var(--card-chrome-height));
     top: 90px;
+  }
+
+  // "Browser-like" chrome bar
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--card-chrome-height);
+    background: color-mix(in srgb, var(--surface) 82%, white 18%);
+    border-bottom: 1px solid var(--border-subtle);
+    opacity: 0.9;
   }
 
   h2 {
@@ -126,7 +144,12 @@ a:focus-visible {
 
 /* Close button */
 .card-close {
-  @include close-button(30px);
+  // Align close button into the chrome bar
+  @include close-button(28px);
+  top: 0px;
+  right: 6px;
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Timer Display */
@@ -685,6 +708,131 @@ footer {
   .cookie-banner__actions {
     justify-content: flex-end;
   }
+}
+
+/* Chatbot */
+.chatbot-fab {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10001;
+  min-width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 60px var(--shadow-color);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chatbot-fab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring), 0 16px 60px var(--shadow-color);
+}
+
+.chatbot-panel {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: min(360px, calc(100% - 2rem));
+  height: min(520px, 70vh);
+  z-index: 10002;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 70px var(--shadow-color);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 28px 1fr auto;
+}
+
+.chatbot-panel__chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem 0 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 86%, white 14%);
+  opacity: 0.9;
+}
+
+.chatbot-panel__title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.chatbot-panel__close {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-panel__close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.chatbot-panel__messages {
+  padding: 0.75rem;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chatbot-msg {
+  max-width: 90%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  line-height: 1.4;
+  font-size: 0.92rem;
+}
+
+.chatbot-msg--bot {
+  align-self: flex-start;
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+.chatbot-msg--user {
+  align-self: flex-end;
+  background: rgba(122, 167, 255, 0.14);
+  color: var(--text);
+}
+
+.chatbot-panel__form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+}
+
+.chatbot-panel__input {
+  @include input-base;
+  min-height: 44px;
+}
+
+.chatbot-panel__send {
+  @include button-base;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
 }
 
 /* Utility class */

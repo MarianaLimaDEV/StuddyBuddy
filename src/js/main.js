@@ -18,6 +18,7 @@ import { CountdownTimer } from './countdown.js';
 import { TaskList } from './tasklist.js';
 import { WorldClock } from './worldclock.js';
 import { initSoundManager, playSound, toggleSound, isSoundMuted, setSoundMuted } from './sound.js';
+import { initChatbot } from './chatbot.js';
 import { 
   initDragFunctionality, 
   initNavbarToggle, 
@@ -87,6 +88,7 @@ async function initializeApp() {
     setupNavbarDropdowns();
     initKeyboardShortcuts();
     initCookieBanner();
+    initChatbot();
     console.info('UI utilities initialized');
   } catch (error) {
     console.error('Failed to initialize UI utilities:', error);

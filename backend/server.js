@@ -6,9 +6,10 @@ const countdownRoutes = require('./routes/countdown');
 const worldclockRoutes = require('./routes/worldclock');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Liga ao MongoDB
 connectDB();
@@ -41,6 +42,7 @@ app.use('/api/countdown', countdownRoutes);
 app.use('/api/worldclock', worldclockRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Fallback simples para erros 404 de API
 app.use('/api', (req, res) => {

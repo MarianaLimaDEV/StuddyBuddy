@@ -9,9 +9,11 @@
   margin: auto;
   
   max-width: 85%;
-  background-color: var(--surface);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  // Slight translucency (glass effect)
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-color);
   z-index: 999;
@@ -308,7 +310,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--surface);
+  --popup-chrome-height: 30px;
   padding: 2rem;
+  padding-top: calc(2rem + var(--popup-chrome-height));
   border-radius: 16px;
   box-shadow: 0 20px 60px var(--shadow-color);
   z-index: 2000;
@@ -317,15 +321,28 @@
   text-align: center;
   color: var(--text);
   font-family: map.get($fonts, "fredoka");
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--popup-chrome-height);
+    background: color-mix(in srgb, var(--surface) 82%, white 18%);
+    border-bottom: 1px solid var(--border-subtle);
+    opacity: 0.9;
+  }
 
   &-close {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: -2px;
+    right: 8px;
     width: 44px;
     height: 44px;
-    background: transparent;
-    border: none;
+    background: color-mix(in srgb, var(--surface) 65%, transparent);
+    border: 1px solid var(--border-subtle);
     color: var(--muted);
     font-size: 1.5rem;
     cursor: pointer;
