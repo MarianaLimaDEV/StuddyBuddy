@@ -3,6 +3,7 @@
  * Shared utilities for drag functionality and UI interactions
  */
 import { playSound } from './sound.js';
+import { renderStatsIn } from './study-stats.js';
 
 // ==================== AUTH / USER SETTINGS (MongoDB) ====================
 const AUTH_TOKEN_STORAGE_KEY = 'authToken';
@@ -979,6 +980,18 @@ export function initKeyboardShortcuts() {
       toggleCard('worldClockButton', 'worldClockCard');
     }
 
+    // Ctrl/Cmd + Shift + S: Toggle Stopwatch
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+      e.preventDefault();
+      toggleCard('stopwatchButton', 'stopwatchCard');
+    }
+
+    // Ctrl/Cmd + Shift + ?: Show shortcuts modal
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === '?') {
+      e.preventDefault();
+      openShortcutsModal();
+    }
+
     // Ctrl/Cmd + Shift + D: Toggle Dark/Light theme
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
       e.preventDefault();
@@ -988,11 +1001,40 @@ export function initKeyboardShortcuts() {
       }
     }
 
-    // Escape: Close all cards
+    // Escape: Close shortcuts modal first, else close all cards
     if (e.key === 'Escape') {
-      closeAllCards();
+      const modal = document.getElementById('shortcutsModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        closeShortcutsModal();
+        document.getElementById('shortcutsBtn')?.focus();
+      } else {
+        closeAllCards();
+      }
     }
   });
+}
+
+/**
+ * Open shortcuts modal
+ */
+export function openShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    document.getElementById('shortcutsClose')?.focus();
+  }
+}
+
+/**
+ * Close shortcuts modal
+ */
+export function closeShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+  }
 }
 
 /**
@@ -1070,6 +1112,7 @@ export function setupNavbarDropdowns() {
       button.setAttribute('aria-expanded', 'true');
       setAriaHidden(dropdown, false);
       lastActiveButton = button;
+      if (dropdownId === 'configuracoes') renderStatsIn('configStats');
 
       // Move focus into dropdown for keyboard users
       const focusables = getFocusableElements(dropdown);
@@ -1121,4 +1164,57 @@ export function setupNavbarDropdowns() {
       closeAllDropdowns({ returnFocus: true });
     }
   });
+}
+
+// ==================== FOCUS MODE ====================
+export function initFocusMode() {
+  const btn = document.getElementById('focusModeBtn');
+  const exitBtn = document.getElementById('focusModeExit');
+  const navbar = document.querySelector('.navbar');
+  const buttonContainer = document.getElementById('buttonContainer');
+  const footer = document.querySelector('footer');
+  if (!btn || !navbar) return;
+
+  const exitFocus = () => {
+    document.body.classList.remove('focus-mode');
+    navbar?.classList.remove('hidden');
+    if (buttonContainer) buttonContainer.classList.remove('hidden');
+    footer?.classList.remove('hidden');
+    btn?.setAttribute('aria-pressed', 'false');
+    btn.textContent = 'Modo foco';
+    exitBtn?.classList.add('hidden');
+  };
+
+  const enterFocus = () => {
+    document.body.classList.add('focus-mode');
+    navbar?.classList.add('hidden');
+    if (buttonContainer) buttonContainer.classList.add('hidden');
+    footer?.classList.add('hidden');
+    btn.setAttribute('aria-pressed', 'true');
+    btn.textContent = 'Modo foco (ativo)';
+    exitBtn?.classList.remove('hidden');
+  };
+
+  btn.addEventListener('click', () => {
+    if (btn.getAttribute('aria-pressed') === 'true') exitFocus();
+    else enterFocus();
+  });
+  exitBtn?.addEventListener('click', exitFocus);
+}
+
+// ==================== SHORTCUTS MODAL ====================
+export function initShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  const openBtn = document.getElementById('shortcutsBtn');
+  const closeBtn = document.getElementById('shortcutsClose');
+  if (!modal || !closeBtn) return;
+
+  const close = () => {
+    closeShortcutsModal();
+    openBtn?.focus();
+  };
+
+  openBtn?.addEventListener('click', () => openShortcutsModal());
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 }

@@ -4,9 +4,24 @@
  */
 import { showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
+import { recordPomodoroSession } from './study-stats.js';
 
 // Constants
 const POMODORO_UPDATE_INTERVAL = 1000; // 1 second
+
+function showBrowserNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body, icon: '/SB_B.png' });
+  } catch (_) {}
+}
+
+function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    Notification.requestPermission().catch(() => {});
+  }
+}
 const DEFAULT_WORK_TIME = 25;
 const DEFAULT_BREAK_TIME = 5;
 const MAX_WORK_TIME = 60;
@@ -88,23 +103,31 @@ export class PomodoroTimer {
 
   start() {
     if (this.isRunning) return;
+    requestNotificationPermission();
     this.isRunning = true;
     playSound('click');
     this.interval = setInterval(() => {
       this.timeLeft--;
       if (this.timeLeft <= 0) {
         // Flip the break state first
+        const wasBreak = this.isBreak;
         this.isBreak = !this.isBreak;
+        // Record work session when transitioning work -> break
+        if (!wasBreak) recordPomodoroSession(this.workTime);
         // Reset timeLeft to the appropriate duration
         this.timeLeft = (this.isBreak ? this.breakTime : this.workTime) * 60;
         // Update display to show the corrected (non-negative) value
         this.updateDisplay();
         // Play alarm sound first (with overlap allowed so it can complete)
         playSoundWithOverlap('alarm');
-        // Then show notification (without playing notification sound)
+        // Browser notification (if permitted)
+        const title = this.isBreak ? 'Pausa!' : 'Tempo de trabalho!';
+        const body = this.isBreak ? 'Ready to focus?' : 'Stay focused!';
+        showBrowserNotification(title, body);
+        // Then show in-app notification
         showCustomNotification(
-          this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!', 
-          'info', 
+          this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!',
+          'info',
           5000
         );
       } else {

@@ -5,6 +5,13 @@
 import { showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
 
+function showBrowserNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body, icon: '/SB_B.png' });
+  } catch (_) {}
+}
+
 // Constants
 const TIMER_UPDATE_INTERVAL = 1000; // 1 second
 
@@ -73,6 +80,9 @@ export class SimpleTimer {
 
   start() {
     if (this.isRunning || this.timeLeft <= 0) return;
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
     this.isRunning = true;
     playSound('click');
     this.interval = setInterval(() => {
@@ -80,9 +90,8 @@ export class SimpleTimer {
       this.updateDisplay();
       if (this.timeLeft <= 0) {
         this.stop();
-        // Play alarm sound first (with overlap allowed so it can complete)
         playSoundWithOverlap('alarm');
-        // Show notification without notification sound
+        showBrowserNotification('Timer finished!', 'O teu temporizador terminou.');
         showCustomNotification('Timer finished!', 'success', 5000);
       }
     }, TIMER_UPDATE_INTERVAL);

@@ -18,13 +18,14 @@ import { CountdownTimer } from './countdown.js';
 import { TaskList } from './tasklist.js';
 import { WorldClock } from './worldclock.js';
 import { initSoundManager, playSound, toggleSound, isSoundMuted, setSoundMuted } from './sound.js';
-import { initChatbot } from './chatbot.js';
 import { 
   initDragFunctionality, 
   initNavbarToggle, 
   setupLoginPopup, 
   setupNavbarDropdowns, 
   initKeyboardShortcuts,
+  initFocusMode,
+  initShortcutsModal,
   initGlobalClickSound,
   initGlobalInputFocusSound,
   setupToggle,
@@ -87,8 +88,9 @@ async function initializeApp() {
     setupLoginPopup();
     setupNavbarDropdowns();
     initKeyboardShortcuts();
+    initFocusMode();
+    initShortcutsModal();
     initCookieBanner();
-    initChatbot();
     console.info('UI utilities initialized');
   } catch (error) {
     console.error('Failed to initialize UI utilities:', error);
@@ -329,6 +331,13 @@ function updateMuteButtonUI(muted) {
     if (unmuteIcon) unmuteIcon.style.display = 'none';
     muteToggleBtn.setAttribute('aria-pressed', 'false');
   }
+}
+
+// PWA: register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
 }
 
 // Initialize when DOM is ready

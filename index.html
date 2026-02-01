@@ -9,8 +9,10 @@
     <meta name="description" content="Ferramenta de estudos">
     <meta name="keywords" content="Pomodoro, Cozy, Lo-fi, Study">
     <meta name="author" content="Mariana Lima">
+    <meta name="theme-color" content="#4f7ddf">
 
     <link rel="icon" href="SB_B.png" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="SB_W.png" media="(prefers-color-scheme: light)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +39,7 @@
 <div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" aria-hidden="true">
                         <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-principal-heading">Principal</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        <p>Bem-vindo ao StuddyBuddy! Acede às ferramentas clicando nos botões abaixo: Pomodoro, Timer, Cronómetro, Task List, Countdown e World Clock. Podes abrir várias ao mesmo tempo e arrastá-las no ecrã. Usa o modo foco para esconder a navegação e concentrares-te no estudo.</p>
                     </div>
                 </li>
                 <li>
@@ -47,7 +49,7 @@
 <div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" aria-hidden="true">
                         <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading">Sobre</h3>
-                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <p>O StuddyBuddy é uma plataforma de estudo com ferramentas práticas: Pomodoro para sessões de foco, Timer, Cronómetro, lista de tarefas, contagem regressiva e relógio mundial. Faz login para sincronizar o teu tema e preferências na nuvem.</p>
                     </div>
                 </li>
                 <li>
@@ -57,7 +59,7 @@
 <div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" aria-hidden="true">
                         <button class="dropdown-close" type="button" aria-label="Fechar">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading">Serviços</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                        <p>Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
                     </div>
                 </li>
                 <li>
@@ -126,7 +128,9 @@
                             </div>
                         </details>
 
-                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+                        <div class="config-stats" id="configStats"></div>
+                        <button type="button" id="shortcutsBtn" class="shortcuts-btn" aria-label="Ver atalhos de teclado">⌨️ Atalhos</button>
+                        <button type="button" id="focusModeBtn" class="focus-mode-btn" aria-pressed="false" aria-label="Ativar modo foco">Modo foco</button>
                     </div>
                 </li>
                 <li>
@@ -375,24 +379,30 @@
         </div>
     </section>
 
-    <!-- Chatbot -->
-    <button id="chatbotFab" class="chatbot-fab" type="button" aria-label="Abrir chat de ajuda" aria-expanded="false" aria-controls="chatbotPanel">
-        Chat
-    </button>
-    <section id="chatbotPanel" class="chatbot-panel hidden" role="dialog" aria-modal="false" aria-label="Chat de ajuda" aria-hidden="true">
-        <div class="chatbot-panel__chrome">
-            <span class="chatbot-panel__title">Ajuda</span>
-            <button id="chatbotClose" class="chatbot-panel__close" type="button" aria-label="Fechar chat">&times;</button>
-        </div>
-        <div id="chatbotMessages" class="chatbot-panel__messages" aria-label="Mensagens"></div>
-        <form id="chatbotForm" class="chatbot-panel__form">
-            <label class="sr-only" for="chatbotInput">Mensagem</label>
-            <input id="chatbotInput" class="chatbot-panel__input" type="text" placeholder="Digite sua pergunta..." autocomplete="off" />
-            <button class="chatbot-panel__send" type="submit">Enviar</button>
-        </form>
-    </section>
+    <button id="focusModeExit" class="focus-mode-exit hidden" type="button" aria-label="Sair do modo foco">Sair modo foco</button>
 
-    
+    <!-- Shortcuts modal -->
+    <div id="shortcutsModal" class="shortcuts-modal hidden" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" aria-hidden="true">
+        <div class="shortcuts-modal__content">
+            <div class="shortcuts-modal__chrome">
+                <h2 id="shortcuts-title">Atalhos de teclado</h2>
+                <button type="button" id="shortcutsClose" class="shortcuts-modal__close" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="shortcuts-modal__body">
+                <ul class="shortcuts-list">
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> Pomodoro</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> Timer</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> Cronómetro</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> Task List</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Countdown</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd> World Clock</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> Alternar tema</li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>?</kbd> Ver atalhos</li>
+                    <li><kbd>Esc</kbd> Fechar cards</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script type="module" src="./src/js/main.js"></script>
