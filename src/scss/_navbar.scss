@@ -55,8 +55,9 @@
     }
   }
 
-  // Mobile spacing: wider navbar + less padding + smaller logo
-  @include respond-to('sm') {
+  // Mobile: when hamburger shows (lg and below)
+  @include respond-to('lg') {
+    height: $navbar-height-mobile;
     max-width: 95%;
 
     &-container {
@@ -64,8 +65,13 @@
     }
 
     &-logo img {
-      height: 3rem;
+      height: 2.75rem;
     }
+  }
+
+  @include respond-to('xs') {
+    margin-left: env(safe-area-inset-left, 0);
+    margin-right: env(safe-area-inset-right, 0);
   }
   
   // Logo visibility when body has light theme
@@ -211,7 +217,7 @@
     opacity: 0;
     transition: max-height .28s ease, opacity .2s ease;
     position: absolute;
-    top: calc(#{$navbar-height} + 0.75rem);
+    top: calc(#{$navbar-height-mobile} + 0.5rem);
     left: 1rem;
     right: 1rem;
     flex-direction: column;
@@ -228,7 +234,7 @@
     display: flex;
     opacity: 1;
     pointer-events: auto;
-    max-height: calc(100vh - (#{$navbar-height} + 4rem));
+    max-height: calc(100dvh - (#{$navbar-height-mobile} + 4rem));
     // Allow scrolling inside the opened mobile menu
     overflow-y: auto;
     overflow-x: hidden;
@@ -316,8 +322,16 @@
   border-radius: 16px;
   box-shadow: 0 20px 60px var(--shadow-color);
   z-index: 2000;
-  min-width: 380px;
+  min-width: 320px;
   max-width: 90vw;
+
+  @include respond-to('xs') {
+    min-width: 0;
+    width: calc(100vw - 2rem);
+    max-width: calc(100vw - 2rem);
+    padding: 1.25rem;
+    padding-top: calc(1.25rem + var(--popup-chrome-height));
+  }
   text-align: center;
   color: var(--text);
   font-family: map.get($fonts, "fredoka");
@@ -722,6 +736,18 @@
   margin-top: 15px;
   min-width: 350px;
   max-width: 450px;
+
+  @include respond-to('lg') {
+    position: static;
+    transform: none;
+    min-width: 0;
+    max-width: none;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   box-shadow: 0 6px 40px var(--shadow-color);
   z-index: 1000;
   opacity: 0;

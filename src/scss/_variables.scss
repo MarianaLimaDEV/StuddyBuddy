@@ -6,6 +6,7 @@
 $grid-color: #292a30;
 $grid-size: 4em;
 $navbar-height: 75px;
+$navbar-height-mobile: 60px;
 $transition-speed: 0.7s;
 $transition-fast: 0.2s ease;
 
@@ -180,6 +181,7 @@ $breakpoints: (
 
 // Button base styles mixin
 @mixin button-base {
+  -webkit-tap-highlight-color: rgba(122, 167, 255, 0.2);
   padding: 0.5rem 1rem;
   background-color: var(--btn-soft-bg);
   color: var(--btn-soft-text);
