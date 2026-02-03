@@ -247,6 +247,23 @@ try {
     setupToggle('countdownButton', 'countdownCard');
     setupToggle('worldClockButton', 'worldClockCard');
     console.info('Toggle buttons configured');
+
+    // PWA shortcuts: open tool from ?tool= param
+    const params = new URLSearchParams(window.location.search);
+    const tool = params.get('tool');
+    const toolMap = {
+      pomodoro: 'pomodoroButton',
+      timer: 'timerButton',
+      stopwatch: 'stopwatchButton',
+      tasklist: 'tasklistButton',
+      countdown: 'countdownButton',
+      worldclock: 'worldClockButton'
+    };
+    const btnId = tool && toolMap[tool.toLowerCase()];
+    if (btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) setTimeout(() => btn.click(), 100);
+    }
   } catch (error) {
     console.error('Failed to configure toggle buttons:', error);
   }

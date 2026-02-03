@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "pwa:icons": "node scripts/generate-pwa-icons.js",
     "preview": "vite preview",
     "server": "node backend/server.js",
     "start": "concurrently \"PORT=3002 npm run server\" \"npm run dev\""
