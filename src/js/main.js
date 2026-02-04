@@ -18,11 +18,11 @@ import { CountdownTimer } from './countdown.js';
 import { TaskList } from './tasklist.js';
 import { WorldClock } from './worldclock.js';
 import { initSoundManager, playSound, toggleSound, isSoundMuted, setSoundMuted } from './sound.js';
-import { 
-  initDragFunctionality, 
-  initNavbarToggle, 
-  setupLoginPopup, 
-  setupNavbarDropdowns, 
+import {
+  initDragFunctionality,
+  initNavbarToggle,
+  setupLoginPopup,
+  setupNavbarDropdowns,
   initKeyboardShortcuts,
   initFocusMode,
   initShortcutsModal,
@@ -37,6 +37,7 @@ import {
   getStoredUserEmail,
   formatUserLabel
 } from './utils.js';
+import { renderStatsIn } from './study-stats.js';
 /**
  * Initialize all features on DOM ready
  */
@@ -91,6 +92,9 @@ async function initializeApp() {
     initFocusMode();
     initShortcutsModal();
     initCookieBanner();
+    renderSidebarStats();
+    window.addEventListener('studystats-updated', renderSidebarStats);
+    initSidebarTab();
     console.info('UI utilities initialized');
   } catch (error) {
     console.error('Failed to initialize UI utilities:', error);
@@ -285,6 +289,21 @@ try {
   } catch (e) {
     // ignore
   }
+}
+
+function renderSidebarStats() {
+  renderStatsIn('sidebarStats');
+}
+
+function initSidebarTab() {
+  const tab = document.getElementById('sidebarTab');
+  const sidebar = document.getElementById('leftSidebar');
+  if (!tab || !sidebar) return;
+  tab.addEventListener('click', () => {
+    const open = document.body.classList.toggle('sidebar-open');
+    tab.setAttribute('aria-expanded', open);
+    tab.textContent = open ? '\u00d7' : '\u203a';
+  });
 }
 
 /**

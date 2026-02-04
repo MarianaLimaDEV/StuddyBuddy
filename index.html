@@ -26,6 +26,14 @@
 <body data-theme="dark">
     <a href="#main-content" class="skip-link">Saltar para o conteúdo principal</a>
 
+    <button type="button" id="sidebarTab" class="left-sidebar-tab" aria-label="Abrir painel lateral" aria-expanded="false">&rsaquo;</button>
+    <aside id="leftSidebar" class="left-sidebar" role="complementary" aria-label="Estatísticas e modo foco">
+        <div class="left-sidebar__inner">
+            <div id="sidebarStats" class="left-sidebar__stats"></div>
+            <button type="button" id="focusModeBtn" class="focus-mode-btn left-sidebar__focus" aria-pressed="false" aria-label="Ativar modo foco">Modo foco</button>
+        </div>
+    </aside>
+
     <nav class="navbar" role="navigation" aria-label="Menu principal">
         <div class="navbar-container">
             <a href="index.html" class="navbar-logo" aria-label="StuddyBuddy - Página inicial">
@@ -132,9 +140,7 @@
                             </div>
                         </details>
 
-                        <div class="config-stats" id="configStats"></div>
                         <button type="button" id="shortcutsBtn" class="shortcuts-btn" aria-label="Ver atalhos de teclado">⌨️ Atalhos</button>
-                        <button type="button" id="focusModeBtn" class="focus-mode-btn" aria-pressed="false" aria-label="Ativar modo foco">Modo foco</button>
                     </div>
                 </li>
                 <li>

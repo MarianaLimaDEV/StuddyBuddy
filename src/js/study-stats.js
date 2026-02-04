@@ -26,6 +26,7 @@ export function recordPomodoroSession(minutes) {
   sessions.push({ date: now.toISOString().slice(0, 10), minutes });
   const total = totalMinutes + minutes;
   saveStats(sessions.slice(-500), total);
+  window.dispatchEvent(new CustomEvent('studystats-updated'));
   return total;
 }
 

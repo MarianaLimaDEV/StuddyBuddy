@@ -1112,7 +1112,7 @@ export function setupNavbarDropdowns() {
       button.setAttribute('aria-expanded', 'true');
       setAriaHidden(dropdown, false);
       lastActiveButton = button;
-      if (dropdownId === 'configuracoes') renderStatsIn('configStats');
+      if (dropdownId === 'configuracoes') renderStatsIn('sidebarStats');
 
       // Move focus into dropdown for keyboard users
       const focusables = getFocusableElements(dropdown);
@@ -1171,6 +1171,7 @@ export function initFocusMode() {
   const btn = document.getElementById('focusModeBtn');
   const exitBtn = document.getElementById('focusModeExit');
   const navbar = document.querySelector('.navbar');
+  const leftSidebar = document.getElementById('leftSidebar');
   const buttonContainer = document.getElementById('buttonContainer');
   const footer = document.querySelector('footer');
   if (!btn || !navbar) return;
@@ -1178,6 +1179,7 @@ export function initFocusMode() {
   const exitFocus = () => {
     document.body.classList.remove('focus-mode');
     navbar?.classList.remove('hidden');
+    leftSidebar?.classList.remove('hidden');
     if (buttonContainer) buttonContainer.classList.remove('hidden');
     footer?.classList.remove('hidden');
     btn?.setAttribute('aria-pressed', 'false');
@@ -1188,6 +1190,7 @@ export function initFocusMode() {
   const enterFocus = () => {
     document.body.classList.add('focus-mode');
     navbar?.classList.add('hidden');
+    leftSidebar?.classList.add('hidden');
     if (buttonContainer) buttonContainer.classList.add('hidden');
     footer?.classList.add('hidden');
     btn.setAttribute('aria-pressed', 'true');
