@@ -792,47 +792,170 @@ footer {
   }
 }
 
-/* Left sidebar - estatísticas e modo foco */
+/* Left sidebar - escondida, só barrinha visível; expande no hover */
+$sidebar-bar-width: 12px;
+$sidebar-expanded-width: 220px;
+
 .left-sidebar {
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 220px;
+  width: $sidebar-expanded-width;
+  transform: translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
   z-index: 998;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-right: 1px solid var(--border-subtle);
-  box-shadow: 4px 0 20px var(--shadow-color);
-  padding: 1rem 0.75rem;
+  box-shadow: 2px 0 12px var(--shadow-color);
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateX(0);
+    padding: 1rem 0.75rem;
+    box-shadow: 4px 0 20px var(--shadow-color);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .left-sidebar__inner {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .left-sidebar__indicator {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 
   @include respond-to('md') {
     width: 200px;
+    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+    &:hover {
+      transform: translateX(0);
+    }
   }
 
   @include respond-to('sm') {
-    width: 72px;
-    padding: 0.75rem 0.5rem;
-    align-items: center;
-    .left-sidebar__inner { align-items: center; }
-    .stats-box { display: none; }
-    .left-sidebar__focus { width: 48px; padding: 0.5rem; font-size: 0; }
-    .left-sidebar__focus::before { content: '👁'; font-size: 1.2rem; }
+    width: 180px;
+    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+    &:hover {
+      transform: translateX(0);
+      .stats-box { display: block; }
+      .left-sidebar__focus { width: 100%; font-size: inherit; }
+      .left-sidebar__focus::before { display: none; }
+    }
   }
 
   @include respond-to('xs') {
+    width: 0;
     transform: translateX(-100%);
+    overflow: visible;
+    pointer-events: none;
+
+    &:hover {
+      transform: translateX(-100%);
+      padding: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .left-sidebar__indicator {
+      display: none;
+    }
+  }
+}
+
+/* Barrinha indicadora (a parte visível quando colapsada; clicável em touch) */
+.left-sidebar__indicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: $sidebar-bar-width;
+  height: 72px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    width: 4px;
+    height: 36px;
+    border-radius: 0 3px 3px 0;
+    background: var(--primary);
+    opacity: 0.8;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+}
+
+.left-sidebar__inner {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (hover: none) {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* No hover (touch): mostrar conteúdo quando sidebar aberta via tab */
+body.sidebar-open .left-sidebar {
+  @include respond-to('xs') {
     width: 220px;
-    transition: transform 0.25s ease;
-    .stats-box { display: block; }
-    .left-sidebar__focus { width: 100%; font-size: inherit; }
-    .left-sidebar__focus::before { display: none; }
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+    pointer-events: auto;
+
+    .left-sidebar__inner {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+/* Touch: clicar na barrinha abre a sidebar (body.sidebar-open) */
+@media (hover: none) {
+  .left-sidebar:hover {
+    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+    padding: 0;
+    overflow: hidden;
+
+    .left-sidebar__inner {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  body.sidebar-open .left-sidebar {
+    transform: translateX(0);
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+
+    .left-sidebar__inner {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .left-sidebar__indicator {
+      opacity: 0;
+    }
   }
 }
 
@@ -890,17 +1013,9 @@ body.sidebar-open .left-sidebar {
   }
 }
 
-/* Main content offset when sidebar visible */
+/* Main content offset - só a barrinha (sidebar expande por cima) */
 body:not(.focus-mode) {
-  padding-left: calc(220px + env(safe-area-inset-left, 0));
-
-  @include respond-to('md') {
-    padding-left: calc(200px + env(safe-area-inset-left, 0));
-  }
-
-  @include respond-to('sm') {
-    padding-left: calc(72px + env(safe-area-inset-left, 0));
-  }
+  padding-left: calc(#{$sidebar-bar-width} + env(safe-area-inset-left, 0));
 
   @include respond-to('xs') {
     padding-left: env(safe-area-inset-left, 0);

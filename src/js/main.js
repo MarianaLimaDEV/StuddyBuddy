@@ -298,11 +298,20 @@ function renderSidebarStats() {
 function initSidebarTab() {
   const tab = document.getElementById('sidebarTab');
   const sidebar = document.getElementById('leftSidebar');
-  if (!tab || !sidebar) return;
-  tab.addEventListener('click', () => {
+  const indicator = document.getElementById('sidebarIndicator');
+  if (!sidebar) return;
+
+  const toggleSidebar = () => {
     const open = document.body.classList.toggle('sidebar-open');
-    tab.setAttribute('aria-expanded', open);
-    tab.textContent = open ? '\u00d7' : '\u203a';
+    tab?.setAttribute('aria-expanded', open);
+    if (tab) tab.textContent = open ? '\u00d7' : '\u203a';
+  };
+
+  tab?.addEventListener('click', toggleSidebar);
+  // Em touch: clicar na barrinha abre/fecha
+  indicator?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
   });
 }
 
