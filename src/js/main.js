@@ -38,6 +38,7 @@ import {
   formatUserLabel
 } from './utils.js';
 import { renderStatsIn } from './study-stats.js';
+import { initLanguageToggle } from './i18n.js';
 /**
  * Initialize all features on DOM ready
  */
@@ -92,6 +93,7 @@ async function initializeApp() {
     initFocusMode();
     initShortcutsModal();
     initCookieBanner();
+    initLanguageToggle();
     renderSidebarStats();
     window.addEventListener('studystats-updated', renderSidebarStats);
     initSidebarTab();
