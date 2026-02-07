@@ -117,6 +117,16 @@ const t = {
   langLabel: { pt: 'Idioma', en: 'Language' },
   langBtn: { pt: '🌐 PT', en: '🌐 EN' },
   langBtnAria: { pt: 'Mudar idioma para Inglês', en: 'Change language to Portuguese' },
+  // Pomodoro break wellness reminders
+  pomoBreakTitle: { pt: 'Pausa!', en: 'Break time!' },
+  pomoBreakBody: { pt: 'Tempo de descanso. Aproveita para cuidar de ti!', en: 'Time to rest. Take care of yourself!' },
+  pomoReminderWater: { pt: '💧 Bebe água', en: '💧 Drink water' },
+  pomoReminderStretch: { pt: '🤸 Alonga-te', en: '🤸 Stretch' },
+  pomoReminderEat: { pt: '🍎 Come algo saudável', en: '🍎 Eat something healthy' },
+  pomoBreakWellness: { pt: 'Pausa! Bebe água • Alonga-te • Come algo saudável', en: 'Break! Drink water • Stretch • Eat something healthy' },
+  pomoWorkTitle: { pt: 'Tempo de trabalho!', en: 'Work time!' },
+  pomoWorkBody: { pt: 'Mantém o foco!', en: 'Stay focused!' },
+  pomoWorkToast: { pt: 'Hora de trabalhar! Mantém o foco!', en: 'Work time! Stay focused!' },
 };
 
 function getLang() {

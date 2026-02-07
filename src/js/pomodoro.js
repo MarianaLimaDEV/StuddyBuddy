@@ -5,6 +5,7 @@
 import { showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
 import { recordPomodoroSession } from './study-stats.js';
+import { tr } from './i18n.js';
 
 // Constants
 const POMODORO_UPDATE_INTERVAL = 1000; // 1 second
@@ -121,15 +122,14 @@ export class PomodoroTimer {
         // Play alarm sound first (with overlap allowed so it can complete)
         playSoundWithOverlap('alarm');
         // Browser notification (if permitted)
-        const title = this.isBreak ? 'Pausa!' : 'Tempo de trabalho!';
-        const body = this.isBreak ? 'Ready to focus?' : 'Stay focused!';
+        const title = this.isBreak ? tr('pomoBreakTitle') : tr('pomoWorkTitle');
+        const body = this.isBreak
+          ? `${tr('pomoReminderWater')} • ${tr('pomoReminderStretch')} • ${tr('pomoReminderEat')}`
+          : tr('pomoWorkBody');
         showBrowserNotification(title, body);
-        // Then show in-app notification
-        showCustomNotification(
-          this.isBreak ? 'Break time! Ready to focus?' : 'Work time! Stay focused!',
-          'info',
-          5000
-        );
+        // In-app notification: wellness reminders on break, focus reminder on work
+        const toastMsg = this.isBreak ? tr('pomoBreakWellness') : tr('pomoWorkToast');
+        showCustomNotification(toastMsg, 'info', 7000);
       } else {
         this.updateDisplay();
       }
