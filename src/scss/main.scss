@@ -4,6 +4,15 @@
 @use 'button';
 @use "sass:map";
 
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+  color: var(--text);
+}
+
 body {
   min-height: 100vh;
   min-height: 100dvh;
