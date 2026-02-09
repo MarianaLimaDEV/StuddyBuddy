@@ -831,10 +831,10 @@ $sidebar-expanded-width: 220px;
 .left-sidebar {
   position: fixed;
   left: 0;
-  top: 0;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
+  height: 280px;
   width: $sidebar-expanded-width;
-  transform: translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
   z-index: 998;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
   -webkit-backdrop-filter: blur(12px);
@@ -848,7 +848,7 @@ $sidebar-expanded-width: 220px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 
   &:hover {
-    transform: translateX(0);
+    transform: translateY(-50%) translateX(0);
     padding: 1rem 0.75rem;
     box-shadow: 4px 0 20px var(--shadow-color);
     overflow-y: auto;
@@ -867,17 +867,19 @@ $sidebar-expanded-width: 220px;
 
   @include respond-to('md') {
     width: 200px;
-    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+    height: 260px;
+    transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
-      transform: translateX(0);
+      transform: translateY(-50%) translateX(0);
     }
   }
 
   @include respond-to('sm') {
     width: 180px;
-    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+    height: 240px;
+    transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
-      transform: translateX(0);
+      transform: translateY(-50%) translateX(0);
       .stats-box { display: block; }
       .left-sidebar__focus { width: 100%; font-size: inherit; }
       .left-sidebar__focus::before { display: none; }
@@ -886,12 +888,13 @@ $sidebar-expanded-width: 220px;
 
   @include respond-to('xs') {
     width: 0;
-    transform: translateX(-100%);
+    transform: translateY(-50%) translateX(-100%);
     overflow: visible;
     pointer-events: none;
+    height: 220px;
 
     &:hover {
-      transform: translateX(-100%);
+      transform: translateY(-50%) translateX(-100%);
       padding: 0;
       overflow: hidden;
       pointer-events: none;
@@ -950,10 +953,12 @@ $sidebar-expanded-width: 220px;
 /* No hover (touch): mostrar conteúdo quando sidebar aberta via tab */
 body.sidebar-open .left-sidebar {
   @include respond-to('xs') {
-    width: 220px;
+    width: 200px;
+    height: 220px;
     padding: 1rem 0.75rem;
     overflow-y: auto;
     pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
 
     .left-sidebar__inner {
       opacity: 1;
@@ -964,8 +969,8 @@ body.sidebar-open .left-sidebar {
 
 /* Touch: clicar na barrinha abre a sidebar (body.sidebar-open) */
 @media (hover: none) {
-  .left-sidebar:hover {
-    transform: translateX(calc(-100% + #{$sidebar-bar-width}));
+  .left-sidebar {
+    transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     padding: 0;
     overflow: hidden;
 
@@ -976,7 +981,7 @@ body.sidebar-open .left-sidebar {
   }
 
   body.sidebar-open .left-sidebar {
-    transform: translateX(0);
+    transform: translateY(-50%) translateX(0);
     padding: 1rem 0.75rem;
     overflow-y: auto;
 
@@ -1041,7 +1046,7 @@ body.sidebar-open .left-sidebar {
 
 body.sidebar-open .left-sidebar {
   @include respond-to('xs') {
-    transform: translateX(0);
+    transform: translateY(-50%) translateX(0);
   }
 }
 
