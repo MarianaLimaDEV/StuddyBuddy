@@ -98,14 +98,14 @@ a:focus-visible {
 
 /* Card styles */
 .card {
-  --card-chrome-height: 28px;
+  --card-chrome-height: 42px;
   width: 400px;
   min-height: 200px;
   padding: 20px;
   padding-top: calc(20px + var(--card-chrome-height));
   background-color: var(--surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 20px;
   position: absolute;
   left: 50%;
   top: 120px;
@@ -119,7 +119,7 @@ a:focus-visible {
   -webkit-user-select: none;
   -ms-user-select: none;
   touch-action: none;
-  box-shadow: 0 8px 24px var(--shadow-color);
+  box-shadow: 0 12px 40px var(--shadow-color);
   text-align: center;
   color: var(--text);
   z-index: 900;
@@ -147,7 +147,7 @@ a:focus-visible {
     max-height: calc(100dvh - 120px);
   }
 
-  // "Browser-like" chrome bar
+  // Rounded chrome bar with improved styling
   &::before {
     content: '';
     position: absolute;
@@ -155,15 +155,29 @@ a:focus-visible {
     left: 0;
     right: 0;
     height: var(--card-chrome-height);
-    background: color-mix(in srgb, var(--surface) 82%, white 18%);
+    background: linear-gradient(180deg, var(--hover-overlay) 0%, color-mix(in srgb, var(--hover-overlay) 70%, transparent) 100%);
     border-bottom: 1px solid var(--border-subtle);
-    opacity: 0.9;
+    border-radius: 18px 18px 0 0;
+    opacity: 0.95;
+  }
+
+  // Window controls (like macOS)
+  &::after {
+    content: '● ● ●';
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    opacity: 0.7;
   }
 
   h2 {
-    margin: 0 0 1rem 0;
+    margin: 0.5rem 0 1rem 0;
     font-size: map.get($font-sizes, "xl");
     color: var(--primary);
+    padding-top: 0.25rem;
 
     @include respond-to('xs') {
       font-size: 1.3rem;
@@ -179,11 +193,19 @@ a:focus-visible {
 /* Close button */
 .card-close {
   // Align close button into the chrome bar
-  @include close-button(28px);
-  top: 0px;
-  right: 6px;
-  background: color-mix(in srgb, var(--surface) 65%, transparent);
-  border: 1px solid var(--border-subtle);
+  @include close-button(32px);
+  top: 5px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  opacity: 0.6;
+  
+  &:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+  }
 }
 
 /* Timer Display */
