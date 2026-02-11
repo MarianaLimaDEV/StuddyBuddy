@@ -147,6 +147,34 @@ a:focus-visible {
     max-height: calc(100dvh - 120px);
   }
 
+  // Landscape mobile - more compact
+  @media (max-height: 500px) and (orientation: landscape) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    max-width: 95vw;
+    min-height: auto;
+    padding: 10px;
+    padding-top: calc(10px + var(--card-chrome-height));
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    
+    .timer-display {
+      font-size: 1.8rem;
+      margin: 0.5rem 0;
+    }
+    
+    .controls {
+      margin: 0.5rem 0;
+    }
+    
+    .buttons {
+      margin-top: 0.5rem;
+    }
+  }
+
   // Rounded chrome bar with improved styling
   &::before {
     content: '';
@@ -1115,6 +1143,11 @@ body.focus-mode {
   width: 100%;
   margin-top: 0.5rem;
   min-height: 44px;
+  
+  // Hide shortcuts button on mobile (xs breakpoint)
+  @include respond-to('xs') {
+    display: none;
+  }
 }
 .focus-mode-btn {
   margin-top: 0.25rem;

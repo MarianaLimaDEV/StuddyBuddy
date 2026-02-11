@@ -355,6 +355,10 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
   z-index: 2000;
   min-width: 320px;
   max-width: 90vw;
+  text-align: center;
+  color: var(--text);
+  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
+  overflow: hidden;
 }
 @media (max-width: 480px) {
   .login-popup {
@@ -365,11 +369,38 @@ body[data-theme=dark] .navbar-logo source[data-theme=dark] {
     padding-top: calc(1.25rem + var(--popup-chrome-height));
   }
 }
-.login-popup {
-  text-align: center;
-  color: var(--text);
-  font-family: "Fredoka One", system-ui, -apple-system, sans-serif;
-  overflow: hidden;
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-popup {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: auto;
+    width: auto;
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 1rem;
+    padding-top: calc(0.75rem + var(--popup-chrome-height));
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .login-popup .auth-tabs {
+    flex-shrink: 0;
+  }
+  .login-popup .login-form {
+    flex-shrink: 0;
+  }
+  .login-popup .social-login {
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+  }
+  .login-popup .social-login .social-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .login-popup .login-footer {
+    flex-shrink: 0;
+  }
 }
 .login-popup::before {
   content: "";
@@ -1270,6 +1301,31 @@ a:focus-visible {
     padding-top: calc(12px + var(--card-chrome-height));
     top: 90px;
     max-height: calc(100dvh - 120px);
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .card {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    max-width: 95vw;
+    min-height: auto;
+    padding: 10px;
+    padding-top: calc(10px + var(--card-chrome-height));
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .timer-display {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+  }
+  .card .controls {
+    margin: 0.5rem 0;
+  }
+  .card .buttons {
+    margin-top: 0.5rem;
   }
 }
 .card::before {
@@ -2485,6 +2541,11 @@ body.focus-mode {
   width: 100%;
   margin-top: 0.5rem;
   min-height: 44px;
+}
+@media (max-width: 480px) {
+  .shortcuts-btn, .focus-mode-btn {
+    display: none;
+  }
 }
 
 .focus-mode-btn {
