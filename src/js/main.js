@@ -96,6 +96,7 @@ async function initializeApp() {
     initLanguageToggle();
     renderSidebarStats();
     window.addEventListener('studystats-updated', renderSidebarStats);
+    document.addEventListener('i18n-changed', renderSidebarStats);
     initSidebarTab();
     console.info('UI utilities initialized');
   } catch (error) {

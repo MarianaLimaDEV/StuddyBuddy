@@ -94,6 +94,9 @@ const t = {
   confirmPassword: { pt: 'Confirmar password', en: 'Confirm password' },
   showPassword: { pt: 'Mostrar', en: 'Show' },
   showPasswordAria: { pt: 'Mostrar password', en: 'Show password' },
+  hidePassword: { pt: 'Ocultar', en: 'Hide' },
+  hidePasswordAria: { pt: 'Ocultar password', en: 'Hide password' },
+  hidePasswordConfirmAria: { pt: 'Ocultar confirmação de password', en: 'Hide password confirmation' },
   orContinue: { pt: 'ou continuar com', en: 'or continue with' },
   showPasswordConfirmAria: { pt: 'Mostrar confirmação de password', en: 'Show password confirmation' },
   signUp: { pt: 'Criar conta', en: 'Sign up' },
@@ -117,6 +120,12 @@ const t = {
   langLabel: { pt: 'Idioma', en: 'Language' },
   langBtn: { pt: '🌐 PT', en: '🌐 EN' },
   langBtnAria: { pt: 'Mudar idioma para Inglês', en: 'Change language to Portuguese' },
+  account: { pt: 'Conta', en: 'Account' },
+  statsTitle: { pt: 'Estatísticas de estudo', en: 'Study statistics' },
+  statsToday: { pt: 'Hoje:', en: 'Today:' },
+  statsWeek: { pt: 'Últimos 7 dias:', en: 'Last 7 days:' },
+  statsTotal: { pt: 'Total:', en: 'Total:' },
+  statsSessions: { pt: 'Sessões:', en: 'Sessions:' },
   // Pomodoro break wellness reminders
   pomoBreakTitle: { pt: 'Pausa!', en: 'Break time!' },
   pomoBreakBody: { pt: 'Tempo de descanso. Aproveita para cuidar de ti!', en: 'Time to rest. Take care of yourself!' },
@@ -157,7 +166,9 @@ function applyLanguage() {
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.getAttribute('data-i18n');
     if (el.id === 'loginButton' && isAuthenticated()) {
-      el.textContent = formatUserLabel(getStoredUserEmail());
+      const raw = formatUserLabel(getStoredUserEmail());
+      el.textContent = raw === 'Conta' ? tr('account') : raw;
+      el.setAttribute('aria-label', `${tr('account')}: ${getStoredUserEmail()}`);
       return;
     }
     const text = tr(key);
@@ -203,6 +214,7 @@ function initLanguageToggle() {
     toggleLanguage();
   });
   applyLanguage();
+  document.addEventListener('login-success', applyLanguage);
 }
 
 export { getLang, setLang, tr, applyLanguage, initLanguageToggle };

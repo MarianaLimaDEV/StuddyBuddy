@@ -1,6 +1,8 @@
 /**
  * Study statistics - tracks Pomodoro sessions and displays stats
  */
+import { tr } from './i18n.js';
+
 const STATS_KEY = 'studdybuddy_study_stats';
 
 function getStats() {
@@ -54,21 +56,21 @@ export function renderStatsIn(containerId) {
 
   container.innerHTML = `
     <div class="stats-box">
-      <h4 class="stats-title">Estatísticas de estudo</h4>
+      <h4 class="stats-title">${tr('statsTitle')}</h4>
       <div class="stats-row">
-        <span>Hoje:</span>
+        <span>${tr('statsToday')}</span>
         <strong>${formatMinutes(todayMinutes)}</strong>
       </div>
       <div class="stats-row">
-        <span>Últimos 7 dias:</span>
+        <span>${tr('statsWeek')}</span>
         <strong>${formatMinutes(weekMinutes)}</strong>
       </div>
       <div class="stats-row">
-        <span>Total:</span>
+        <span>${tr('statsTotal')}</span>
         <strong>${formatMinutes(totalMinutes)}</strong>
       </div>
       <div class="stats-row">
-        <span>Sessões:</span>
+        <span>${tr('statsSessions')}</span>
         <strong>${sessions.length}</strong>
       </div>
     </div>

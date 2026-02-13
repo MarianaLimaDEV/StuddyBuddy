@@ -3,6 +3,7 @@
  * Shared utilities for drag functionality and UI interactions
  */
 import { playSound } from './sound.js';
+import { tr } from './i18n.js';
 import { renderStatsIn } from './study-stats.js';
 
 // ==================== AUTH / USER SETTINGS (MongoDB) ====================
@@ -667,8 +668,8 @@ export function setupLoginPopup() {
     if (passwordInput) passwordInput.type = 'password';
     if (togglePasswordBtn) {
       togglePasswordBtn.setAttribute('aria-pressed', 'false');
-      togglePasswordBtn.setAttribute('aria-label', 'Mostrar password');
-      togglePasswordBtn.textContent = 'Mostrar';
+      togglePasswordBtn.setAttribute('aria-label', tr('showPasswordAria'));
+      togglePasswordBtn.textContent = tr('showPassword');
     }
     // Prefer returning focus to where the user was, otherwise fallback to login button
     if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
@@ -726,6 +727,7 @@ export function setupLoginPopup() {
         if (userEmail) {
           loginButton.textContent = formatUserLabel(userEmail);
           loginButton.setAttribute('aria-label', `Conta: ${userEmail}`);
+          document.dispatchEvent(new CustomEvent('login-success'));
         }
 
         showNotification('Sessão iniciada.', 'success', 2000);
@@ -764,8 +766,8 @@ export function setupLoginPopup() {
 
       passwordInput.type = nextVisible ? 'text' : 'password';
       togglePasswordBtn.setAttribute('aria-pressed', nextVisible ? 'true' : 'false');
-      togglePasswordBtn.setAttribute('aria-label', nextVisible ? 'Ocultar password' : 'Mostrar password');
-      togglePasswordBtn.textContent = nextVisible ? 'Ocultar' : 'Mostrar';
+      togglePasswordBtn.setAttribute('aria-label', nextVisible ? tr('hidePasswordAria') : tr('showPasswordAria'));
+      togglePasswordBtn.textContent = nextVisible ? tr('hidePassword') : tr('showPassword');
       try { passwordInput.focus(); } catch (_) {}
     });
   }
@@ -777,8 +779,8 @@ export function setupLoginPopup() {
       const nextVisible = !isVisible;
       passwordConfirmInput.type = nextVisible ? 'text' : 'password';
       togglePasswordConfirmBtn.setAttribute('aria-pressed', nextVisible ? 'true' : 'false');
-      togglePasswordConfirmBtn.setAttribute('aria-label', nextVisible ? 'Ocultar confirmação de password' : 'Mostrar confirmação de password');
-      togglePasswordConfirmBtn.textContent = nextVisible ? 'Ocultar' : 'Mostrar';
+      togglePasswordConfirmBtn.setAttribute('aria-label', nextVisible ? tr('hidePasswordConfirmAria') : tr('showPasswordConfirmAria'));
+      togglePasswordConfirmBtn.textContent = nextVisible ? tr('hidePassword') : tr('showPassword');
       try { passwordConfirmInput.focus(); } catch (_) {}
     });
   }
@@ -812,8 +814,8 @@ export function setupLoginPopup() {
     signOutBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       clearAuth();
-      loginButton.textContent = 'Login';
-      loginButton.setAttribute('aria-label', 'Login');
+      loginButton.textContent = tr('login');
+      loginButton.setAttribute('aria-label', tr('login'));
       showNotification('Sessão terminada.', 'info', 2000);
       showLoginFormView();
       setAuthMode('login');

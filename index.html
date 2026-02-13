@@ -59,6 +59,38 @@
                         <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading" data-i18n="sobre">Sobre</h3>
                         <p data-i18n="sobreText">O StuddyBuddy é uma plataforma de estudo com ferramentas práticas: Pomodoro para sessões de foco, Timer, Cronómetro, lista de tarefas, contagem regressiva e relógio mundial. Faz login para sincronizar o teu tema e preferências na nuvem.</p>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos" data-i18n="servicos">Serviços</button>
+<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading" data-i18n="servicos">Serviços</h3>
+                        <p data-i18n="servicosText">Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-configuracoes" data-dropdown="configuracoes" data-i18n="configuracoes">Configurações</button>
+<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" aria-hidden="true">
+                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-configuracoes-heading" data-i18n="configuracoes">Configurações</h3>
+                        <div class="theme-toggle-container" role="group" aria-labelledby="theme-toggle-label">
+                            <span id="theme-toggle-label" data-i18n="tema">Tema</span>
+                            <theme-toggle theme="dark" data-i18n-aria="tema"></theme-toggle>
+                        </div>
+                        <div class="sound-toggle-container" role="group" aria-labelledby="sound-toggle-label">
+                            <span id="sound-toggle-label" data-i18n="som">Som</span>
+                            <button id="muteToggle" class="mute-toggle-btn" type="button" data-i18n-aria="soundAria" aria-pressed="false">
+                                <span class="mute-icon" aria-hidden="true">🔊</span>
+                                <span class="unmute-icon" aria-hidden="true" style="display:none;">🔇</span>
+                            </button>
+                        </div>
+
+                        <div class="lang-toggle-container" role="group" aria-labelledby="lang-toggle-label">
+                            <span id="lang-toggle-label" data-i18n="langLabel">Idioma</span>
+                            <button type="button" id="langBtn" class="lang-btn" data-i18n-aria="langBtnAria">🌐 PT</button>
+                        </div>
+
                         <details class="config-faq">
                             <summary class="config-faq__summary" data-i18n="faq">FAQ</summary>
                             <div class="faq-accordion" data-i18n-aria="faqAria">
@@ -88,37 +120,6 @@
                                 </details>
                             </div>
                         </details>
-                    </div>
-                </li>
-                <li>
-                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos" data-i18n="servicos">Serviços</button>
-<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
-                        <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading" data-i18n="servicos">Serviços</h3>
-                        <p data-i18n="servicosText">Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
-                    </div>
-                </li>
-                <li>
-                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-configuracoes" data-dropdown="configuracoes" data-i18n="configuracoes">Configurações</button>
-<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
-                        <h3 class="nav-dropdown__heading" id="dropdown-configuracoes-heading" data-i18n="configuracoes">Configurações</h3>
-                        <div class="theme-toggle-container" role="group" aria-labelledby="theme-toggle-label">
-                            <span id="theme-toggle-label" data-i18n="tema">Tema</span>
-                            <theme-toggle theme="dark" aria-label="Tema"></theme-toggle>
-                        </div>
-                        <div class="sound-toggle-container" role="group" aria-labelledby="sound-toggle-label">
-                            <span id="sound-toggle-label" data-i18n="som">Som</span>
-                            <button id="muteToggle" class="mute-toggle-btn" type="button" data-i18n-aria="soundAria" aria-pressed="false">
-                                <span class="mute-icon" aria-hidden="true">🔊</span>
-                                <span class="unmute-icon" aria-hidden="true" style="display:none;">🔇</span>
-                            </button>
-                        </div>
-
-                        <div class="lang-toggle-container" role="group" aria-labelledby="lang-toggle-label">
-                            <span id="lang-toggle-label" data-i18n="langLabel">Idioma</span>
-                            <button type="button" id="langBtn" class="lang-btn" data-i18n-aria="langBtnAria">🌐 PT</button>
-                        </div>
 
                         <button type="button" id="shortcutsBtn" class="shortcuts-btn" data-i18n-aria="shortcutsAria" data-i18n="shortcutsBtn">⌨️ Atalhos</button>
                     </div>
