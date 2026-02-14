@@ -386,6 +386,10 @@ export function initDragFunctionality() {
         e.target.closest('textarea') ||
         e.target.closest('select')
       ) return;
+      // Don't start drag if clicking the resize handle area (bottom-right corner)
+      const rect = card.getBoundingClientRect();
+      const RESIZE_ZONE = 28;
+      if (e.clientX >= rect.right - RESIZE_ZONE && e.clientY >= rect.bottom - RESIZE_ZONE) return;
       
       activeCard = card;
       bringCardToFront(card);

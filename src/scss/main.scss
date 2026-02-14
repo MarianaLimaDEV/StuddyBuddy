@@ -89,18 +89,33 @@ select option {
   color: var(--text);
 }
 
-/* Global keyboard focus (fallback) */
-a:focus-visible {
+/* Keyboard focus - high visibility for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
   outline: 3px solid var(--primary);
-  outline-offset: 3px;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+a:focus-visible {
   border-radius: 6px;
 }
 
 /* Card styles */
 .card {
   --card-chrome-height: 42px;
+  --card-min-w: 280px;
+  --card-max-w: min(600px, 95vw);
+  --card-min-h: 200px;
+  --card-max-h: min(700px, 90vh);
   width: 400px;
-  min-height: 200px;
+  min-width: var(--card-min-w);
+  max-width: var(--card-max-w);
+  min-height: var(--card-min-h);
+  max-height: var(--card-max-h);
   padding: 20px;
   padding-top: calc(20px + var(--card-chrome-height));
   background-color: var(--surface);
@@ -109,6 +124,15 @@ a:focus-visible {
   position: absolute;
   left: 50%;
   top: 120px;
+  overflow: auto;
+  resize: both;
+
+  /* Resize grip hint - only visible when resize is enabled (desktop) */
+  &::-webkit-resizer {
+    border-width: 0 0 12px 12px;
+    border-style: solid;
+    border-color: transparent var(--muted) transparent transparent;
+  }
 
   @include respond-to('sm') {
     top: calc(#{$navbar-height-mobile} + 1rem);
@@ -125,9 +149,11 @@ a:focus-visible {
   z-index: 900;
   overflow: hidden;
 
-  // Mobile responsiveness
+  // Mobile responsiveness - disable resize, fixed dimensions
   @include respond-to('sm') {
+    resize: none;
     width: min(calc(100vw - 2rem), 350px);
+    min-width: unset;
     max-width: none;
     padding: 16px;
     padding-top: calc(16px + var(--card-chrome-height));
@@ -141,6 +167,7 @@ a:focus-visible {
 
   // Extra small mobile - more compact popup size
   @include respond-to('xs') {
+    resize: none;
     --card-chrome-height: 32px;
     width: calc(100vw - 1.5rem);
     max-width: none;
@@ -156,6 +183,7 @@ a:focus-visible {
 
   // Landscape mobile - more compact
   @media (max-height: 500px) and (orientation: landscape) {
+    resize: none;
     --card-chrome-height: 28px;
     top: 50%;
     left: 50%;
@@ -1318,7 +1346,7 @@ body.focus-mode {
   display: none;
 }
 
-/* Screen reader only class for accessibility */
+/* Screen reader only - visually hidden, available to assistive tech */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1326,32 +1354,29 @@ body.focus-mode {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
 
-/* Skip link for keyboard navigation */
+/* Skip link - visible on focus for keyboard users */
 .skip-link {
   position: absolute;
-  left: -9999px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  z-index: -1;
+  inset: 0 0 auto auto;
+  transform: translateY(-100%);
+  z-index: 10001;
+  padding: 0.75rem 1rem;
+  background: var(--primary);
+  color: var(--bg-color);
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+  transition: transform 0.2s ease;
 
-  &:focus, &:active {
-    left: 1rem;
-    top: 1rem;
-    width: auto;
-    height: auto;
-    z-index: 10000;
-    background: var(--surface);
-    color: var(--text);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    box-shadow: 0 8px 24px var(--shadow-color);
+  &:focus, &:focus-visible {
+    transform: translateY(0);
+    outline: 3px solid var(--primary-variant);
+    outline-offset: 2px;
   }
 }
 
@@ -1369,6 +1394,10 @@ body.focus-mode {
   }
 
   body {
+    transition: none !important;
+  }
+
+  .skip-link {
     transition: none !important;
   }
 
