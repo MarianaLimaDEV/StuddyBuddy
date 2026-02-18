@@ -1,0 +1,32 @@
+{
+  "id": "/",
+  "name": "StuddyBuddy",
+  "short_name": "StuddyBuddy",
+  "description": "Ferramenta de estudos: Pomodoro, Timer, Cronómetro, Task List, Countdown e World Clock. Funciona offline e instala como app.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#171922",
+  "theme_color": "#4f7ddf",
+  "dir": "ltr",
+  "lang": "pt-PT",
+  "categories": ["productivity", "education", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "/icons/icon-48.png", "type": "image/png", "sizes": "48x48", "purpose": "any" },
+    { "src": "/icons/icon-96.png", "type": "image/png", "sizes": "96x96", "purpose": "any" },
+    { "src": "/icons/icon-144.png", "type": "image/png", "sizes": "144x144", "purpose": "any" },
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/icons/icon-256.png", "type": "image/png", "sizes": "256x256", "purpose": "any" },
+    { "src": "/icons/icon-384.png", "type": "image/png", "sizes": "384x384", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Pomodoro", "short_name": "Pomodoro", "url": "/?tool=pomodoro", "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Timer", "short_name": "Timer", "url": "/?tool=timer", "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Task List", "short_name": "Tasks", "url": "/?tool=tasklist", "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }] }
+  ]
+}

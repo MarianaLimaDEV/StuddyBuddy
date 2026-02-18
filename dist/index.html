@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-PT" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>StuddyBuddy</title>
+    <meta name="description" content="Ferramenta de estudos">
+    <meta name="keywords" content="Pomodoro, Cozy, Lo-fi, Study">
+    <meta name="author" content="Mariana Lima">
+    <meta name="theme-color" content="#171922">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StuddyBuddy">
+
+    <!-- First-paint: evita flash branco ao abrir a partir do ecrã inicial -->
+    <style>
+      html { background-color: #171922; }
+      .pwa-install-banner.hidden { display: none !important; }
+    </style>
+
+    <!-- Styles are bundled by Vite build (dist/assets/*.css). -->
+
+    <link rel="icon" href="./assets/SB_B-BgTwGHlg.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="./assets/SB_W-DceTup2_.png" media="(prefers-color-scheme: light)">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+    </noscript>
+  <script type="module" crossorigin src="./assets/index-DVE3Ga7A.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/vendor-Dob3nYDb.js">
+  <link rel="modulepreload" crossorigin href="./assets/pwa-DuRvrkK_.js">
+  <link rel="modulepreload" crossorigin href="./assets/utils-C-wUI3sC.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-CWE1SVqI.css">
+</head>
+<body data-theme="dark">
+    <a href="#main-content" class="skip-link" data-i18n="skipLink">Saltar para o conteúdo principal</a>
+
+    <!-- Banner "Instalar app" (só visível quando beforeinstallprompt e não dispensado) -->
+    <aside id="pwa-install-banner" class="pwa-install-banner hidden" role="region" aria-labelledby="pwa-install-title" hidden>
+      <p id="pwa-install-title">Instalar StuddyBuddy para usar como app</p>
+      <div class="pwa-install-banner__actions">
+        <button type="button" id="pwa-install-btn" class="pwa-install-banner__install">Instalar</button>
+        <button type="button" id="pwa-install-close" class="pwa-install-banner__close" aria-label="Fechar">×</button>
+      </div>
+    </aside>
+
+    <button type="button" id="sidebarTab" class="left-sidebar-tab" data-i18n-aria="sidebarTabAria" aria-expanded="false">&rsaquo;</button>
+    <aside id="leftSidebar" class="left-sidebar" role="complementary" data-i18n-aria="sidebarAria">
+        <button type="button" class="left-sidebar__indicator" id="sidebarIndicator" data-i18n-aria="sidebarTabAria" aria-label="Abrir painel lateral"></button>
+        <div class="left-sidebar__inner">
+            <div id="sidebarStats" class="left-sidebar__stats"></div>
+            <button type="button" id="focusModeBtn" class="focus-mode-btn left-sidebar__focus" aria-pressed="false" data-i18n-aria="focusModeAria" data-i18n="focusMode">Modo foco</button>
+        </div>
+    </aside>
+
+    <nav class="navbar" role="navigation" data-i18n-aria="navAria">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo" data-i18n-aria="logoAria">
+                <picture>
+                    <source srcset="./assets/SB_W-DceTup2_.png" data-theme="light">
+                    <source srcset="./assets/SB_B-BgTwGHlg.png" data-theme="dark">
+                    <img src="./assets/SB_B-BgTwGHlg.png" alt="StuddyBuddy Logo" class="navbar-logo-img" width="56" height="56" decoding="async" fetchpriority="high">
+                </picture>
+            </a>
+            <ul class="navbar-menu" id="navbar-menu">
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-principal" data-dropdown="principal" data-i18n="principal">Principal</button>
+<div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-principal-heading" data-i18n="principal">Principal</h3>
+                        <p data-i18n="principalText">Bem-vindo ao StuddyBuddy! Acede às ferramentas clicando nos botões abaixo: Pomodoro, Timer, Cronómetro, Task List, Countdown e World Clock. Podes abrir várias ao mesmo tempo e arrastá-las no ecrã. Usa o modo foco para esconder a navegação e concentrares-te no estudo.</p>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-sobre" data-dropdown="sobre" data-i18n="sobre">Sobre</button>
+<div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading" data-i18n="sobre">Sobre</h3>
+                        <p data-i18n="sobreText">O StuddyBuddy é uma plataforma de estudo com ferramentas práticas: Pomodoro para sessões de foco, Timer, Cronómetro, lista de tarefas, contagem regressiva e relógio mundial. Faz login para sincronizar o teu tema e preferências na nuvem.</p>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos" data-i18n="servicos">Serviços</button>
+<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading" data-i18n="servicos">Serviços</h3>
+                        <p data-i18n="servicosText">Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-configuracoes" data-dropdown="configuracoes" data-i18n="configuracoes">Configurações</button>
+<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-configuracoes-heading" data-i18n="configuracoes">Configurações</h3>
+                        <div class="theme-toggle-container" role="group" aria-labelledby="theme-toggle-label">
+                            <span id="theme-toggle-label" data-i18n="tema">Tema</span>
+                            <theme-toggle theme="dark" data-i18n-aria="tema"></theme-toggle>
+                        </div>
+                        <div class="sound-toggle-container" role="group" aria-labelledby="sound-toggle-label">
+                            <span id="sound-toggle-label" data-i18n="som">Som</span>
+                            <button id="muteToggle" class="mute-toggle-btn" type="button" data-i18n-aria="soundAria" aria-pressed="false">
+                                <span class="mute-icon" aria-hidden="true">🔊</span>
+                                <span class="unmute-icon" aria-hidden="true" style="display:none;">🔇</span>
+                            </button>
+                        </div>
+
+                        <div class="lang-toggle-container" role="group" aria-labelledby="lang-toggle-label">
+                            <span id="lang-toggle-label" data-i18n="langLabel">Idioma</span>
+                            <button type="button" id="langBtn" class="lang-btn" data-i18n-aria="langBtnAria">🌐 PT</button>
+                        </div>
+
+                        <div class="push-toggle-container" role="group" aria-labelledby="push-toggle-label">
+                            <span id="push-toggle-label" data-i18n="pushNotifications">Notificações push</span>
+                            <button type="button" id="pushNotifyBtn" class="push-notify-btn" data-i18n-aria="pushNotifyAria" aria-label="Ativar notificações" data-i18n="pushEnable">🔔 Ativar</button>
+                        </div>
+
+                        <details class="config-faq">
+                            <summary class="config-faq__summary" data-i18n="faq">FAQ</summary>
+                            <div class="faq-accordion" data-i18n-aria="faqAria">
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq1Q">Como faço login?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq1A">Abre o menu <strong>Login</strong>...</p></div>
+                                </details>
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq2Q">Como alterar o tema (claro/escuro)?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq2A">Vai em <strong>Configurações</strong>...</p></div>
+                                </details>
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq3Q">Como ativar/desativar o som?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq3A">Em <strong>Configurações</strong>...</p></div>
+                                </details>
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq4Q">Os meus dados ficam guardados?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq4A">Sim: as <strong>configurações</strong>...</p></div>
+                                </details>
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq5Q">Posso abrir várias ferramentas ao mesmo tempo?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq5A">Sim. Podes abrir mais do que um card...</p></div>
+                                </details>
+                                <details class="faq-item">
+                                    <summary class="faq-question" data-i18n="faq6Q">Perdi a password. E agora?</summary>
+                                    <div class="faq-answer"><p data-i18n="faq6A">Exemplo fictício: clica em <strong>Forgot password?</strong>...</p></div>
+                                </details>
+                            </div>
+                        </details>
+
+                        <button type="button" id="shortcutsBtn" class="shortcuts-btn" data-i18n-aria="shortcutsAria" data-i18n="shortcutsBtn">⌨️ Atalhos</button>
+                    </div>
+                </li>
+                <li>
+                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-contacto" data-dropdown="contacto" data-i18n="contacto">Contacto</button>
+<div id="dropdown-contacto" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-contacto-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
+                        <h3 class="nav-dropdown__heading" id="dropdown-contacto-heading" data-i18n="contacto">Contacto</h3>
+                        <p data-i18n="contactoText">Entre em contacto!</p>
+                        <div class="contact-buttons">
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-btn github" aria-label="GitHub">
+                                <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                <span>GitHub</span>
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-btn linkedin" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                <span>LinkedIn</span>
+                            </a>
+                            <a href="https://discord.com/" target="_blank" rel="noopener noreferrer" class="contact-btn discord" aria-label="Discord">
+                                <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                                <span>Discord</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <button id="loginButton" class="navbar-login-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="loginPopup" data-i18n="login">Login</button>
+                </li>
+            </ul>
+            <button class="navbar-toggle" type="button" data-i18n-aria="navToggleAria" aria-expanded="false" aria-controls="navbar-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main" tabindex="-1">
+    <h1 class="sr-only">StuddyBuddy</h1>
+
+    <!-- Pomodoro Card -->
+    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="pomodoroCard" data-i18n-aria="closePomodoro">&times;</button>
+        <h2 id="pomodoro-title" data-i18n="pomodoroTitle">Pomodoro Timer</h2>
+        <div class="timer-display" id="pomodoroDisplay" aria-live="polite" data-i18n-aria="timeRemaining">25:00</div>
+        <div class="controls">
+            <label for="pomodoroWork" class="sr-only" data-i18n="workMin">Tempo de trabalho em minutos</label>
+            <input type="number" id="pomodoroWork" min="1" max="60" value="25" placeholder="Work (min)" data-i18n-aria="workMin">
+            <label for="pomodoroBreak" class="sr-only" data-i18n="breakMin">Tempo de pausa em minutos</label>
+            <input type="number" id="pomodoroBreak" min="1" max="30" value="5" placeholder="Break (min)" data-i18n-aria="breakMin">
+        </div>
+        <div class="buttons">
+            <button id="pomodoroStart" data-i18n="start">Start</button>
+            <button id="pomodoroStop" data-i18n="stop">Stop</button>
+            <button id="pomodoroReset" data-i18n="reset">Reset</button>
+        </div>
+    </section>
+
+    <!-- Timer Card -->
+    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="timerCard" data-i18n-aria="closeTimer">&times;</button>
+        <h2 id="timer-title" data-i18n="timerTitle">Timer</h2>
+        <div class="timer-display" id="timerDisplay" aria-live="polite" data-i18n-aria="timeRemaining">00:00</div>
+        <div class="controls">
+            <label for="timerMinutes" class="sr-only" data-i18n="minutes">Minutos</label>
+            <input type="number" id="timerMinutes" min="0" max="99" value="1" placeholder="Minutes" data-i18n-aria="minutes">
+            <label for="timerSeconds" class="sr-only" data-i18n="seconds">Segundos</label>
+            <input type="number" id="timerSeconds" min="0" max="59" value="0" placeholder="Seconds" data-i18n-aria="seconds">
+        </div>
+        <div class="buttons">
+            <button id="timerStart" data-i18n="start">Start</button>
+            <button id="timerStop" data-i18n="stop">Stop</button>
+            <button id="timerReset" data-i18n="reset">Reset</button>
+        </div>
+    </section>
+
+    <!-- Stopwatch Card -->
+    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="stopwatchCard" data-i18n-aria="closeStopwatch">&times;</button>
+        <h2 id="stopwatch-title" data-i18n="stopwatchTitle">Cronómetro</h2>
+        <div class="timer-display" id="stopwatchDisplay" aria-live="polite" data-i18n-aria="elapsed">00:00.00</div>
+        <div class="buttons">
+            <button id="stopwatchStart" data-i18n="start">Start</button>
+            <button id="stopwatchStop" data-i18n="stop">Stop</button>
+            <button id="stopwatchLap" data-i18n="lap">Lap</button>
+            <button id="stopwatchReset" data-i18n="reset">Reset</button>
+        </div>
+        <ul id="stopwatchLaps" class="laps-list" aria-label="Lista de voltas"></ul>
+    </section>
+
+    <!-- TaskList Card -->
+    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="tasklistCard" data-i18n-aria="closeTasklist">&times;</button>
+        <h2 id="tasklist-title" data-i18n="tasklistTitle">Task List</h2>
+        <div class="task-input">
+            <label for="taskInput" class="sr-only" data-i18n="taskLabel">Nova tarefa</label>
+            <input type="text" id="taskInput" data-i18n-placeholder="taskPlaceholder" data-i18n-aria="taskLabel" aria-label="Nova tarefa">
+            <button id="addTaskBtn" data-i18n-aria="addTaskAria" data-i18n="add">Add</button>
+        </div>
+        <ul id="taskList" class="task-list" aria-label="Lista de tarefas"></ul>
+    </section>
+
+    <!-- Countdown Card -->
+    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="countdownCard" data-i18n-aria="closeCountdown">&times;</button>
+        <h2 id="countdown-title" data-i18n="countdownTitle">Countdown</h2>
+        <div class="countdown-controls">
+            <label for="countdownLabel" class="sr-only" data-i18n="countdownLabelAria">Nome do countdown</label>
+            <input type="text" id="countdownLabel" data-i18n-placeholder="countdownLabelPlaceholder" data-i18n-aria="countdownLabelAria">
+            <label for="countdownDate" class="sr-only" data-i18n="countdownDateAria">Data e hora de destino</label>
+            <input type="datetime-local" id="countdownDate" data-i18n-aria="countdownDateAria">
+            <div class="buttons">
+                <button id="countdownAdd" data-i18n-aria="addCountdownAria" data-i18n="add">Add</button>
+                <button id="countdownResetAll" data-i18n-aria="resetCountdownAria" data-i18n="reset">Reset</button>
+            </div>
+        </div>
+        <div id="countdownList" class="countdown-list" aria-label="Lista de countdowns"></div>
+    </section>
+
+    <!-- World Clock Card -->
+    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="worldClockCard" data-i18n-aria="closeWorldclock">&times;</button>
+        <h2 id="worldclock-title" data-i18n="worldclockTitle">World Clock</h2>
+        <div class="timezone-container">
+            <label for="timezoneSelect" class="sr-only" data-i18n="timezoneAria">Selecionar fuso horário</label>
+            <select id="timezoneSelect" data-i18n-aria="timezoneAria">
+                <option value="UTC">UTC (London)</option>
+                <option value="Europe/Lisbon">Lisbon (WET/WEST)</option>
+                <option value="Europe/Paris">Paris (CET/CEST)</option>
+                <option value="America/New_York">New York (EST/EDT)</option>
+                <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                <option value="Asia/Dubai">Dubai (GST)</option>
+                <option value="Asia/Singapore">Singapore (SGT)</option>
+                <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+            </select>
+            <button id="addTimezoneBtn" data-i18n-aria="addTimezoneAria" data-i18n="add">Add</button>
+        </div>
+        <div id="timezoneList" class="timezone-list" aria-label="Lista de fusos horários"></div>
+    </section>
+
+    <div id="buttonContainer" class="buttonContainer">
+        <button id="pomodoroButton" aria-pressed="false" data-i18n="pomodoro">Pomodoro</button>
+        <button id="timerButton" aria-pressed="false" data-i18n="timer">Timer</button>
+        <button id="stopwatchButton" aria-pressed="false" data-i18n="stopwatch">Cronómetro</button>
+        <button id="tasklistButton" aria-pressed="false" data-i18n="tasklist">TaskList</button>
+        <button id="countdownButton" aria-pressed="false" data-i18n="countdown">Countdown</button>
+        <button id="worldClockButton" aria-pressed="false" data-i18n="worldClock">World Clock</button>
+    </div>
+
+    <!-- Login Popup -->
+    <section id="loginPopup" class="login-popup hidden" aria-labelledby="login-title" role="dialog" aria-modal="true" hidden>
+        <button class="login-popup-close" type="button" id="loginPopupClose" aria-label="Fechar" data-i18n-aria="closeLogin">&times;</button>
+        <div id="loginFormView">
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab is-active" id="authTabLogin" role="tab" aria-selected="true" aria-controls="loginForm" data-auth-mode="login" data-i18n="entrar">Entrar</button>
+                <button type="button" class="auth-tab" id="authTabSignup" role="tab" aria-selected="false" aria-controls="loginForm" data-auth-mode="signup" data-i18n="criarConta">Criar conta</button>
+            </div>
+
+            <h2 id="login-title" data-i18n="entrar">Entrar</h2>
+            <p class="login-subtitle" id="loginSubtitle" data-i18n="loginSubtitle">Acesse sua conta para sincronizar suas configurações.</p>
+            <form id="loginForm" class="login-form">
+                <div class="login-input-group">
+                    <label for="loginEmail" class="sr-only">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Email" required aria-label="Email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
+                </div>
+                <div class="login-input-group">
+                    <label for="loginPassword" class="sr-only">Password</label>
+                <div class="password-field">
+                    <input type="password" id="loginPassword" placeholder="Password" required aria-label="Password" autocomplete="current-password">
+                    <button type="button" id="togglePassword" class="password-toggle" data-i18n-aria="showPasswordAria" data-i18n="showPassword" aria-pressed="false">Mostrar</button>
+                </div>
+                </div>
+                <div class="login-input-group hidden" id="confirmPasswordGroup">
+                    <label for="loginPasswordConfirm" class="sr-only">Confirmar password</label>
+                    <div class="password-field">
+                        <input type="password" id="loginPasswordConfirm" placeholder="Confirmar password" aria-label="Confirmar password" autocomplete="new-password">
+                        <button type="button" id="togglePasswordConfirm" class="password-toggle" data-i18n-aria="showPasswordConfirmAria" data-i18n="showPassword" aria-pressed="false">Mostrar</button>
+                    </div>
+                </div>
+                <div class="login-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span data-i18n="rememberMe">Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password" data-i18n="forgotPassword">Forgot password?</a>
+                </div>
+                <button type="submit" class="login-submit-btn" id="loginSubmitBtn" data-i18n="entrar">Entrar</button>
+            </form>
+            <div class="login-divider">
+                <span data-i18n="orContinue">or continue with</span>
+            </div>
+            <div class="social-login">
+                <button class="social-btn google" type="button" aria-label="Sign in with Google">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                </button>
+                <button class="social-btn github" type="button" aria-label="Sign in with GitHub">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </button>
+                <button class="social-btn microsoft" type="button" aria-label="Sign in with Microsoft">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M13 1h10v10H13z"/><path fill="#05a6f0" d="M1 13h10v10H1z"/><path fill="#ffba08" d="M13 13h10v10H13z"/></svg>
+                </button>
+            </div>
+            <p class="login-footer">
+                <span data-i18n="noAccount">Don't have an account?</span> <a href="#" class="signup-link" data-i18n="signUp">Sign up</a>
+            </p>
+        </div>
+
+        <!-- Reset password view -->
+        <div id="resetPasswordView" class="hidden" aria-live="polite">
+            <button type="button" id="resetBackBtn" class="login-secondary-btn" aria-label="Voltar">← Voltar</button>
+            <h2 id="reset-title">Redefinir password</h2>
+            <p class="login-subtitle" id="resetSubtitle">Pede um token por email e define uma nova password.</p>
+
+            <form id="resetPasswordForm" class="login-form">
+                <div class="login-input-group">
+                    <label for="resetEmail" class="sr-only">Email</label>
+                    <input type="email" id="resetEmail" placeholder="Email" required aria-label="Email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
+                </div>
+
+                <div class="buttons" style="margin: 0.5rem 0 1rem;">
+                    <button type="button" class="login-secondary-btn" id="resetRequestBtn">Enviar token</button>
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetToken" class="sr-only">Token</label>
+                    <input type="text" id="resetToken" placeholder="Token" aria-label="Token" autocomplete="one-time-code" inputmode="text">
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetNewPassword" class="sr-only">Nova password</label>
+                    <input type="password" id="resetNewPassword" placeholder="Nova password" aria-label="Nova password" autocomplete="new-password">
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetNewPasswordConfirm" class="sr-only">Confirmar nova password</label>
+                    <input type="password" id="resetNewPasswordConfirm" placeholder="Confirmar nova password" aria-label="Confirmar nova password" autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="login-submit-btn" id="resetSubmitBtn">Atualizar password</button>
+            </form>
+        </div>
+
+        <div id="loginConnectedView" class="hidden" aria-live="polite">
+            <h2 id="login-connected-title" data-i18n="connected">Conectado</h2>
+            <p class="login-subtitle" id="loginConnectedMessage" data-i18n="connectedMsg">Você está conectado!</p>
+            <div class="connected-actions">
+                <button type="button" class="login-submit-btn" id="loginConnectedOk" data-i18n="ok">Ok</button>
+                <button type="button" class="login-secondary-btn" id="signOutBtn" data-i18n="signOut">Sair</button>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <footer role="contentinfo">
+        <div>
+            <p data-i18n="footer">&copy; 2026 StuddyBuddy. Desenvolvido por Mariana Lima.</p>
+        </div>
+    </footer>
+
+    <!-- Cookie consent (footer popup) -->
+    <section id="cookieBanner" class="cookie-banner hidden" role="dialog" aria-modal="false" aria-labelledby="cookie-title" aria-describedby="cookie-desc" hidden>
+        <div class="cookie-banner__content">
+            <h2 id="cookie-title" class="cookie-banner__title" data-i18n="cookies">Cookies</h2>
+            <p id="cookie-desc" class="cookie-banner__text" data-i18n="cookieText">
+                Usamos cookies essenciais para o funcionamento do site e cookies de preferência para guardar opções como tema e som.
+            </p>
+            <div class="cookie-banner__actions">
+                <button type="button" id="cookieAccept" class="cookie-btn cookie-btn--primary" data-i18n="accept">Aceitar</button>
+                <button type="button" id="cookieReject" class="cookie-btn" data-i18n="reject">Recusar</button>
+            </div>
+        </div>
+    </section>
+
+    <button id="focusModeExit" class="focus-mode-exit hidden" type="button" aria-label="Sair do modo foco">Sair modo foco</button>
+
+    <!-- Shortcuts modal -->
+    <div id="shortcutsModal" class="shortcuts-modal hidden" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" hidden>
+        <div class="shortcuts-modal__content">
+            <div class="shortcuts-modal__chrome">
+                <h2 id="shortcuts-title" data-i18n="shortcutsTitle">Atalhos de teclado</h2>
+                <button type="button" id="shortcutsClose" class="shortcuts-modal__close" aria-label="Fechar" data-i18n-aria="shortcutsCloseAria">&times;</button>
+            </div>
+            <div class="shortcuts-modal__body">
+                <ul class="shortcuts-list">
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> <span data-i18n="pomodoro">Pomodoro</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> <span data-i18n="timer">Timer</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> <span data-i18n="shortcutStopwatch">Cronómetro</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> <span data-i18n="tasklistTitle">Task List</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> <span data-i18n="countdown">Countdown</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd> <span data-i18n="worldClock">World Clock</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> <span data-i18n="shortcutTheme">Alternar tema</span></li>
+                    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>?</kbd> <span data-i18n="shortcutShortcuts">Ver atalhos</span></li>
+                    <li><kbd>Esc</kbd> <span data-i18n="shortcutCloseCards">Fechar cards</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
