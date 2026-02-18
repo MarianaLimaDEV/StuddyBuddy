@@ -5,6 +5,8 @@
 import { playSound } from './sound.js';
 import { tr } from './i18n.js';
 import { renderStatsIn } from './study-stats.js';
+import { addToPendingSync, getOffline, salvarOffline } from './pwa/db.js';
+import { registerBackgroundSync } from './pwa/sync.js';
 
 // ==================== AUTH / USER SETTINGS (MongoDB) ====================
 const AUTH_TOKEN_STORAGE_KEY = 'authToken';
@@ -132,6 +134,52 @@ export async function registerUser({ email, password }) {
   return data;
 }
 
+// ==================== PASSWORD RESET (FORGOT PASSWORD) ====================
+
+export async function requestPasswordReset(email) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!normalizedEmail) throw new Error('Email é obrigatório');
+  const res = await fetch('/api/auth/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: normalizedEmail }),
+  });
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+  return await res.json();
+}
+
+export async function resetPassword({ token, password }) {
+  const t = String(token || '').trim();
+  const pwd = String(password || '');
+  if (!t) throw new Error('Token é obrigatório');
+  if (!pwd || pwd.length < 8) throw new Error('Password deve ter pelo menos 8 caracteres');
+  const res = await fetch('/api/auth/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: t, password: pwd }),
+  });
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+  return await res.json();
+}
+
 export async function loginOrRegister({ email, password, rememberMe }) {
   try {
     return await loginUser({ email, password, rememberMe });
@@ -145,26 +193,79 @@ export async function loginOrRegister({ email, password, rememberMe }) {
 }
 
 export async function fetchUserSettings() {
-  const res = await authFetch('/api/user/settings');
-  if (!res.ok) {
-    let message = `Erro HTTP ${res.status}`;
-    try {
-      const data = await res.json();
-      if (data?.message) message = data.message;
-    } catch {
-      // ignore
+  const email = getStoredUserEmail() || 'anon';
+  const key = `userSettings:${email}`;
+  try {
+    const res = await authFetch('/api/user/settings');
+    if (!res.ok) {
+      let message = `Erro HTTP ${res.status}`;
+      try {
+        const data = await res.json();
+        if (data?.message) message = data.message;
+      } catch {
+        // ignore
+      }
+      throw new Error(message);
     }
-    throw new Error(message);
+    const settings = await res.json();
+    // Best-effort cache write - don't let cache errors prevent returning fresh settings
+    try {
+      await salvarOffline('dados', { _id: key, ...(settings || {}) });
+    } catch (cacheError) {
+      console.warn('Failed to cache user settings:', cacheError);
+    }
+    return settings;
+  } catch (err) {
+    const cached = await getOffline('dados', key).catch(() => null);
+    if (cached) {
+      const { _id, ...settings } = cached;
+      return settings;
+    }
+    throw err;
   }
-  return await res.json();
 }
 
 export async function updateUserSettings(partial) {
-  const res = await authFetch('/api/user/settings', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(partial || {}),
-  });
+  const payload = partial || {};
+  // Se o request falhar por rede (offline), guarda localmente e enfileira para sync
+  let res;
+  try {
+    res = await authFetch('/api/user/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    const email = getStoredUserEmail() || 'anon';
+    const key = `userSettings:${email}`;
+    const cached = await getOffline('dados', key).catch(() => null);
+    const merged = { ...(cached || {}), ...payload };
+    
+    // Wrap offline operations in try-catch to ensure merged is returned even if storage fails
+    try {
+      await salvarOffline('dados', { _id: key, ...merged });
+    } catch (cacheError) {
+      console.warn('Failed to save offline settings:', cacheError);
+    }
+
+    const token = getAuthToken();
+    if (token) {
+      try {
+        await addToPendingSync({
+          type: 'PUT',
+          url: '/api/user/settings',
+          body: payload,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        await registerBackgroundSync();
+      } catch (syncError) {
+        console.warn('Failed to register background sync:', syncError);
+      }
+    }
+
+    return merged;
+  }
+
   if (!res.ok) {
     let message = `Erro HTTP ${res.status}`;
     try {
@@ -175,7 +276,17 @@ export async function updateUserSettings(partial) {
     }
     throw new Error(message);
   }
-  return await res.json();
+
+  const settings = await res.json();
+  const email = getStoredUserEmail() || 'anon';
+  const key = `userSettings:${email}`;
+  // Best-effort cache write
+  try {
+    await salvarOffline('dados', { _id: key, ...(settings || {}) });
+  } catch (cacheError) {
+    console.warn('Failed to cache user settings:', cacheError);
+  }
+  return settings;
 }
 
 // ==================== COOKIE CONSENT ====================
@@ -262,7 +373,15 @@ function setExpanded(el, expanded) {
 
 function setAriaHidden(el, hidden) {
   if (!el) return;
-  el.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+  // Use `hidden` + `inert` to prevent focus inside closed UI and avoid Lighthouse
+  // errors about `aria-hidden` containers with focusable descendants.
+  if (hidden) {
+    el.setAttribute('hidden', '');
+    el.setAttribute('inert', '');
+  } else {
+    el.removeAttribute('hidden');
+    el.removeAttribute('inert');
+  }
 }
 
 // ==================== GLOBAL CLICK SOUND ====================
@@ -542,6 +661,15 @@ export function setupLoginPopup() {
   const loginPopupClose = document.getElementById('loginPopupClose');
   const loginForm = document.getElementById('loginForm');
   const loginFormView = document.getElementById('loginFormView');
+  const resetPasswordView = document.getElementById('resetPasswordView');
+  const resetBackBtn = document.getElementById('resetBackBtn');
+  const resetPasswordForm = document.getElementById('resetPasswordForm');
+  const resetEmailInput = document.getElementById('resetEmail');
+  const resetRequestBtn = document.getElementById('resetRequestBtn');
+  const resetTokenInput = document.getElementById('resetToken');
+  const resetNewPasswordInput = document.getElementById('resetNewPassword');
+  const resetNewPasswordConfirmInput = document.getElementById('resetNewPasswordConfirm');
+  const resetSubmitBtn = document.getElementById('resetSubmitBtn');
   const loginConnectedView = document.getElementById('loginConnectedView');
   const loginConnectedMessage = document.getElementById('loginConnectedMessage');
   const loginConnectedOk = document.getElementById('loginConnectedOk');
@@ -553,6 +681,7 @@ export function setupLoginPopup() {
   const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
   const rememberMe = document.getElementById('rememberMe');
   const loginOptions = loginPopup.querySelector('.login-options');
+  const forgotPasswordLink = loginPopup.querySelector('.forgot-password');
   const loginTitle = document.getElementById('login-title');
   const loginSubtitle = document.getElementById('loginSubtitle');
   const submitBtn = document.getElementById('loginSubmitBtn');
@@ -595,6 +724,7 @@ export function setupLoginPopup() {
 
   const showConnectedView = (email) => {
     if (loginFormView) loginFormView.classList.add('hidden');
+    if (resetPasswordView) resetPasswordView.classList.add('hidden');
     if (loginConnectedView) loginConnectedView.classList.remove('hidden');
     if (loginConnectedMessage) {
       const safeEmail = String(email || '').trim();
@@ -609,7 +739,21 @@ export function setupLoginPopup() {
 
   const showLoginFormView = () => {
     if (loginConnectedView) loginConnectedView.classList.add('hidden');
+    if (resetPasswordView) resetPasswordView.classList.add('hidden');
     if (loginFormView) loginFormView.classList.remove('hidden');
+  };
+
+  const showResetPasswordView = () => {
+    if (loginConnectedView) loginConnectedView.classList.add('hidden');
+    if (loginFormView) loginFormView.classList.add('hidden');
+    if (resetPasswordView) resetPasswordView.classList.remove('hidden');
+    if (tabLogin) tabLogin.classList.remove('is-active');
+    if (tabSignup) tabSignup.classList.remove('is-active');
+    if (resetEmailInput) {
+      const stored = getStoredUserEmail();
+      if (stored && !resetEmailInput.value) resetEmailInput.value = stored;
+      try { resetEmailInput.focus(); } catch (_) {}
+    }
   };
 
   // Focus trap for modal dialog
@@ -757,6 +901,111 @@ export function setupLoginPopup() {
         showNotification(err?.message || 'Falha ao iniciar sessão', 'error', 4000);
       } finally {
         if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  // Forgot password → open reset view
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showResetPasswordView();
+    });
+  }
+
+  // Reset view: back to login
+  if (resetBackBtn) {
+    resetBackBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showLoginFormView();
+      setAuthMode('login');
+      document.getElementById('loginEmail')?.focus();
+    });
+  }
+
+  // Request reset token
+  if (resetRequestBtn) {
+    resetRequestBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const email = resetEmailInput?.value;
+      if (!email) {
+        showNotification('Email é obrigatório', 'warning', 2500);
+        resetEmailInput?.focus();
+        return;
+      }
+
+      if (resetRequestBtn) resetRequestBtn.disabled = true;
+      try {
+        const data = await requestPasswordReset(email);
+        showNotification(data?.message || 'Pedido enviado.', 'success', 3500);
+
+        // Dev-only convenience: autofill token when backend returns it
+        const devToken = data?.dev?.token;
+        if (devToken && resetTokenInput && !resetTokenInput.value) {
+          resetTokenInput.value = devToken;
+          showNotification('Token preenchido automaticamente (modo dev).', 'info', 2500);
+          resetNewPasswordInput?.focus();
+        } else {
+          resetTokenInput?.focus();
+        }
+      } catch (err) {
+        console.error('Request reset failed:', err);
+        showNotification(err?.message || 'Falha ao pedir token', 'error', 3500);
+      } finally {
+        if (resetRequestBtn) resetRequestBtn.disabled = false;
+      }
+    });
+  }
+
+  // Confirm reset (token + new password)
+  if (resetPasswordForm) {
+    resetPasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = resetTokenInput?.value;
+      const newPassword = resetNewPasswordInput?.value;
+      const confirm = resetNewPasswordConfirmInput?.value;
+
+      if (!token) {
+        showNotification('Token é obrigatório', 'warning', 2500);
+        resetTokenInput?.focus();
+        return;
+      }
+      if (!newPassword || String(newPassword).length < 8) {
+        showNotification('A nova password deve ter pelo menos 8 caracteres', 'warning', 3000);
+        resetNewPasswordInput?.focus();
+        return;
+      }
+      if (String(newPassword) !== String(confirm || '')) {
+        showNotification('As passwords não coincidem', 'warning', 3000);
+        resetNewPasswordConfirmInput?.focus();
+        return;
+      }
+
+      if (resetSubmitBtn) resetSubmitBtn.disabled = true;
+      try {
+        const data = await resetPassword({ token, password: newPassword });
+        showNotification(data?.message || 'Password atualizada.', 'success', 3500);
+
+        // UX: go back to login view, keep email prefilled
+        const emailVal = String(resetEmailInput?.value || '').trim();
+        showLoginFormView();
+        setAuthMode('login');
+        const loginEmail = document.getElementById('loginEmail');
+        if (loginEmail && emailVal && !loginEmail.value) loginEmail.value = emailVal;
+        document.getElementById('loginPassword')?.focus();
+
+        // Clear reset fields (privacy)
+        if (resetTokenInput) resetTokenInput.value = '';
+        if (resetNewPasswordInput) resetNewPasswordInput.value = '';
+        if (resetNewPasswordConfirmInput) resetNewPasswordConfirmInput.value = '';
+      } catch (err) {
+        console.error('Reset password failed:', err);
+        showNotification(err?.message || 'Falha ao redefinir password', 'error', 3500);
+      } finally {
+        if (resetSubmitBtn) resetSubmitBtn.disabled = false;
       }
     });
   }

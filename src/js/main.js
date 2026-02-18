@@ -10,7 +10,6 @@ const cardPositions = {
 };
 
 // Import all modules
-import '../scss/main.scss';
 import { PomodoroTimer } from './pomodoro.js';
 import { SimpleTimer } from './timer.js';
 import { Stopwatch } from './stopwatch.js';
@@ -35,14 +34,82 @@ import {
   updateUserSettings,
   isAuthenticated,
   getStoredUserEmail,
-  formatUserLabel
+  formatUserLabel,
+  getAuthToken
 } from './utils.js';
 import { renderStatsIn } from './study-stats.js';
 import { initLanguageToggle } from './i18n.js';
+import { initSWRegistration } from './pwa/sw-registration.js';
+import { initSyncManager } from './pwa/sync.js';
+import { initInstallPrompt } from './pwa/install-prompt.js';
+import { initNativeFeel } from './pwa/native-feel.js';
+import { initPush, disablePush, hasActivePushSubscription } from './pwa/push.js';
+/** Configura o botão "Notificações push" nas configurações. */
+async function initPushButton() {
+  const btn = document.getElementById('pushNotifyBtn');
+  if (!btn) return;
+  const updateLabel = async () => {
+    const active = await hasActivePushSubscription();
+    btn.textContent = active ? '🔕 Desativar' : '🔔 Ativar';
+    btn.disabled = false;
+  };
+  await updateLabel();
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try {
+      const active = await hasActivePushSubscription();
+      if (active) {
+        const result = await disablePush({ getAuthToken });
+        if (result.ok) showNotification('Notificações desativadas.', 'info');
+        else showNotification('Não foi possível desativar notificações.', 'error');
+        await updateLabel();
+        return;
+      }
+
+      const result = await initPush({ getAuthToken });
+      if (result.ok) showNotification('Notificações ativadas.', 'success');
+      else {
+        if (result.reason === 'denied') showNotification('Notificações recusadas.', 'warning');
+        else if (result.reason !== 'unsupported') showNotification('Não foi possível ativar notificações.', 'error');
+      }
+      await updateLabel();
+    } catch (error) {
+      console.error('Error in push button handler:', error);
+      showNotification('Erro ao gerir notificações.', 'error');
+      await updateLabel();
+    }
+  });
+}
+
 /**
  * Initialize all features on DOM ready
  */
 async function initializeApp() {
+  // Initialize PWA features with proper error handling
+  try {
+    await initSWRegistration();
+  } catch (error) {
+    console.error('Failed to initialize SW Registration:', error);
+  }
+
+  try {
+    await initSyncManager();
+  } catch (error) {
+    console.error('Failed to initialize Sync Manager:', error);
+  }
+
+  try {
+    await initInstallPrompt();
+  } catch (error) {
+    console.error('Failed to initialize Install Prompt:', error);
+  }
+
+  try {
+    await initNativeFeel();
+  } catch (error) {
+    console.error('Failed to initialize Native Feel:', error);
+  }
+
   try {
     // Import and initialize theme toggle
     await import('./theme-toggle.js');
@@ -94,6 +161,7 @@ async function initializeApp() {
     initShortcutsModal();
     initCookieBanner();
     initLanguageToggle();
+    initPushButton();
     renderSidebarStats();
     window.addEventListener('studystats-updated', renderSidebarStats);
     document.addEventListener('i18n-changed', renderSidebarStats);
@@ -150,13 +218,30 @@ async function initializeApp() {
     const pomodoroTimer = new PomodoroTimer();
     const simpleTimer = new SimpleTimer();
     const stopwatchInstance = window.stopwatchInstance = new Stopwatch();
-    const taskListInstance = window.taskListInstance = new TaskList();
     const countdownTimer = new CountdownTimer();
     const worldClockInstance = window.worldClockInstance = new WorldClock();
     console.info('All timer features initialized');
   } catch (error) {
     console.error('Failed to initialize timer features:', error);
     showErrorNotification('Failed to load timer functionality');
+  }
+
+  // Defer TaskList (API /api/tasks) to avoid blocking LCP
+  try {
+    const initTaskList = () => {
+      try {
+        window.taskListInstance = new TaskList();
+      } catch (e) {
+        console.error('Failed to initialize TaskList:', e);
+      }
+    };
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(initTaskList, { timeout: 1500 });
+    } else {
+      setTimeout(initTaskList, 0);
+    }
+  } catch (e) {
+    console.error('Failed to schedule TaskList init:', e);
   }
 
 try {
@@ -381,12 +466,13 @@ function updateMuteButtonUI(muted) {
   }
 }
 
-// PWA: register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('SW registado!', reg))
+      .catch(err => console.log('Erro no SW', err));
+  });
+}

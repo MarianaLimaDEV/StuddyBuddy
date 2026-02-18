@@ -3,31 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
     <title>StuddyBuddy</title>
-    
     <meta name="description" content="Ferramenta de estudos">
     <meta name="keywords" content="Pomodoro, Cozy, Lo-fi, Study">
     <meta name="author" content="Mariana Lima">
-    <meta name="theme-color" content="#4f7ddf">
+    <meta name="theme-color" content="#171922">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="StuddyBuddy">
 
+    <!-- First-paint: evita flash branco ao abrir a partir do ecrã inicial -->
+    <style>
+      html { background-color: #171922; }
+      .pwa-install-banner.hidden { display: none !important; }
+    </style>
+
+    <!-- Load main styles early to reduce CLS (especially in dev/HMR) -->
+    <link rel="stylesheet" href="src/scss/main.scss">
+
     <link rel="icon" href="SB_B.png" media="(prefers-color-scheme: dark)">
     <link rel="icon" href="SB_W.png" media="(prefers-color-scheme: light)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+    </noscript>
 </head>
 <body data-theme="dark">
     <a href="#main-content" class="skip-link" data-i18n="skipLink">Saltar para o conteúdo principal</a>
 
+    <!-- Banner "Instalar app" (só visível quando beforeinstallprompt e não dispensado) -->
+    <aside id="pwa-install-banner" class="pwa-install-banner hidden" role="region" aria-labelledby="pwa-install-title" hidden>
+      <p id="pwa-install-title">Instalar StuddyBuddy para usar como app</p>
+      <div class="pwa-install-banner__actions">
+        <button type="button" id="pwa-install-btn" class="pwa-install-banner__install">Instalar</button>
+        <button type="button" id="pwa-install-close" class="pwa-install-banner__close" aria-label="Fechar">×</button>
+      </div>
+    </aside>
+
     <button type="button" id="sidebarTab" class="left-sidebar-tab" data-i18n-aria="sidebarTabAria" aria-expanded="false">&rsaquo;</button>
     <aside id="leftSidebar" class="left-sidebar" role="complementary" data-i18n-aria="sidebarAria">
-        <div class="left-sidebar__indicator" id="sidebarIndicator" data-i18n-aria="sidebarTabAria"></div>
+        <button type="button" class="left-sidebar__indicator" id="sidebarIndicator" data-i18n-aria="sidebarTabAria" aria-label="Abrir painel lateral"></button>
         <div class="left-sidebar__inner">
             <div id="sidebarStats" class="left-sidebar__stats"></div>
             <button type="button" id="focusModeBtn" class="focus-mode-btn left-sidebar__focus" aria-pressed="false" data-i18n-aria="focusModeAria" data-i18n="focusMode">Modo foco</button>
@@ -40,38 +59,38 @@
                 <picture>
                     <source srcset="SB_W.png" data-theme="light">
                     <source srcset="SB_B.png" data-theme="dark">
-                    <img src="SB_B.png" alt="StuddyBuddy Logo" class="navbar-logo-img">
+                    <img src="SB_B.png" alt="StuddyBuddy Logo" class="navbar-logo-img" width="56" height="56" decoding="async" fetchpriority="high">
                 </picture>
             </a>
             <ul class="navbar-menu" id="navbar-menu">
                 <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-principal" data-dropdown="principal" data-i18n="principal">Principal</button>
-<div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+<div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-principal-heading" data-i18n="principal">Principal</h3>
                         <p data-i18n="principalText">Bem-vindo ao StuddyBuddy! Acede às ferramentas clicando nos botões abaixo: Pomodoro, Timer, Cronómetro, Task List, Countdown e World Clock. Podes abrir várias ao mesmo tempo e arrastá-las no ecrã. Usa o modo foco para esconder a navegação e concentrares-te no estudo.</p>
                     </div>
                 </li>
                 <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-sobre" data-dropdown="sobre" data-i18n="sobre">Sobre</button>
-<div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+<div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading" data-i18n="sobre">Sobre</h3>
                         <p data-i18n="sobreText">O StuddyBuddy é uma plataforma de estudo com ferramentas práticas: Pomodoro para sessões de foco, Timer, Cronómetro, lista de tarefas, contagem regressiva e relógio mundial. Faz login para sincronizar o teu tema e preferências na nuvem.</p>
                     </div>
                 </li>
                 <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos" data-i18n="servicos">Serviços</button>
-<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading" data-i18n="servicos">Serviços</h3>
                         <p data-i18n="servicosText">Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
                     </div>
                 </li>
                 <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-configuracoes" data-dropdown="configuracoes" data-i18n="configuracoes">Configurações</button>
-<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+<div id="dropdown-configuracoes" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-configuracoes-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-configuracoes-heading" data-i18n="configuracoes">Configurações</h3>
                         <div class="theme-toggle-container" role="group" aria-labelledby="theme-toggle-label">
                             <span id="theme-toggle-label" data-i18n="tema">Tema</span>
@@ -88,6 +107,11 @@
                         <div class="lang-toggle-container" role="group" aria-labelledby="lang-toggle-label">
                             <span id="lang-toggle-label" data-i18n="langLabel">Idioma</span>
                             <button type="button" id="langBtn" class="lang-btn" data-i18n-aria="langBtnAria">🌐 PT</button>
+                        </div>
+
+                        <div class="push-toggle-container" role="group" aria-labelledby="push-toggle-label">
+                            <span id="push-toggle-label" data-i18n="pushNotifications">Notificações push</span>
+                            <button type="button" id="pushNotifyBtn" class="push-notify-btn" data-i18n-aria="pushNotifyAria" aria-label="Ativar notificações" data-i18n="pushEnable">🔔 Ativar</button>
                         </div>
 
                         <details class="config-faq">
@@ -125,8 +149,8 @@
                 </li>
                 <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-contacto" data-dropdown="contacto" data-i18n="contacto">Contacto</button>
-<div id="dropdown-contacto" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-contacto-heading" aria-hidden="true">
-                        <button class="dropdown-close" type="button" data-i18n-aria="dropdownClose">&times;</button>
+<div id="dropdown-contacto" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-contacto-heading" hidden>
+                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-contacto-heading" data-i18n="contacto">Contacto</h3>
                         <p data-i18n="contactoText">Entre em contacto!</p>
                         <div class="contact-buttons">
@@ -161,8 +185,8 @@
     <h1 class="sr-only">StuddyBuddy</h1>
 
     <!-- Pomodoro Card -->
-    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="pomodoroCard" data-i18n-aria="closePomodoro">&times;</button>
+    <section id="pomodoroCard" class="card hidden" aria-labelledby="pomodoro-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="pomodoroCard" data-i18n-aria="closePomodoro">&times;</button>
         <h2 id="pomodoro-title" data-i18n="pomodoroTitle">Pomodoro Timer</h2>
         <div class="timer-display" id="pomodoroDisplay" aria-live="polite" data-i18n-aria="timeRemaining">25:00</div>
         <div class="controls">
@@ -179,8 +203,8 @@
     </section>
 
     <!-- Timer Card -->
-    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="timerCard" data-i18n-aria="closeTimer">&times;</button>
+    <section id="timerCard" class="card hidden" aria-labelledby="timer-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="timerCard" data-i18n-aria="closeTimer">&times;</button>
         <h2 id="timer-title" data-i18n="timerTitle">Timer</h2>
         <div class="timer-display" id="timerDisplay" aria-live="polite" data-i18n-aria="timeRemaining">00:00</div>
         <div class="controls">
@@ -197,8 +221,8 @@
     </section>
 
     <!-- Stopwatch Card -->
-    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="stopwatchCard" data-i18n-aria="closeStopwatch">&times;</button>
+    <section id="stopwatchCard" class="card hidden" aria-labelledby="stopwatch-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="stopwatchCard" data-i18n-aria="closeStopwatch">&times;</button>
         <h2 id="stopwatch-title" data-i18n="stopwatchTitle">Cronómetro</h2>
         <div class="timer-display" id="stopwatchDisplay" aria-live="polite" data-i18n-aria="elapsed">00:00.00</div>
         <div class="buttons">
@@ -211,8 +235,8 @@
     </section>
 
     <!-- TaskList Card -->
-    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="tasklistCard" data-i18n-aria="closeTasklist">&times;</button>
+    <section id="tasklistCard" class="card hidden" aria-labelledby="tasklist-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="tasklistCard" data-i18n-aria="closeTasklist">&times;</button>
         <h2 id="tasklist-title" data-i18n="tasklistTitle">Task List</h2>
         <div class="task-input">
             <label for="taskInput" class="sr-only" data-i18n="taskLabel">Nova tarefa</label>
@@ -223,8 +247,8 @@
     </section>
 
     <!-- Countdown Card -->
-    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="countdownCard" data-i18n-aria="closeCountdown">&times;</button>
+    <section id="countdownCard" class="card hidden" aria-labelledby="countdown-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="countdownCard" data-i18n-aria="closeCountdown">&times;</button>
         <h2 id="countdown-title" data-i18n="countdownTitle">Countdown</h2>
         <div class="countdown-controls">
             <label for="countdownLabel" class="sr-only" data-i18n="countdownLabelAria">Nome do countdown</label>
@@ -240,8 +264,8 @@
     </section>
 
     <!-- World Clock Card -->
-    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false" aria-hidden="true">
-        <button class="card-close" type="button" data-card-id="worldClockCard" data-i18n-aria="closeWorldclock">&times;</button>
+    <section id="worldClockCard" class="card hidden" aria-labelledby="worldclock-title" role="dialog" aria-modal="false" hidden>
+        <button class="card-close" type="button" aria-label="Fechar" data-card-id="worldClockCard" data-i18n-aria="closeWorldclock">&times;</button>
         <h2 id="worldclock-title" data-i18n="worldclockTitle">World Clock</h2>
         <div class="timezone-container">
             <label for="timezoneSelect" class="sr-only" data-i18n="timezoneAria">Selecionar fuso horário</label>
@@ -272,8 +296,8 @@
     </div>
 
     <!-- Login Popup -->
-    <section id="loginPopup" class="login-popup hidden" aria-labelledby="login-title" role="dialog" aria-modal="true" aria-hidden="true">
-        <button class="login-popup-close" type="button" id="loginPopupClose" data-i18n-aria="closeLogin">&times;</button>
+    <section id="loginPopup" class="login-popup hidden" aria-labelledby="login-title" role="dialog" aria-modal="true" hidden>
+        <button class="login-popup-close" type="button" id="loginPopupClose" aria-label="Fechar" data-i18n-aria="closeLogin">&times;</button>
         <div id="loginFormView">
             <div class="auth-tabs" role="tablist">
                 <button type="button" class="auth-tab is-active" id="authTabLogin" role="tab" aria-selected="true" aria-controls="loginForm" data-auth-mode="login" data-i18n="entrar">Entrar</button>
@@ -329,6 +353,41 @@
             </p>
         </div>
 
+        <!-- Reset password view -->
+        <div id="resetPasswordView" class="hidden" aria-live="polite">
+            <button type="button" id="resetBackBtn" class="login-secondary-btn" aria-label="Voltar">← Voltar</button>
+            <h2 id="reset-title">Redefinir password</h2>
+            <p class="login-subtitle" id="resetSubtitle">Pede um token por email e define uma nova password.</p>
+
+            <form id="resetPasswordForm" class="login-form">
+                <div class="login-input-group">
+                    <label for="resetEmail" class="sr-only">Email</label>
+                    <input type="email" id="resetEmail" placeholder="Email" required aria-label="Email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
+                </div>
+
+                <div class="buttons" style="margin: 0.5rem 0 1rem;">
+                    <button type="button" class="login-secondary-btn" id="resetRequestBtn">Enviar token</button>
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetToken" class="sr-only">Token</label>
+                    <input type="text" id="resetToken" placeholder="Token" aria-label="Token" autocomplete="one-time-code" inputmode="text">
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetNewPassword" class="sr-only">Nova password</label>
+                    <input type="password" id="resetNewPassword" placeholder="Nova password" aria-label="Nova password" autocomplete="new-password">
+                </div>
+
+                <div class="login-input-group">
+                    <label for="resetNewPasswordConfirm" class="sr-only">Confirmar nova password</label>
+                    <input type="password" id="resetNewPasswordConfirm" placeholder="Confirmar nova password" aria-label="Confirmar nova password" autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="login-submit-btn" id="resetSubmitBtn">Atualizar password</button>
+            </form>
+        </div>
+
         <div id="loginConnectedView" class="hidden" aria-live="polite">
             <h2 id="login-connected-title" data-i18n="connected">Conectado</h2>
             <p class="login-subtitle" id="loginConnectedMessage" data-i18n="connectedMsg">Você está conectado!</p>
@@ -348,7 +407,7 @@
     </footer>
 
     <!-- Cookie consent (footer popup) -->
-    <section id="cookieBanner" class="cookie-banner hidden" role="dialog" aria-modal="false" aria-labelledby="cookie-title" aria-describedby="cookie-desc" aria-hidden="true">
+    <section id="cookieBanner" class="cookie-banner hidden" role="dialog" aria-modal="false" aria-labelledby="cookie-title" aria-describedby="cookie-desc" hidden>
         <div class="cookie-banner__content">
             <h2 id="cookie-title" class="cookie-banner__title" data-i18n="cookies">Cookies</h2>
             <p id="cookie-desc" class="cookie-banner__text" data-i18n="cookieText">
@@ -364,11 +423,11 @@
     <button id="focusModeExit" class="focus-mode-exit hidden" type="button" aria-label="Sair do modo foco">Sair modo foco</button>
 
     <!-- Shortcuts modal -->
-    <div id="shortcutsModal" class="shortcuts-modal hidden" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" aria-hidden="true">
+    <div id="shortcutsModal" class="shortcuts-modal hidden" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" hidden>
         <div class="shortcuts-modal__content">
             <div class="shortcuts-modal__chrome">
                 <h2 id="shortcuts-title" data-i18n="shortcutsTitle">Atalhos de teclado</h2>
-                <button type="button" id="shortcutsClose" class="shortcuts-modal__close" data-i18n-aria="shortcutsCloseAria">&times;</button>
+                <button type="button" id="shortcutsClose" class="shortcuts-modal__close" aria-label="Fechar" data-i18n-aria="shortcutsCloseAria">&times;</button>
             </div>
             <div class="shortcuts-modal__body">
                 <ul class="shortcuts-list">

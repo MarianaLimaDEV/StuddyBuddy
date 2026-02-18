@@ -21,23 +21,24 @@ body {
     linear-gradient(var(--hover-overlay) 1px, transparent 1px),
     linear-gradient(90deg, var(--hover-overlay) 1px, transparent 1px);
   background-size: 4em 4em;
-  font-family: map.get($fonts, "fredoka");
+  // Reduce CLS when Fredoka swaps in (better fallback metrics)
+  font-family: map.get($fonts, "fredoka"), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size-adjust: 0.52;
   font-size: map.get($font-sizes, "md");
   color: var(--text);
   margin: 0;
-  padding-top: 30px;
+  padding-top: max(30px, env(safe-area-inset-top, 0));
   height: 100%;
   transition: background-color 0.4s ease, color 0.4s ease;
-  // Safe area for notched devices
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
 
   @include respond-to('sm') {
-    padding-top: 16px;
+    padding-top: max(16px, env(safe-area-inset-top, 0));
   }
   @include respond-to('xs') {
-    padding-top: 12px;
+    padding-top: max(12px, env(safe-area-inset-top, 0));
   }
 
   // Smoother mobile scrolling
@@ -106,7 +107,8 @@ a:focus-visible {
 
 /* Card styles */
 .card {
-  --card-chrome-height: 42px;
+  --card-chrome-height: 48px;
+  --chrome-close-size: 2.75rem;
   --card-min-w: 280px;
   --card-max-w: min(600px, 95vw);
   --card-min-h: 200px;
@@ -168,7 +170,8 @@ a:focus-visible {
   // Extra small mobile - more compact popup size
   @include respond-to('xs') {
     resize: none;
-    --card-chrome-height: 32px;
+    --card-chrome-height: 40px;
+    --chrome-close-size: 2.25rem;
     width: calc(100vw - 1.5rem);
     max-width: none;
     padding: 10px;
@@ -184,7 +187,8 @@ a:focus-visible {
   // Landscape mobile - more compact
   @media (max-height: 500px) and (orientation: landscape) {
     resize: none;
-    --card-chrome-height: 28px;
+    --card-chrome-height: 36px;
+    --chrome-close-size: 2.25rem;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -221,7 +225,7 @@ a:focus-visible {
     height: var(--card-chrome-height);
     background: linear-gradient(180deg, var(--hover-overlay) 0%, color-mix(in srgb, var(--hover-overlay) 70%, transparent) 100%);
     border-bottom: 1px solid var(--border-subtle);
-    border-radius: 18px 18px 0 0;
+    border-radius: 20px 20px 0 0;
     opacity: 0.95;
   }
 
@@ -229,7 +233,7 @@ a:focus-visible {
   &::after {
     content: '● ● ●';
     position: absolute;
-    top: 12px;
+    top: calc((var(--card-chrome-height) - 10px) / 2);
     left: 16px;
     font-size: 10px;
     letter-spacing: 4px;
@@ -257,18 +261,32 @@ a:focus-visible {
 /* Close button */
 .card-close {
   // Align close button into the chrome bar
-  @include close-button(32px);
-  top: 5px;
-  right: 8px;
+  // Increased touch target from 32px to 44px (2.75rem) for better accessibility
+  position: absolute;
+  z-index: 2;
+  width: var(--chrome-close-size);
+  height: var(--chrome-close-size);
+  padding: 0;
+  top: calc((var(--card-chrome-height) - var(--chrome-close-size)) / 2);
+  right: 10px;
   background: transparent;
   border: none;
   font-size: 1.5rem;
   opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   
   &:hover {
     opacity: 1;
     background: rgba(239, 68, 68, 0.15);
     color: var(--danger);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 6px 18px var(--shadow-color);
   }
 }
 
@@ -472,7 +490,7 @@ a:focus-visible {
     margin: 0.25rem 0;
     background-color: var(--hover-overlay);
     border-radius: 4px;
-    transition: all $transition-fast;
+    transition: opacity $transition-fast;
 
     &.done {
       opacity: 0.6;
@@ -514,7 +532,7 @@ a:focus-visible {
     font-family: map.get($fonts, "fredoka");
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: transform $transition-fast, opacity $transition-fast;
     min-height: 44px;
 
     &:hover {
@@ -544,7 +562,7 @@ a:focus-visible {
     font-family: map.get($fonts, "fredoka");
     font-size: 0.9rem;
     font-weight: 600;
-    transition: all $transition-fast;
+    transition: transform $transition-fast, opacity $transition-fast;
     white-space: nowrap;
 
     &:hover {
@@ -776,10 +794,10 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
-  margin: 0.5rem 0;
+  padding: 0.55rem 0.75rem;
+  margin: 0.4rem 0;
   background-color: var(--hover-overlay);
-  border-radius: 8px;
+  border-radius: 6px;
   gap: 1rem;
 
   label {
@@ -800,15 +818,36 @@ a:focus-visible {
 }
 
 /* Language toggle container */
-.lang-toggle-container {
+.lang-toggle-container,
+.push-toggle-container {
   @include toggle-container;
+}
+
+.push-notify-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--surface);
+  border: 2px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--hover-overlay);
+    border-color: var(--primary);
+  }
+  &:disabled {
+    opacity: 0.8;
+    cursor: default;
+  }
 }
 
 .lang-btn {
   padding: 0.5rem 1rem;
   background-color: var(--surface);
   border: 2px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text);
   font-family: inherit;
   font-size: 0.95rem;
@@ -1357,6 +1396,76 @@ body.focus-mode {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+// ============================================
+// PWA — Install banner (cara de nativo)
+// ============================================
+.pwa-install-banner {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  font-size: map.get($font-sizes, "sm");
+
+  p {
+    margin: 0;
+    color: var(--text);
+    flex: 1;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__install {
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--primary-variant);
+    }
+  }
+
+  &__close {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted, var(--text));
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--hover-overlay);
+      color: var(--text);
+    }
+  }
+}
+
+.pwa-standalone .pwa-install-banner {
+  display: none !important;
 }
 
 /* Skip link - visible on focus for keyboard users */

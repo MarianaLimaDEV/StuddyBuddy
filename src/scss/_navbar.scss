@@ -50,8 +50,10 @@
     }
     
     img {
+      width: 3.5rem;
       height: 3.5rem;
-      width: auto;
+      aspect-ratio: 1 / 1;
+      display: block;
     }
   }
 
@@ -65,6 +67,7 @@
     }
 
     &-logo img {
+      width: 2.75rem;
       height: 2.75rem;
     }
   }
@@ -110,7 +113,7 @@
     padding: 3px 20px;
     border-radius: 20px;
     border: 2px solid transparent;
-    transition: all $transition-speed ease;
+    transition: transform $transition-speed ease, opacity $transition-speed ease;
     white-space: nowrap;
     position: relative;
     font-family: map.get($fonts, "fredoka");
@@ -137,7 +140,7 @@
       white-space: nowrap;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, opacity 0.2s ease;
       pointer-events: none;
       z-index: 1001;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -280,7 +283,7 @@
   font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all $transition-speed ease;
+  transition: transform $transition-speed ease, opacity $transition-speed ease;
   white-space: nowrap;
 
   &:hover {
@@ -316,7 +319,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--surface);
-  --popup-chrome-height: 30px;
+  --popup-chrome-height: 48px;
+  --popup-close-size: 2.75rem;
   padding: 2rem;
   padding-top: calc(2rem + var(--popup-chrome-height));
   border-radius: 16px;
@@ -344,7 +348,8 @@
     padding: 1rem;
     padding-top: calc(1rem + var(--popup-chrome-height));
     border-radius: 12px;
-    --popup-chrome-height: 24px;
+    --popup-chrome-height: 40px;
+    --popup-close-size: 2.25rem;
   }
 
   // Mobile landscape - more compact
@@ -413,17 +418,18 @@
     left: 0;
     right: 0;
     height: var(--popup-chrome-height);
-    background: color-mix(in srgb, var(--surface) 82%, white 18%);
+    background: linear-gradient(180deg, var(--hover-overlay) 0%, color-mix(in srgb, var(--hover-overlay) 65%, transparent) 100%);
     border-bottom: 1px solid var(--border-subtle);
     opacity: 0.9;
   }
 
   &-close {
     position: absolute;
-    top: -2px;
-    right: 8px;
-    width: 44px;
-    height: 44px;
+    z-index: 2;
+    top: calc((var(--popup-chrome-height) - var(--popup-close-size)) / 2);
+    right: 10px;
+    width: var(--popup-close-size);
+    height: var(--popup-close-size);
     background: color-mix(in srgb, var(--surface) 65%, transparent);
     border: 1px solid var(--border-subtle);
     color: var(--muted);
@@ -892,11 +898,27 @@
   }
 }
 
+// Remove/hide the “X” close button from navbar dropdowns
+.navbar-dropdown .dropdown-close {
+  display: none !important;
+}
+
 // Config dropdown can get long (FAQ etc.) → allow scroll
 #dropdown-configuracoes {
+  // Smaller panel (more compact)
+  min-width: 280px;
+  max-width: 360px;
+  padding: 1rem;
+  border-radius: 6px;
+
   max-height: min(70vh, 520px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+
+  .nav-dropdown__heading {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.05rem;
+  }
 }
 
 .nav-dropdown__subheading {
@@ -910,7 +932,7 @@
 .config-faq {
   margin-top: 0.5rem;
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--hover-overlay);
   overflow: clip;
 }
@@ -918,7 +940,7 @@
 .config-faq__summary {
   list-style: none;
   cursor: pointer;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.85rem;
   font-weight: 700;
   color: var(--text);
   position: relative;

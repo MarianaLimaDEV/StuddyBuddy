@@ -41,3 +41,6 @@ coverage/
 # Misc
 *.local
 
+# Local HTTPS dev certificates (Vite)
+certs/
+

@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
+    "dev:https": "node scripts/ensure-https.mjs && vite",
     "build": "vite build",
     "pwa:icons": "node scripts/generate-pwa-icons.js",
     "preview": "vite preview",
     "server": "node backend/server.js",
-    "start": "concurrently \"PORT=3002 npm run server\" \"npm run dev\""
+    "start": "concurrently \"PORT=3002 npm run server\" \"npm run dev:https\""
   },
   "repository": {
     "type": "git",
@@ -31,9 +32,11 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
+    "helmet": "^8.1.0",
+    "idb": "^8.0.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.1.5",
     "nodemon": "^3.1.11",
-    "path": "^0.12.7"
+    "web-push": "^3.6.7"
   }
 }

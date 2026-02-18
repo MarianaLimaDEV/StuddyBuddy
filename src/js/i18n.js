@@ -5,6 +5,7 @@
 import { isAuthenticated, getStoredUserEmail, formatUserLabel } from './utils.js';
 
 const STORAGE_KEY = 'lang';
+let currentLang = null; // fallback when localStorage is unavailable
 
 const t = {
   skipLink: { pt: 'Saltar para o conteúdo principal', en: 'Skip to main content' },
@@ -139,6 +140,7 @@ const t = {
 };
 
 function getLang() {
+  if (currentLang === 'en' || currentLang === 'pt') return currentLang;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'pt') return stored;
@@ -148,6 +150,7 @@ function getLang() {
 
 function setLang(lang) {
   if (lang !== 'pt' && lang !== 'en') return;
+  currentLang = lang;
   try {
     localStorage.setItem(STORAGE_KEY, lang);
   } catch (_) {}
@@ -194,7 +197,8 @@ function applyLanguage() {
 
   const langBtn = document.getElementById('langBtn');
   if (langBtn) {
-    langBtn.textContent = lang === 'pt' ? '🌐 PT' : '🌐 EN';
+    // Show the target language (more intuitive): PT → EN, EN → PT
+    langBtn.textContent = lang === 'pt' ? '🌐 EN' : '🌐 PT';
     langBtn.setAttribute('aria-label', tr('langBtnAria'));
   }
 
@@ -210,7 +214,9 @@ function toggleLanguage() {
 function initLanguageToggle() {
   const btn = document.getElementById('langBtn');
   if (!btn) return;
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     toggleLanguage();
   });
   applyLanguage();

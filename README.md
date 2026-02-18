@@ -1,61 +1,117 @@
 # 📚 StuddyBuddy
 
-> **Estado do Projeto:** 🏗️ Em desenvolvimento inicial
+O **StuddyBuddy** é uma aplicação web focada em produtividade e bem‑estar para estudar com mais consistência.  
+O **Muffin** é o “companheiro virtual” que traz vida à experiência com feedback visual (foco, pausas, descanso, etc.).
 
-O **StuddyBuddy** é uma aplicação web focada na produtividade e no bem-estar, criada para tornar as tuas sessões de estudo mais eficientes e menos solitárias.  
-Com a ajuda do **Muffin**, um companheiro virtual animado, podes gerir o teu tempo, organizar metas e cuidar da tua rotina pessoal e académica num único ambiente.
+## ✨ Funcionalidades
 
----
+- **Pomodoro** (ciclos de foco/pausa)
+- **Timer** e **cronómetro**
+- **Task list**
+- **Countdown** (prazos)
+- **World clock** (fusos horários)
+- **PWA**: offline, cache inteligente, IndexedDB, fila offline + sync, base para push notifications
 
-## 🐾 O teu companheiro de estudos
+## 🧱 Stack
 
-O grande diferencial do StuddyBuddy é o **Muffin**, o teu parceiro virtual ao longo do dia.  
-Através de GIFs interactivos e pequenas interacções visuais, ele acompanha-te em tempo real:
+- **Frontend**: HTML + SCSS + JavaScript (Vanilla)
+- **Build/dev**: Vite
+- **Backend**: Node.js + Express
+- **DB**: MongoDB (Mongoose)
+- **Auth**: JWT
+- **PWA**: Service Worker + Cache API + IndexedDB (`idb`) + Background Sync + Push (Web Push)
 
-- 📖 **Foco:** Estuda contigo durante as tarefas.
-- 🍎 **Lembretes saudáveis:** Come e bebe água contigo durante as pausas.
-- 😴 **Descanso:** Dorme quando terminas o teu dia.
-- 🎵 **Lofi:** Relaxa ao som de música ambiente.
-- 💬 **Motivação:** Envia mensagens e frases motivacionais para te manter no caminho certo.
+## ✅ Requisitos
 
----
+- **Node.js >= 18**
+- **MongoDB** (local ou Atlas)
+- (Opcional) **mkcert** para HTTPS local mais “limpo” (há fallback para `openssl`)
 
-## ✨ Funcionalidades principais
+## 🚀 Como correr (dev)
 
-O StuddyBuddy reúne várias ferramentas num só lugar para apoiar a tua produtividade:
+1) Instalar dependências:
 
-- 🍅 **Método Pomodoro:** Temporizador com ciclos configuráveis de foco e descanso.
-- ✅ **Lista de tarefas:** Organiza prioridades de forma simples e intuitiva.
-- ⏳ **Contagem decrescente:** Acompanha prazos de exames, entregas e eventos importantes.
-- ⏱️ **Cronómetro:** Mede com precisão o tempo gasto em cada actividade.
-- 🌍 **Relógio mundial:** Visualiza diferentes fusos horários num relance.
-- 🎯 **Acompanhamento de metas:** Monitoriza o teu progresso e evolução ao longo do tempo.
+```bash
+npm install
+```
 
----
+2) Criar `.env` na raiz do projeto (não commitar):
 
-## 💻 Tecnologias utilizadas
+```bash
+MONGO_URI=mongodb://...
+PORT=3002
+JWT_SECRET=troca-por-um-valor-forte
 
-Este projecto utiliza ferramentas modernas para garantir desempenho, organização e escalabilidade:
+# Opcional (push)
+VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
 
-- [Vite](https://vitejs.dev/) — Ferramenta de build rápida e moderna.
-- [Sass (SCSS)](https://sass-lang.com/) — Estilização modular e organizada.
-- [JavaScript](https://developer.mozilla.org/pt-PT/docs/Web/JavaScript) — Lógica da aplicação e interactividade.
+# Opcional (forgot password)
+RESET_PASSWORD_TTL_MINUTES=30
 
----
+# Opcional (se tiveres chatbot/IA no projeto)
+OPENAI_API_KEY=...
+```
+
+3) Iniciar frontend + backend juntos:
+
+```bash
+npm start
+```
+
+- **Frontend (Vite HTTPS)**: `https://localhost:5173`
+- **API (Express)**: `http://localhost:3002` (health check: `GET /api/health`)
+
+Scripts úteis:
+
+```bash
+npm run server     # só API
+npm run dev:https  # só Vite em HTTPS (gera ./certs/)
+npm run build
+npm run preview
+```
+
+## 📦 PWA / Offline / Sync
+
+Documentação:
+- `docs/PWA.md`
+- `docs/PWA_ARCHITECTURE.md`
+- `docs/LOCAL_HTTPS.md`
+
+Notas de desenvolvimento:
+- Em **DEV**, o projeto **desativa o Service Worker** para não atrapalhar o HMR do Vite (SCSS/JS).
+- Para testar PWA “a sério”, usa `npm run build` + `npm run preview` (ou ambiente de produção).
+
+## 🔐 Autenticação e “Forgot password” (dev)
+
+- **Pedir reset**: no popup de login → **“Forgot password?”** → email → **“Enviar token”**.
+- **Repor password**: token + nova password → **“Atualizar password”**.
+
+Notas:
+- O endpoint **não revela** se o email existe (resposta genérica por segurança).
+- Em **modo não-production**, o backend devolve `dev.token` para facilitar testes locais.
+
+## 🔔 Push notifications (Web Push)
+
+1) Gerar chaves VAPID:
+
+```bash
+node scripts/generate-vapid-keys.js
+```
+
+2) Copiar `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` para o `.env`.
+
+3) Na app, ativa push nas configurações (botão “Notificações push”).
 
 ## ✉️ Contacto
-
-Tens alguma dúvida, sugestão ou feedback? Podes contactar-me através de:
 
 | Plataforma | Contacto |
 | :-- | :-- |
 | **Discord** | `@marianalima.dev` |
 | **E-mail** | `marianalima.developer@gmail.com` |
 
----
-
 ## ✍️ Autora
 
-Desenvolvido com dedicação por **Mariana Lima** 💙
+Desenvolvido por **Mariana Lima**.
 
-> 💡 *Para acompanhar o progresso detalhado das tarefas e ideias futuras, consulta o ficheiro [TODO.md](./TODO.md).*
+> Para acompanhar ideias e melhorias: `TODO.md`.
