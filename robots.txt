@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Don't crawl API endpoints
+Disallow: /api/
+
