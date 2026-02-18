@@ -9,9 +9,17 @@ const KEY_FILE = path.join(CERT_DIR, 'localhost-key.pem');
 const hasHttpsCerts = fs.existsSync(CERT_FILE) && fs.existsSync(KEY_FILE);
 
 export default defineConfig({
-  // Use relative asset paths so it works on GitHub Pages subpaths
-  // (e.g. https://username.github.io/repo/).
-  base: './',
+  // GitHub Pages deploys this app under /StuddyBuddy/
+  // (https://<user>.github.io/StuddyBuddy/).
+  base: '/StuddyBuddy/',
+  css: {
+    // Ensures SCSS preprocessing is configured for production builds.
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+      },
+    },
+  },
   server: {
     https: hasHttpsCerts
       ? {

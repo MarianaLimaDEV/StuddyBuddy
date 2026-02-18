@@ -271,7 +271,7 @@ try {
       if (isSoundMuted()) return;
 
       // Use a direct Audio() here so we can detect autoplay blocking via the promise.
-      const a = new Audio('/sfx/INTRO.mp3');
+      const a = new Audio(`${import.meta.env.BASE_URL}sfx/INTRO.mp3`);
       a.volume = 0.7;
 
       a.play()
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`)
       .then(reg => console.log('SW registado!', reg))
       .catch(err => console.log('Erro no SW', err));
   });
