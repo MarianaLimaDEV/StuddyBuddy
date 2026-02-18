@@ -10,6 +10,7 @@ const cardPositions = {
 };
 
 // Import all modules
+import '../scss/main.scss';
 import { PomodoroTimer } from './pomodoro.js';
 import { SimpleTimer } from './timer.js';
 import { Stopwatch } from './stopwatch.js';

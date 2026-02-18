@@ -10,6 +10,7 @@
     "pwa:icons": "node scripts/generate-pwa-icons.js",
     "preview": "vite preview",
     "server": "node backend/server.js",
+    "prestart": "npm run build",
     "start": "concurrently \"PORT=3002 npm run server\" \"npm run dev:https\""
   },
   "repository": {
