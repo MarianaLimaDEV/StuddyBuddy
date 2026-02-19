@@ -305,8 +305,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body || '',
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-96.png',
+      icon: toBaseUrl('icons/icon-192.png'),
+      badge: toBaseUrl('icons/icon-96.png'),
       tag: data.tag || 'default',
       data: data.data || {},
       requireInteraction: !!data.requireInteraction,
@@ -316,7 +316,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/';
+  const urlToOpen = toBaseUrl(event.notification.data?.url || '');
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
       if (clients.length > 0) {

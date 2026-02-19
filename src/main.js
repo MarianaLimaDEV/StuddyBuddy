@@ -1,4 +1,4 @@
-// Entry point for Vite (kept small on purpose).
 import './scss/main.scss';
+import './fonts.css';
 import './js/main.js';
 

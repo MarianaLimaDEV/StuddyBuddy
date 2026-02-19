@@ -85,18 +85,6 @@ async function initPushButton() {
  * Initialize all features on DOM ready
  */
 async function initializeApp() {
-  // #region agent log
-  fetch('/__cursor_debug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'src/js/main.js:initializeApp:entry',message:'Base URL and CSS link hrefs',data:{baseUrl:(import.meta&&import.meta.env&&import.meta.env.BASE_URL)||null,origin:location.origin,pathname:location.pathname,baseURI:document.baseURI,cssHrefs:[...document.querySelectorAll('link[rel=\"stylesheet\"][href]')].map(l=>l.getAttribute('href')).slice(0,5)},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
-
-  // #region agent log
-  fetch('/__cursor_debug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H3',location:'src/js/main.js:initializeApp:sw',message:'Service worker controller status',data:{swSupported:('serviceWorker' in navigator),controllerUrl:navigator.serviceWorker?.controller?.scriptURL||null},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
-
-  // #region agent log
-  (async()=>{try{const href=(document.querySelector('link[rel=\"stylesheet\"][href]')||null)?.getAttribute('href');const abs=href?new URL(href,document.baseURI).toString():null;let status=null;if(abs){try{const res=await fetch(abs,{method:'HEAD',cache:'no-store'});status=res.status;}catch(e){status='ERR';}}fetch('/__cursor_debug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'src/js/main.js:initializeApp:css-head',message:'HEAD first stylesheet href',data:{href,abs,status},timestamp:Date.now()})}).catch(()=>{});}catch(_){}})();
-  // #endregion
-
   // Initialize PWA features with proper error handling
   try {
     await initSWRegistration();
