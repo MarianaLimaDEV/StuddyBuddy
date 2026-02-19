@@ -29,6 +29,14 @@ export default defineConfig({
       : false,
     proxy: {
       '/api': 'http://localhost:3002',
+      // Local-only: allow HTTPS pages to send debug logs without mixed-content.
+      // Proxies to Cursor's debug ingest server over HTTP.
+      '/__cursor_debug': {
+        target: 'http://127.0.0.1:7242',
+        changeOrigin: true,
+        secure: false,
+        rewrite: () => '/ingest/89655d2b-1862-42ea-92cd-ed23a5d332c2',
+      },
     },
   },
   preview: {
