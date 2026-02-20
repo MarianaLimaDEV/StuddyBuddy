@@ -5,6 +5,9 @@
  */
 
 const STORAGE_KEY = 'pwa-install-dismissed';
+let deferredPrompt = null;
+let isAvailable = false;
+const availabilitySubscribers = new Set();
 
 /** True se a app está a correr em modo standalone (instalada). */
 export function isStandalone() {
@@ -14,6 +17,24 @@ export function isStandalone() {
     window.navigator.standalone === true ||
     document.referrer.includes('android-app://')
   );
+}
+
+function setAvailability(next) {
+  isAvailable = Boolean(next);
+  availabilitySubscribers.forEach((cb) => {
+    try { cb(isAvailable); } catch (_) {}
+  });
+}
+
+export function getInstallAvailability() {
+  return isAvailable;
+}
+
+export function onInstallAvailabilityChange(cb) {
+  if (typeof cb !== 'function') return () => {};
+  availabilitySubscribers.add(cb);
+  try { cb(isAvailable); } catch (_) {}
+  return () => availabilitySubscribers.delete(cb);
 }
 
 /** Marca que o utilizador dispensou o prompt (não mostrar de novo). */
@@ -31,6 +52,46 @@ function setDismissed() {
   } catch {}
 }
 
+function showEl(el) {
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.removeAttribute('hidden');
+  el.removeAttribute('inert');
+  el.setAttribute('aria-hidden', 'false');
+}
+
+function hideEl(el) {
+  if (!el) return;
+  el.classList.add('hidden');
+  el.setAttribute('aria-hidden', 'true');
+  el.setAttribute('hidden', '');
+  el.setAttribute('inert', '');
+}
+
+export async function promptInstall({ hideBannerId } = {}) {
+  if (!deferredPrompt) return { available: false, outcome: null };
+
+  try {
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    const outcome = choice?.outcome || null;
+
+    if (outcome === 'accepted') setDismissed();
+    deferredPrompt = null;
+    setAvailability(false);
+
+    if (hideBannerId) {
+      const banner = document.getElementById(hideBannerId);
+      hideEl(banner);
+    }
+
+    return { available: true, outcome };
+  } catch (err) {
+    // If something goes wrong, keep availability as-is (best effort).
+    return { available: Boolean(deferredPrompt), outcome: null, error: err };
+  }
+}
+
 /**
  * Inicializa o install prompt: escuta beforeinstallprompt e mostra o banner.
  * Chamar uma vez no arranque (main.js).
@@ -41,33 +102,23 @@ export function initInstallPrompt(options = {}) {
   const installBtnId = options.installBtnId ?? 'pwa-install-btn';
   const closeBtnId = options.closeBtnId ?? 'pwa-install-close';
 
-  if (isStandalone() || wasDismissed()) return;
+  if (typeof window === 'undefined') return;
+  if (isStandalone()) return;
 
-  let deferredPrompt = null;
+  const shouldAutoShowBanner = !wasDismissed();
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     const banner = document.getElementById(bannerId);
-    if (banner) {
-      banner.classList.remove('hidden');
-      banner.setAttribute('aria-hidden', 'false');
-    }
+    setAvailability(true);
+    if (shouldAutoShowBanner) showEl(banner);
   });
 
   const installBtn = document.getElementById(installBtnId);
   if (installBtn) {
     installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') setDismissed();
-      deferredPrompt = null;
-      const banner = document.getElementById(bannerId);
-      if (banner) {
-        banner.classList.add('hidden');
-        banner.setAttribute('aria-hidden', 'true');
-      }
+      await promptInstall({ hideBannerId: bannerId });
     });
   }
 
@@ -76,10 +127,16 @@ export function initInstallPrompt(options = {}) {
     closeBtn.addEventListener('click', () => {
       setDismissed();
       const banner = document.getElementById(bannerId);
-      if (banner) {
-        banner.classList.add('hidden');
-        banner.setAttribute('aria-hidden', 'true');
-      }
+      hideEl(banner);
     });
   }
+
+  // If the app gets installed (e.g., via browser UI), hide banner + disable buttons.
+  window.addEventListener('appinstalled', () => {
+    setDismissed();
+    deferredPrompt = null;
+    setAvailability(false);
+    const banner = document.getElementById(bannerId);
+    hideEl(banner);
+  });
 }

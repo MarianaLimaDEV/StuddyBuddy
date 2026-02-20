@@ -109,6 +109,15 @@
                             <button type="button" id="pushNotifyBtn" class="push-notify-btn" data-i18n-aria="pushNotifyAria" aria-label="Ativar notificações" data-i18n="pushEnable">🔔 Ativar</button>
                         </div>
 
+                        <div class="pwa-install-container" role="group" aria-labelledby="pwa-install-label">
+                            <span id="pwa-install-label" data-i18n="appLabel">App</span>
+                            <div class="pwa-install-actions">
+                                <button type="button" id="pwaInstallNowBtn" class="pwa-install-now-btn" data-i18n-aria="appInstallAria" data-i18n="appInstall" aria-label="Instalar app" disabled>Instalar</button>
+                                <button type="button" id="pwaDownloadBtn" class="pwa-download-btn" data-i18n-aria="appDownloadAria" data-i18n="appDownload" aria-label="Download da app">Download</button>
+                            </div>
+                        </div>
+                        <p id="pwaInstallHint" class="pwa-install-hint" data-i18n="appInstallHint">Para instalar, usa um browser compatível (Chrome/Edge) ou “Adicionar ao ecrã principal” no iOS.</p>
+
                         <details class="config-faq">
                             <summary class="config-faq__summary" data-i18n="faq">FAQ</summary>
                             <div class="faq-accordion" data-i18n-aria="faqAria">

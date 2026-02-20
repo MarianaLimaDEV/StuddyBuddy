@@ -9,8 +9,8 @@
  *
  * Also: Background Sync (process pending queue with or without open clients), Push notifications.
  */
-const CACHE_PRECACHE = 'studdybuddy-precache-v2';
-const CACHE_RUNTIME = 'studdybuddy-runtime-v2';
+const CACHE_PRECACHE = 'studdybuddy-precache-v3';
+const CACHE_RUNTIME = 'studdybuddy-runtime-v3';
 const CACHE_API = 'studdybuddy-api-v1';
 const SYNC_TAG_PENDING = 'sync-pending';
 const DB_NAME = 'studdybuddy-db';
@@ -29,11 +29,47 @@ const PRECACHE_URLS = [
   'icons/icon-512.png',
 ].map(toBaseUrl);
 
+function unique(arr) {
+  return Array.from(new Set((arr || []).filter(Boolean)));
+}
+
+async function precacheBuildAssets(cache) {
+  // Ensure the app stays interactive offline/standalone:
+  // parse index.html and precache /assets/*.js + /assets/*.css (hashed filenames).
+  try {
+    const indexUrl = toBaseUrl('index.html');
+    const res = await fetch(indexUrl, { cache: 'no-cache' });
+    if (!res.ok) return;
+    const html = await res.text();
+
+    const assetUrls = [];
+    const re = /(?:href|src)\s*=\s*["']([^"']+)["']/gi;
+    let m;
+    while ((m = re.exec(html))) {
+      const raw = m[1];
+      if (!raw) continue;
+      if (!raw.includes('/assets/')) continue;
+      // Only cache build assets (avoid external URLs)
+      if (/^https?:\/\//i.test(raw)) continue;
+      assetUrls.push(toBaseUrl(raw));
+    }
+
+    const urls = unique(assetUrls);
+    if (urls.length) await cache.addAll(urls);
+  } catch (err) {
+    // Best-effort: don't fail SW install if parsing/caching assets fails.
+    console.warn('SW precache assets failed', err);
+  }
+}
+
 // --- Install: precache shell, skipWaiting ---
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_PRECACHE)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(async (cache) => {
+        await cache.addAll(PRECACHE_URLS);
+        await precacheBuildAssets(cache);
+      })
       .then(() => self.skipWaiting())
       .catch((err) => console.warn('SW install precache failed', err))
   );

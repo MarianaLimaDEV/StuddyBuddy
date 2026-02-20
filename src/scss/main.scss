@@ -819,8 +819,59 @@ a:focus-visible {
 
 /* Language toggle container */
 .lang-toggle-container,
-.push-toggle-container {
+.push-toggle-container,
+.pwa-install-container {
   @include toggle-container;
+}
+
+.pwa-install-container {
+  align-items: flex-start;
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pwa-install-now-btn,
+.pwa-download-btn {
+  padding: 0.5rem 0.9rem;
+  background-color: var(--surface);
+  border: 2px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background-color: var(--hover-overlay);
+    border-color: var(--primary);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: default;
+  }
+}
+
+.pwa-install-now-btn {
+  background-color: rgba(122, 167, 255, 0.16);
+  border-color: rgba(122, 167, 255, 0.28);
+
+  &:hover:not(:disabled) {
+    background-color: rgba(122, 167, 255, 0.22);
+    border-color: rgba(122, 167, 255, 0.4);
+  }
+}
+
+.pwa-install-hint {
+  margin: 0.25rem 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
 }
 
 .push-notify-btn {
@@ -928,6 +979,7 @@ footer {
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
   box-shadow: 0 16px 60px var(--shadow-color);
+  overflow: hidden;
 }
 
 .cookie-banner__content {

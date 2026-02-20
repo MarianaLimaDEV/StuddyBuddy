@@ -42,6 +42,7 @@ import { initLanguageToggle } from './i18n.js';
 import { initSWRegistration } from './pwa/sw-registration.js';
 import { initSyncManager } from './pwa/sync.js';
 import { initInstallPrompt } from './pwa/install-prompt.js';
+import { initInstallUI } from './pwa/install-ui.js';
 import { initNativeFeel } from './pwa/native-feel.js';
 import { initPush, disablePush, hasActivePushSubscription } from './pwa/push.js';
 /** Configura o botão "Notificações push" nas configurações. */
@@ -102,6 +103,12 @@ async function initializeApp() {
     await initInstallPrompt();
   } catch (error) {
     console.error('Failed to initialize Install Prompt:', error);
+  }
+
+  try {
+    await initInstallUI();
+  } catch (error) {
+    console.error('Failed to initialize Install UI:', error);
   }
 
   try {
@@ -468,11 +475,3 @@ function updateMuteButtonUI(muted) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`)
-      .then(reg => console.log('SW registado!', reg))
-      .catch(err => console.log('Erro no SW', err));
-  });
-}
