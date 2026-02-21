@@ -29,7 +29,7 @@ const t = {
   appInstallAria: { pt: 'Instalar a app', en: 'Install the app' },
   appDownload: { pt: 'Download', en: 'Download' },
   appDownloadAria: { pt: 'Baixar / instalar a app', en: 'Download / install the app' },
-  appInstallHint: { pt: 'Para instalar, usa um browser compatível (Chrome/Edge) ou “Adicionar ao ecrã principal” no iOS.', en: 'To install, use a compatible browser (Chrome/Edge) or “Add to Home Screen” on iOS.' },
+  appInstallHint: { pt: 'Clica em “Download” para ver as opções de instalação. No iOS: “Partilhar” → “Adicionar ao ecrã principal”.', en: 'Click “Download” to see install options. On iOS: “Share” → “Add to Home Screen”.' },
   appInstallReady: { pt: 'Instalação disponível neste browser.', en: 'Install is available in this browser.' },
   appAlreadyInstalled: { pt: 'A app já está instalada.', en: 'The app is already installed.' },
   appInstalledBtn: { pt: 'Instalada', en: 'Installed' },

@@ -18,20 +18,13 @@ function setText(el, text) {
 }
 
 export function initInstallUI(options = {}) {
-  const installBtnId = options.installBtnId ?? 'pwaInstallNowBtn';
   const downloadBtnId = options.downloadBtnId ?? 'pwaDownloadBtn';
   const hintId = options.hintId ?? 'pwaInstallHint';
 
-  const installBtn = document.getElementById(installBtnId);
   const downloadBtn = document.getElementById(downloadBtnId);
   const hint = document.getElementById(hintId);
 
   const setInstalledState = () => {
-    if (installBtn) {
-      installBtn.disabled = true;
-      installBtn.hidden = false;
-      setText(installBtn, tr('appInstalledBtn'));
-    }
     if (downloadBtn) {
       downloadBtn.disabled = true;
     }
@@ -39,11 +32,6 @@ export function initInstallUI(options = {}) {
   };
 
   const setUnavailableState = () => {
-    if (installBtn) {
-      installBtn.disabled = true;
-      installBtn.hidden = false;
-      setText(installBtn, tr('appInstall'));
-    }
     if (downloadBtn) {
       downloadBtn.disabled = false;
     }
@@ -51,10 +39,6 @@ export function initInstallUI(options = {}) {
   };
 
   const setAvailableState = () => {
-    if (installBtn) {
-      installBtn.disabled = false;
-      setText(installBtn, tr('appInstall'));
-    }
     if (downloadBtn) {
       downloadBtn.disabled = false;
     }
@@ -72,17 +56,6 @@ export function initInstallUI(options = {}) {
   onInstallAvailabilityChange((available) => {
     if (isStandalone()) return setInstalledState();
     available ? setAvailableState() : setUnavailableState();
-  });
-
-  installBtn?.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const result = await promptInstall({ hideBannerId: 'pwa-install-banner' });
-    if (!result.available) {
-      downloadBtn?.click();
-      return;
-    }
-    if (result.outcome === 'accepted') showNotification(tr('appInstalled'), 'success', 3500);
-    else if (result.outcome === 'dismissed') showNotification(tr('appInstallDismissed'), 'info', 3500);
   });
 
   downloadBtn?.addEventListener('click', async (e) => {

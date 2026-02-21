@@ -562,10 +562,34 @@ export function initNavbarToggle() {
   const menu = document.getElementById('navbar-menu') || document.querySelector('.navbar-menu');
   if (!toggle || !menu) return;
 
-  setExpanded(toggle, false);
-  setAriaHidden(menu, true);
+  // Keep in sync with SCSS breakpoint: $breakpoints['lg'] = 1300px (max-width)
+  const mobileMq = window.matchMedia('(max-width: 1300px)');
+
+  const syncLayout = () => {
+    const isMobile = mobileMq.matches;
+    const isOpen = menu.classList.contains('open');
+
+    // Desktop: menu is always visible; hamburger is hidden via CSS
+    if (!isMobile) {
+      menu.classList.remove('open');
+      toggle.classList.remove('is-open');
+      setAriaHidden(menu, false);
+      setExpanded(toggle, false);
+      return;
+    }
+
+    // Mobile: menu is collapsible
+    setAriaHidden(menu, !isOpen);
+    setExpanded(toggle, isOpen);
+    toggle.classList.toggle('is-open', isOpen);
+  };
+
+  // Initial state should respect current viewport size
+  syncLayout();
 
   const openMenu = () => {
+    // Only meaningful in the mobile layout
+    if (!mobileMq.matches) return;
     menu.classList.add('open');
     toggle.classList.add('is-open');
     setAriaHidden(menu, false);
@@ -575,6 +599,7 @@ export function initNavbarToggle() {
   };
 
   const closeMenu = () => {
+    if (!mobileMq.matches) return;
     menu.classList.remove('open');
     toggle.classList.remove('is-open');
     setAriaHidden(menu, true);
@@ -595,9 +620,16 @@ export function initNavbarToggle() {
     if (ev.key === 'Escape' && menu.classList.contains('open')) closeMenu();
   });
 
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768 && menu.classList.contains('open')) closeMenu();
-  });
+  // When crossing the breakpoint, force the correct desktop/mobile behavior
+  try {
+    mobileMq.addEventListener('change', syncLayout);
+  } catch {
+    // Safari < 14
+    mobileMq.addListener(syncLayout);
+  }
+
+  // On any resize, keep hidden/inert in sync with open state (mobile only)
+  window.addEventListener('resize', () => syncLayout(), { passive: true });
 }
 
 // ==================== REUSABLE TOGGLE SETUP ====================

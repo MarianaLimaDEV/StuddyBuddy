@@ -319,8 +319,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--surface);
-  --popup-chrome-height: 48px;
-  --popup-close-size: 2.75rem;
+  --popup-chrome-height: 44px;
+  --popup-close-size: 2.25rem;
   padding: 2rem;
   padding-top: calc(2rem + var(--popup-chrome-height));
   border-radius: 16px;
@@ -348,8 +348,8 @@
     padding: 1rem;
     padding-top: calc(1rem + var(--popup-chrome-height));
     border-radius: 12px;
-    --popup-chrome-height: 40px;
-    --popup-close-size: 2.25rem;
+    --popup-chrome-height: 36px;
+    --popup-close-size: 2rem;
   }
 
   // Mobile landscape - more compact
@@ -366,7 +366,8 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    --popup-chrome-height: 24px;
+    --popup-chrome-height: 28px;
+    --popup-close-size: 2rem;
     
     .auth-tabs {
       flex-shrink: 0;
@@ -426,14 +427,14 @@
   &-close {
     position: absolute;
     z-index: 2;
-    top: calc((var(--popup-chrome-height) - var(--popup-close-size)) / 2);
+    top: 4px;
     right: 10px;
     width: var(--popup-close-size);
     height: var(--popup-close-size);
     background: color-mix(in srgb, var(--surface) 65%, transparent);
     border: 1px solid var(--border-subtle);
     color: var(--muted);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -826,10 +827,10 @@
   border-radius: 14px;
   border: 1px solid var(--border-subtle);
   overflow: hidden; // keep rounded edges crisp (clip pseudo/backdrops)
-  padding: 1.5rem;
+  padding: 1.75rem;
   margin-top: 15px;
-  min-width: 350px;
-  max-width: 450px;
+  min-width: min(420px, calc(100vw - 2rem));
+  max-width: min(620px, calc(100vw - 2rem));
 
   @include respond-to('lg') {
     position: static;
@@ -905,9 +906,9 @@
 // Config dropdown can get long (FAQ etc.) → allow scroll
 #dropdown-configuracoes {
   // Smaller panel (more compact)
-  min-width: 280px;
-  max-width: 360px;
-  padding: 1rem;
+  min-width: min(360px, calc(100vw - 2rem));
+  max-width: min(560px, calc(100vw - 2rem));
+  padding: 1.25rem;
   border-radius: 14px;
 
   max-height: min(70vh, 520px);

@@ -107,8 +107,8 @@ a:focus-visible {
 
 /* Card styles */
 .card {
-  --card-chrome-height: 48px;
-  --chrome-close-size: 2.75rem;
+  --card-chrome-height: 44px;
+  --chrome-close-size: 2.25rem;
   --card-min-w: 280px;
   --card-max-w: min(600px, 95vw);
   --card-min-h: 200px;
@@ -170,8 +170,8 @@ a:focus-visible {
   // Extra small mobile - more compact popup size
   @include respond-to('xs') {
     resize: none;
-    --card-chrome-height: 40px;
-    --chrome-close-size: 2.25rem;
+    --card-chrome-height: 36px;
+    --chrome-close-size: 2rem;
     width: calc(100vw - 1.5rem);
     max-width: none;
     padding: 10px;
@@ -188,7 +188,7 @@ a:focus-visible {
   @media (max-height: 500px) and (orientation: landscape) {
     resize: none;
     --card-chrome-height: 36px;
-    --chrome-close-size: 2.25rem;
+    --chrome-close-size: 2rem;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -261,17 +261,17 @@ a:focus-visible {
 /* Close button */
 .card-close {
   // Align close button into the chrome bar
-  // Increased touch target from 32px to 44px (2.75rem) for better accessibility
+  // Slightly smaller so it stays fully inside the chrome bar
   position: absolute;
   z-index: 2;
   width: var(--chrome-close-size);
   height: var(--chrome-close-size);
   padding: 0;
-  top: calc((var(--card-chrome-height) - var(--chrome-close-size)) / 2);
+  top: 4px;
   right: 10px;
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   opacity: 0.6;
   display: flex;
   align-items: center;
@@ -280,7 +280,8 @@ a:focus-visible {
   
   &:hover {
     opacity: 1;
-    background: rgba(239, 68, 68, 0.15);
+    // Smaller circle (matches the smaller button size)
+    background: rgba(239, 68, 68, 0.14);
     color: var(--danger);
   }
 
@@ -1047,6 +1048,11 @@ $sidebar-expanded-width: 220px;
   position: fixed;
   left: 0;
   top: 50%;
+  // Mobile browsers with dynamic toolbars can shift elements positioned at 50%.
+  // Prefer a stable viewport unit when supported so it doesn't "follow the finger".
+  @supports (top: 50svh) {
+    top: 50svh;
+  }
   transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
   height: 280px;
   width: $sidebar-expanded-width;
@@ -1055,6 +1061,7 @@ $sidebar-expanded-width: 220px;
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-right: 1px solid var(--border-subtle);
+  border-radius: 0 16px 16px 0;
   box-shadow: 2px 0 12px var(--shadow-color);
   padding: 0;
   display: flex;
@@ -1174,6 +1181,7 @@ body.sidebar-open .left-sidebar {
     overflow-y: auto;
     pointer-events: auto;
     transform: translateY(-50%) translateX(0);
+    box-shadow: 4px 0 20px var(--shadow-color);
 
     .left-sidebar__inner {
       opacity: 1;
@@ -1199,6 +1207,7 @@ body.sidebar-open .left-sidebar {
     transform: translateY(-50%) translateX(0);
     padding: 1rem 0.75rem;
     overflow-y: auto;
+    box-shadow: 4px 0 20px var(--shadow-color);
 
     .left-sidebar__inner {
       opacity: 1;
@@ -1238,6 +1247,9 @@ body.sidebar-open .left-sidebar {
   position: fixed;
   left: 0;
   top: 50%;
+  @supports (top: 50svh) {
+    top: 50svh;
+  }
   transform: translateY(-50%);
   z-index: 999;
   width: 28px;
