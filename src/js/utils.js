@@ -1141,7 +1141,7 @@ function getNotificationContainer() {
   notificationContainer.setAttribute('aria-live', 'polite');
   notificationContainer.style.cssText = `
     position: fixed;
-    bottom: 80px;
+    bottom: max(80px, calc(env(safe-area-inset-bottom, 0) + 92px));
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -1170,6 +1170,114 @@ const NOTIFICATION_COLORS = {
   info: 'var(--primary)'
 };
 
+function dismissToast(toastEl, { direction = 'down', immediate = false } = {}) {
+  if (!toastEl || toastEl.dataset.dismissed === 'true') return;
+  toastEl.dataset.dismissed = 'true';
+
+  const finish = () => toastEl.remove();
+  if (immediate) return finish();
+
+  const dirX = direction === 'left' ? -1 : direction === 'right' ? 1 : 0;
+  const outTransform = dirX
+    ? `translate3d(${dirX * 120}%, 0, 0)`
+    : 'translate3d(0, 20px, 0)';
+
+  toastEl.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+  toastEl.style.opacity = '0';
+  toastEl.style.transform = outTransform;
+  setTimeout(finish, 240);
+}
+
+function attachSwipeToDismiss(toastEl, { onDismiss } = {}) {
+  if (!toastEl) return;
+
+  let startX = 0;
+  let startY = 0;
+  let lastX = 0;
+  let swiping = false;
+  let pointerId = null;
+  let moved = false;
+
+  const onPointerDown = (e) => {
+    // Only handle primary button / touch
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    pointerId = e.pointerId;
+    moved = false;
+    swiping = false;
+    startX = e.clientX;
+    startY = e.clientY;
+    lastX = e.clientX;
+    toastEl.style.willChange = 'transform, opacity';
+    try { toastEl.setPointerCapture(pointerId); } catch (_) {}
+  };
+
+  const onPointerMove = (e) => {
+    if (pointerId === null || e.pointerId !== pointerId) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    lastX = e.clientX;
+
+    // Begin swipe only when movement is mostly horizontal
+    if (!swiping) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(dx) <= Math.abs(dy) + 6) return;
+      swiping = true;
+    }
+    moved = true;
+
+    // Drag
+    toastEl.style.transition = 'none';
+    toastEl.style.transform = `translate3d(${dx}px, 0, 0)`;
+    const fade = Math.min(0.65, Math.abs(dx) / 320);
+    toastEl.style.opacity = String(1 - fade);
+    e.preventDefault();
+  };
+
+  const onPointerUp = (e) => {
+    if (pointerId === null || e.pointerId !== pointerId) return;
+    try { toastEl.releasePointerCapture(pointerId); } catch (_) {}
+    pointerId = null;
+
+    if (!swiping) return;
+
+    const dx = lastX - startX;
+    const shouldDismiss = Math.abs(dx) > 90;
+    if (shouldDismiss) {
+      const direction = dx < 0 ? 'left' : 'right';
+      onDismiss?.(direction);
+      dismissToast(toastEl, { direction });
+      return;
+    }
+
+    // Snap back
+    toastEl.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+    toastEl.style.opacity = '1';
+    toastEl.style.transform = 'translate3d(0, 0, 0)';
+    setTimeout(() => { toastEl.style.willChange = ''; }, 220);
+  };
+
+  const onPointerCancel = () => {
+    pointerId = null;
+    toastEl.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+    toastEl.style.opacity = '1';
+    toastEl.style.transform = 'translate3d(0, 0, 0)';
+    setTimeout(() => { toastEl.style.willChange = ''; }, 220);
+  };
+
+  toastEl.addEventListener('pointerdown', onPointerDown);
+  toastEl.addEventListener('pointermove', onPointerMove);
+  toastEl.addEventListener('pointerup', onPointerUp);
+  toastEl.addEventListener('pointercancel', onPointerCancel);
+
+  // Prevent accidental click-through after a swipe
+  toastEl.addEventListener('click', (e) => {
+    if (moved) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, { capture: true });
+}
+
 /**
  * Show a notification toast
  * @param {string} message - Message to display
@@ -1189,6 +1297,7 @@ export function showNotification(message, type = 'success', duration = 3000, pla
   notification.className = `notification notification-${type}`;
   notification.textContent = message;
   notification.setAttribute('role', 'alert');
+  notification.dataset.dismissed = 'false';
   notification.style.cssText = `
     background-color: ${NOTIFICATION_COLORS[type] || NOTIFICATION_COLORS.success};
     color: white;
@@ -1196,25 +1305,46 @@ export function showNotification(message, type = 'success', duration = 3000, pla
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate3d(0, 20px, 0);
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: auto;
+    max-width: min(92vw, 520px);
+    text-align: center;
+    touch-action: pan-y;
   `;
 
   container.appendChild(notification);
 
+  let autoRemoveTimeout = null;
+  const scheduleAutoRemove = () => {
+    if (duration <= 0) return;
+    autoRemoveTimeout = setTimeout(() => {
+      dismissToast(notification, { direction: 'down' });
+    }, duration);
+  };
+  const clearAutoRemove = () => {
+    if (autoRemoveTimeout) clearTimeout(autoRemoveTimeout);
+    autoRemoveTimeout = null;
+  };
+
+  attachSwipeToDismiss(notification, {
+    onDismiss: () => clearAutoRemove(),
+  });
+
   // Animate in
   requestAnimationFrame(() => {
     notification.style.opacity = '1';
-    notification.style.transform = 'translateY(0)';
+    notification.style.transform = 'translate3d(0, 0, 0)';
   });
 
-  // Remove after duration
-  setTimeout(() => {
-    notification.style.opacity = '0';
-    notification.style.transform = 'translateY(20px)';
-    setTimeout(() => notification.remove(), 300);
-  }, duration);
+  // Optional: tap to dismiss (native-ish)
+  notification.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearAutoRemove();
+    dismissToast(notification, { direction: 'down' });
+  });
+
+  scheduleAutoRemove();
 }
 
 /**

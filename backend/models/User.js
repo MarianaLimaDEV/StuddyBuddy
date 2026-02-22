@@ -9,6 +9,15 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    emailVerifiedAt: {
+      type: Date,
+      default: null,
+    },
     passwordHash: {
       type: String,
       required: true,

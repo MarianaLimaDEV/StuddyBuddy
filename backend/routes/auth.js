@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('node:crypto');
 const User = require('../models/User');
 const PasswordResetToken = require('../models/PasswordResetToken');
+const EmailVerificationToken = require('../models/EmailVerificationToken');
+const { hasSmtpConfig, sendEmail } = require('../mailer');
 
 const router = express.Router();
 
@@ -24,6 +26,64 @@ function signToken(user, { rememberMe = false } = {}) {
     secret,
     { expiresIn }
   );
+}
+
+function getPublicBaseUrl(req) {
+  const envBase = process.env.PUBLIC_BASE_URL || process.env.APP_BASE_URL;
+  if (envBase) return String(envBase).replace(/\/+$/, '');
+
+  const proto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+  const host = req.headers['x-forwarded-host'] || req.get('host');
+  return `${proto}://${host}`;
+}
+
+function buildVerifyEmailLink(req, rawToken) {
+  const base = getPublicBaseUrl(req);
+  const url = new URL('/api/auth/verify-email', base);
+  url.searchParams.set('token', rawToken);
+  return url.toString();
+}
+
+async function sendVerificationEmail({ req, to, rawToken }) {
+  const link = buildVerifyEmailLink(req, rawToken);
+  const subject = 'Verifica o teu email — StuddyBuddy';
+  const text = `Olá!\n\nPara verificar o teu email no StuddyBuddy, abre este link:\n${link}\n\nSe não foste tu, ignora este email.\n`;
+  const html = `
+    <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.5;">
+      <h2>Verificação de email</h2>
+      <p>Para verificar o teu email no <strong>StuddyBuddy</strong>, clica aqui:</p>
+      <p><a href="${link}">Verificar email</a></p>
+      <p style="color:#666;">Se não foste tu, podes ignorar este email.</p>
+    </div>
+  `;
+
+  if (process.env.NODE_ENV !== 'production' && !hasSmtpConfig()) {
+    // Dev convenience: no SMTP configured, skip sending
+    return { skipped: true, link };
+  }
+
+  await sendEmail({ to, subject, text, html });
+  return { skipped: false, link };
+}
+
+async function createEmailVerificationToken({ userId, req }) {
+  const rawToken = crypto.randomBytes(32).toString('base64url');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const ttlMinutes = Number(process.env.EMAIL_VERIFY_TTL_MINUTES || 60 * 24); // 24h default
+  const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
+
+  // Invalidate previous unused tokens
+  await EmailVerificationToken.deleteMany({ userId, usedAt: null });
+
+  await EmailVerificationToken.create({
+    userId,
+    tokenHash,
+    expiresAt,
+    requestedIp: req?.ip || null,
+    userAgent: req?.headers?.['user-agent'] || null,
+  });
+
+  return { rawToken, ttlMinutes };
 }
 
 // POST /api/auth/register
@@ -52,10 +112,17 @@ router.post('/register', async (req, res) => {
       settings: { theme: 'dark', soundMuted: false },
     });
 
+    // Create verification token + send email (best-effort in dev)
+    const { rawToken, ttlMinutes } = await createEmailVerificationToken({ userId: user._id, req });
+    const mailResult = await sendVerificationEmail({ req, to: user.email, rawToken });
+
     const token = signToken(user);
     return res.status(201).json({
       token,
-      user: { email: user.email, settings: user.settings },
+      user: { email: user.email, settings: user.settings, emailVerified: Boolean(user.emailVerified) },
+      ...(process.env.NODE_ENV !== 'production'
+        ? { dev: { verifyLink: mailResult.link, token: rawToken, expiresInMinutes: ttlMinutes, emailSent: !mailResult.skipped } }
+        : {}),
     });
   } catch (err) {
     console.error('Erro ao registar utilizador:', err);
@@ -67,6 +134,83 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ message: 'Este email já está registado' });
     }
     return res.status(500).json({ message: 'Erro ao registar utilizador' });
+  }
+});
+
+// GET /api/auth/verify-email?token=...
+router.get('/verify-email', async (req, res) => {
+  try {
+    const token = req.query?.token;
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ message: 'Token é obrigatório' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const record = await EmailVerificationToken.findOne({
+      tokenHash,
+      usedAt: null,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!record) {
+      return res.status(400).json({ message: 'Token inválido ou expirado' });
+    }
+
+    const user = await User.findById(record.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilizador não encontrado' });
+    }
+
+    if (!user.emailVerified) {
+      user.emailVerified = true;
+      user.emailVerifiedAt = new Date();
+      await user.save();
+    }
+
+    record.usedAt = new Date();
+    await record.save();
+    await EmailVerificationToken.deleteMany({ userId: user._id, usedAt: null });
+
+    const redirect = process.env.EMAIL_VERIFY_REDIRECT_URL;
+    if (redirect) {
+      const url = new URL(redirect);
+      url.searchParams.set('verified', '1');
+      return res.redirect(302, url.toString());
+    }
+
+    return res.json({ ok: true, message: 'Email verificado com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao verificar email:', err);
+    return res.status(500).json({ message: 'Erro ao verificar email' });
+  }
+});
+
+// POST /api/auth/resend-verification
+// Security: do NOT reveal whether an email exists.
+router.post('/resend-verification', async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ message: 'Email é obrigatório' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail }).select('_id email emailVerified');
+
+    const generic = { message: 'Se o email existir, enviámos um link de verificação.' };
+    if (!user) return res.json(generic);
+    if (user.emailVerified) return res.json(generic);
+
+    const { rawToken, ttlMinutes } = await createEmailVerificationToken({ userId: user._id, req });
+    const mailResult = await sendVerificationEmail({ req, to: user.email, rawToken });
+
+    if (process.env.NODE_ENV !== 'production') {
+      return res.json({ ...generic, dev: { verifyLink: mailResult.link, token: rawToken, expiresInMinutes: ttlMinutes, emailSent: !mailResult.skipped } });
+    }
+    return res.json(generic);
+  } catch (err) {
+    console.error('Erro no resend-verification:', err);
+    return res.status(500).json({ message: 'Erro ao reenviar verificação' });
   }
 });
 
@@ -93,10 +237,14 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Credenciais inválidas' });
     }
 
+    if (process.env.REQUIRE_EMAIL_VERIFICATION === 'true' && !user.emailVerified) {
+      return res.status(403).json({ message: 'Email ainda não verificado. Verifica o teu email antes de fazer login.' });
+    }
+
     const token = signToken(user, { rememberMe: Boolean(rememberMe) });
     return res.json({
       token,
-      user: { email: user.email, settings: user.settings },
+      user: { email: user.email, settings: user.settings, emailVerified: Boolean(user.emailVerified) },
     });
   } catch (err) {
     console.error('Erro ao fazer login:', err);

@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const mongoose = require('mongoose');
 const connectDB = require('./db');
 
 const tasksRoutes = require('./routes/tasks');
@@ -35,7 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Liga ao MongoDB
-connectDB();
+let server = null;
 
 // CORS middleware - permitir requests do Vite dev server
 app.use((req, res, next) => {
@@ -56,7 +57,8 @@ app.use(express.json());
 
 // Rota de teste/health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'StuddyBuddy API a funcionar 🚀' });
+  const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+  res.json({ status: 'ok', db: state, message: 'StuddyBuddy API a funcionar 🚀' });
 });
 
 // Rotas principais da API
@@ -73,6 +75,31 @@ app.use('/api', (req, res) => {
 });
 
 // Arranque do servidor
-app.listen(PORT, () => {
-  console.log(`🌐 Servidor API a correr em http://localhost:${PORT}`);
+(async () => {
+  await connectDB();
+
+  server = app.listen(PORT, () => {
+    console.log(`🌐 Servidor API a correr em http://localhost:${PORT}`);
+  });
+
+  const shutdown = async (signal) => {
+    try {
+      console.log(`\n🛑 Recebido ${signal}. A encerrar...`);
+      if (server) {
+        await new Promise((resolve) => server.close(resolve));
+      }
+      // Close DB connections so deploy platforms can recycle cleanly
+      await mongoose.connection.close(false);
+      process.exit(0);
+    } catch (err) {
+      console.error('❌ Erro ao encerrar:', err?.message || err);
+      process.exit(1);
+    }
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+})().catch((err) => {
+  console.error('❌ Failed to start server:', err?.message || err);
+  process.exit(1);
 });

@@ -36,9 +36,12 @@ body {
 
   @include respond-to('sm') {
     padding-top: max(16px, env(safe-area-inset-top, 0));
+    // Space for the mobile tool dock (buttonContainer)
+    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 96px);
   }
   @include respond-to('xs') {
     padding-top: max(12px, env(safe-area-inset-top, 0));
+    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 96px);
   }
 
   // Smoother mobile scrolling
