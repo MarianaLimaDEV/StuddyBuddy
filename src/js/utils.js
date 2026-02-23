@@ -1285,7 +1285,7 @@ function attachSwipeToDismiss(toastEl, { onDismiss } = {}) {
  * @param {number} duration - Duration in ms (default: 3000)
  * @param {boolean} playSoundOnNotification - Whether to play notification sound (default: true, false during initialization)
  */
-export function showNotification(message, type = 'success', duration = 3000, playSoundOnNotification = true) {
+export function showNotification(message, type = 'success', duration = 3000, playSoundOnNotification = true, options = {}) {
   // Play notification sound only if not during initialization (to avoid conflict with intro sound)
   if (playSoundOnNotification && !isInitializing) {
     playSound('notification');
@@ -1293,6 +1293,7 @@ export function showNotification(message, type = 'success', duration = 3000, pla
 
   const container = getNotificationContainer();
   const notification = document.createElement('div');
+  const opts = options && typeof options === 'object' ? options : {};
   
   notification.className = `notification notification-${type}`;
   notification.textContent = message;
@@ -1337,11 +1338,18 @@ export function showNotification(message, type = 'success', duration = 3000, pla
     notification.style.transform = 'translate3d(0, 0, 0)';
   });
 
-  // Optional: tap to dismiss (native-ish)
-  notification.addEventListener('click', (e) => {
+  // Optional: tap action / dismiss
+  notification.addEventListener('click', async (e) => {
     e.stopPropagation();
     clearAutoRemove();
-    dismissToast(notification, { direction: 'down' });
+    try {
+      if (typeof opts.onClick === 'function') {
+        await opts.onClick();
+      }
+    } finally {
+      const dismissOnClick = typeof opts.dismissOnClick === 'boolean' ? opts.dismissOnClick : true;
+      if (dismissOnClick) dismissToast(notification, { direction: 'down' });
+    }
   });
 
   scheduleAutoRemove();

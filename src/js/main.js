@@ -39,7 +39,7 @@ import {
 } from './utils.js';
 import { renderStatsIn } from './study-stats.js';
 import { initLanguageToggle } from './i18n.js';
-import { initSWRegistration } from './pwa/sw-registration.js';
+import { initSWRegistration, skipWaitingAndReload } from './pwa/sw-registration.js';
 import { initSyncManager } from './pwa/sync.js';
 import { initInstallPrompt } from './pwa/install-prompt.js';
 import { initInstallUI } from './pwa/install-ui.js';
@@ -88,6 +88,22 @@ async function initPushButton() {
 async function initializeApp() {
   // Initialize PWA features with proper error handling
   try {
+    // Notify users when a new deployed commit/version is available (PWA update)
+    window.__pwaOnNewVersion = () => {
+      showNotification(
+        'Nova versão disponível. Toque para atualizar.',
+        'info',
+        0,
+        true,
+        {
+          dismissOnClick: false,
+          onClick: async () => {
+            const ok = await skipWaitingAndReload();
+            if (!ok) window.location.reload();
+          },
+        }
+      );
+    };
     await initSWRegistration();
   } catch (error) {
     console.error('Failed to initialize SW Registration:', error);
