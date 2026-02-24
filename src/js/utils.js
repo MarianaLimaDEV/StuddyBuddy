@@ -7,6 +7,7 @@ import { tr } from './i18n.js';
 import { renderStatsIn } from './study-stats.js';
 import { addToPendingSync, getOffline, salvarOffline } from './pwa/db.js';
 import { registerBackgroundSync } from './pwa/sync.js';
+import { apiFetch, apiUrl } from './api-base.js';
 
 // ==================== AUTH / USER SETTINGS (MongoDB) ====================
 const AUTH_TOKEN_STORAGE_KEY = 'authToken';
@@ -66,7 +67,7 @@ export async function authFetch(url, options = {}) {
   const token = getAuthToken();
   const headers = new Headers(options.headers || {});
   if (token) headers.set('Authorization', `Bearer ${token}`);
-  const res = await fetch(url, { ...options, headers });
+  const res = await apiFetch(url, { ...options, headers });
   if (res.status === 401) {
     // Token expirado/ inválido: limpa estado local para evitar loops
     clearAuth();
@@ -80,7 +81,7 @@ export async function loginUser({ email, password, rememberMe }) {
   if (!normalizedEmail) throw new Error('Email é obrigatório');
   if (!pwd) throw new Error('Password é obrigatória');
 
-  const res = await fetch('/api/auth/login', {
+  const res = await apiFetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: normalizedEmail, password: pwd, rememberMe: Boolean(rememberMe) }),
@@ -110,7 +111,7 @@ export async function registerUser({ email, password }) {
   if (!normalizedEmail) throw new Error('Email é obrigatório');
   if (!pwd || pwd.length < 8) throw new Error('Password deve ter pelo menos 8 caracteres');
 
-  const res = await fetch('/api/auth/register', {
+  const res = await apiFetch('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: normalizedEmail, password: pwd }),
@@ -139,7 +140,7 @@ export async function registerUser({ email, password }) {
 export async function requestPasswordReset(email) {
   const normalizedEmail = String(email || '').trim().toLowerCase();
   if (!normalizedEmail) throw new Error('Email é obrigatório');
-  const res = await fetch('/api/auth/forgot-password', {
+  const res = await apiFetch('/api/auth/forgot-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: normalizedEmail }),
@@ -162,7 +163,7 @@ export async function resetPassword({ token, password }) {
   const pwd = String(password || '');
   if (!t) throw new Error('Token é obrigatório');
   if (!pwd || pwd.length < 8) throw new Error('Password deve ter pelo menos 8 caracteres');
-  const res = await fetch('/api/auth/reset-password', {
+  const res = await apiFetch('/api/auth/reset-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: t, password: pwd }),
@@ -253,7 +254,7 @@ export async function updateUserSettings(partial) {
       try {
         await addToPendingSync({
           type: 'PUT',
-          url: '/api/user/settings',
+          url: apiUrl('/api/user/settings'),
           body: payload,
           headers: { Authorization: `Bearer ${token}` },
         });

@@ -8,6 +8,7 @@ import {
   carregarTasks,
 } from './db.js';
 import { SYNC_TAG_PENDING } from './config.js';
+import { apiFetch } from '../api-base.js';
 
 // Module-level guard to prevent concurrent sync operations
 let isSyncing = false;
@@ -32,7 +33,7 @@ export async function processPendingSync() {
       if (item.body && (item.type === 'POST' || item.type === 'PUT')) {
         options.body = JSON.stringify(item.body);
       }
-      const res = await fetch(item.url, options);
+      const res = await apiFetch(item.url, options);
       
       // Remove from queue on success OR on non-retriable client errors (4xx)
       if (res.ok) {

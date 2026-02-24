@@ -11,8 +11,9 @@ import {
   addToPendingSync,
 } from './db.js';
 import { registerBackgroundSync } from './pwa/sync.js';
+import { apiFetch, apiUrl } from './api-base.js';
 
-const TASKS_API_URL = '/api/tasks';
+const TASKS_API_URL = apiUrl('/api/tasks');
 
 export class TaskList {
   constructor() {
@@ -92,7 +93,7 @@ export class TaskList {
     }
 
     try {
-      const response = await fetch(TASKS_API_URL, {
+      const response = await apiFetch(TASKS_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: taskText }),
@@ -171,7 +172,7 @@ async deleteTask(id) {
     this.render();
 
     try {
-      const response = await fetch(`${TASKS_API_URL}/${id}`, { method: 'DELETE' });
+      const response = await apiFetch(`${TASKS_API_URL}/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
       playSound('task_delete');
     } catch (error) {
@@ -205,7 +206,7 @@ async toggleTask(id) {
     this.inFlight.add(id);
 
     try {
-      const response = await fetch(`${TASKS_API_URL}/${id}`, {
+      const response = await apiFetch(`${TASKS_API_URL}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ done: task.done }),

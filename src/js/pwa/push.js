@@ -4,15 +4,17 @@
  * O Service Worker já trata os eventos push e notificationclick.
  */
 
-const VAPID_PUBLIC_ENDPOINT = '/api/push/vapid-public';
-const SUBSCRIBE_ENDPOINT = '/api/push/subscribe';
-const UNSUBSCRIBE_ENDPOINT = '/api/push/unsubscribe';
+import { apiFetch, apiUrl } from '../api-base.js';
+
+const VAPID_PUBLIC_ENDPOINT = apiUrl('/api/push/vapid-public');
+const SUBSCRIBE_ENDPOINT = apiUrl('/api/push/subscribe');
+const UNSUBSCRIBE_ENDPOINT = apiUrl('/api/push/unsubscribe');
 
 /**
  * Obtém a chave pública VAPID do backend (para PushManager.subscribe).
  */
 export async function getVapidPublicKey() {
-  const res = await fetch(VAPID_PUBLIC_ENDPOINT);
+  const res = await apiFetch(VAPID_PUBLIC_ENDPOINT);
   if (!res.ok) throw new Error('VAPID public key not available');
   const data = await res.json();
   const key = data.publicKey || data.public_key;
@@ -53,7 +55,7 @@ export async function subscribePush(registration) {
 export async function sendSubscriptionToBackend(subscription, authToken = null) {
   const headers = { 'Content-Type': 'application/json' };
   if (authToken) headers.Authorization = `Bearer ${authToken}`;
-  const res = await fetch(SUBSCRIBE_ENDPOINT, {
+  const res = await apiFetch(SUBSCRIBE_ENDPOINT, {
     method: 'POST',
     headers,
     body: JSON.stringify(subscription.toJSON ? subscription.toJSON() : subscription),
@@ -69,7 +71,7 @@ export async function sendSubscriptionToBackend(subscription, authToken = null) 
 export async function removeSubscriptionFromBackend(endpoint, authToken = null) {
   const headers = { 'Content-Type': 'application/json' };
   if (authToken) headers.Authorization = `Bearer ${authToken}`;
-  const res = await fetch(UNSUBSCRIBE_ENDPOINT, {
+  const res = await apiFetch(UNSUBSCRIBE_ENDPOINT, {
     method: 'POST',
     headers,
     body: JSON.stringify({ endpoint }),

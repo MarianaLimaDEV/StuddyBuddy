@@ -4,6 +4,7 @@
  */
 import { openDB } from 'idb';
 import { DB_NAME, DB_VERSION } from './config.js';
+import { apiFetch } from '../api-base.js';
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
   upgrade(db, oldVersion, newVersion) {
@@ -120,7 +121,7 @@ export async function carregarTasks() {
   const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
   try {
-    const res = await fetch('/api/tasks', { signal: controller.signal });
+    const res = await apiFetch('/api/tasks', { signal: controller.signal });
     clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
