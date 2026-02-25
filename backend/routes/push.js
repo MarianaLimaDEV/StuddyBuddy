@@ -161,4 +161,50 @@ router.post('/send', async (req, res) => {
   }
 });
 
+/** POST /api/push/test — envia uma notificação de teste só ao utilizador/dispositivo */
+router.post('/test', async (req, res) => {
+  if (!vapidPublic || !vapidPrivate) {
+    return res.status(503).json({ message: 'Web Push não configurado.' });
+  }
+
+  // Require auth in production (so people can't spam arbitrary endpoints)
+  const userId = getOptionalUserId(req);
+  if (process.env.NODE_ENV === 'production' && !userId) {
+    return res.status(403).json({ message: 'Não autorizado.' });
+  }
+
+  try {
+    const { endpoint } = req.body || {};
+    const title = 'StuddyBuddy';
+    const body = 'Notificações push ativas ✅';
+    const payload = JSON.stringify({ title, body, data: { url: '/' } });
+
+    let record = null;
+    if (endpoint) {
+      record = await PushSubscription.findOne({ endpoint }).lean();
+    } else if (userId) {
+      // Most recent subscription for this user
+      record = await PushSubscription.findOne({ userId }).sort({ updatedAt: -1 }).lean();
+    }
+
+    if (!record?.subscription) {
+      return res.status(404).json({ message: 'Subscrição não encontrada.' });
+    }
+
+    try {
+      await webpush.sendNotification(record.subscription, payload);
+      return res.json({ ok: true, message: 'Notificação de teste enviada.' });
+    } catch (e) {
+      // Cleanup gone subscriptions
+      if (e?.statusCode === 410 || e?.statusCode === 404) {
+        await PushSubscription.deleteOne({ endpoint: record.subscription.endpoint });
+      }
+      return res.status(500).json({ message: 'Falha ao enviar notificação.', details: e?.message });
+    }
+  } catch (err) {
+    console.error('Erro no push/test:', err);
+    return res.status(500).json({ message: 'Erro ao enviar notificação de teste' });
+  }
+});
+
 module.exports = router;

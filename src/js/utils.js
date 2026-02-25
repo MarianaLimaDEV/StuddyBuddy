@@ -9,6 +9,8 @@ import { addToPendingSync, getOffline, salvarOffline } from './pwa/db.js';
 import { registerBackgroundSync } from './pwa/sync.js';
 import { apiFetch, apiUrl } from './api-base.js';
 
+const GOOGLE_CLIENT_ID = (import.meta?.env?.VITE_GOOGLE_CLIENT_ID || '').trim();
+
 // ==================== AUTH / USER SETTINGS (MongoDB) ====================
 const AUTH_TOKEN_STORAGE_KEY = 'authToken';
 const USER_EMAIL_STORAGE_KEY = 'userEmail';
@@ -132,6 +134,31 @@ export async function registerUser({ email, password }) {
   if (!data?.token) throw new Error('Resposta de registo inválida (token em falta)');
   setAuthToken(data.token);
   setStoredUserEmail(data?.user?.email || normalizedEmail);
+  return data;
+}
+
+export async function loginWithGoogle({ credential, rememberMe }) {
+  const res = await apiFetch('/api/auth/google', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential, rememberMe: Boolean(rememberMe) }),
+  });
+
+  if (!res.ok) {
+    let message = `Erro HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  const data = await res.json();
+  if (!data?.token) throw new Error('Resposta de login Google inválida (token em falta)');
+  setAuthToken(data.token);
+  setStoredUserEmail(data?.user?.email || '');
   return data;
 }
 
@@ -720,6 +747,7 @@ export function setupLoginPopup() {
   const submitBtn = document.getElementById('loginSubmitBtn');
   const tabLogin = document.getElementById('authTabLogin');
   const tabSignup = document.getElementById('authTabSignup');
+  const googleBtnContainer = document.getElementById('googleSignInBtn');
 
   if (!loginButton || !loginPopup) return;
 
@@ -768,6 +796,56 @@ export function setupLoginPopup() {
     // Focus something sensible
     if (loginConnectedOk) loginConnectedOk.focus();
     else if (loginPopupClose) loginPopupClose.focus();
+  };
+
+  const initGoogleButton = () => {
+    if (!googleBtnContainer) return;
+    if (!GOOGLE_CLIENT_ID) {
+      googleBtnContainer.style.display = 'none';
+      return;
+    }
+    const g = window.google;
+    if (!g?.accounts?.id) {
+      // GIS script may still be loading; best-effort retry
+      setTimeout(initGoogleButton, 600);
+      return;
+    }
+
+    try {
+      g.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async (resp) => {
+          try {
+            const remember = Boolean(document.getElementById('rememberMe')?.checked);
+            const data = await loginWithGoogle({ credential: resp.credential, rememberMe: remember });
+            playSound('login');
+            const userEmail = data?.user?.email;
+            if (userEmail) {
+              loginButton.textContent = formatUserLabel(userEmail);
+              loginButton.setAttribute('aria-label', `Conta: ${userEmail}`);
+              document.dispatchEvent(new CustomEvent('login-success'));
+            }
+            showNotification('Sessão iniciada.', 'success', 2000);
+            showConnectedView(userEmail);
+          } catch (err) {
+            console.error('Google login failed:', err);
+            showNotification(err?.message || 'Falha ao autenticar com Google', 'error', 4000);
+          }
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      g.accounts.id.renderButton(googleBtnContainer, {
+        type: 'icon',
+        shape: 'circle',
+        theme: 'outline',
+        size: 'large',
+      });
+    } catch (e) {
+      console.warn('Failed to init Google Identity Services:', e);
+      googleBtnContainer.style.display = 'none';
+    }
   };
 
   const showLoginFormView = () => {
@@ -1125,6 +1203,9 @@ export function setupLoginPopup() {
 
   // Trap focus inside popup when open (modal)
   document.addEventListener('keydown', handleTrapFocus);
+
+  // Initialize Google button (render once)
+  initGoogleButton();
 }
 
 // ==================== SHARED NOTIFICATION SYSTEM ====================

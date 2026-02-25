@@ -44,7 +44,7 @@ import { initSyncManager } from './pwa/sync.js';
 import { initInstallPrompt } from './pwa/install-prompt.js';
 import { initInstallUI } from './pwa/install-ui.js';
 import { initNativeFeel } from './pwa/native-feel.js';
-import { initPush, disablePush, hasActivePushSubscription } from './pwa/push.js';
+import { initPush, disablePush, hasActivePushSubscription, sendTestPush } from './pwa/push.js';
 /** Configura o botão "Notificações push" nas configurações. */
 async function initPushButton() {
   const btn = document.getElementById('pushNotifyBtn');
@@ -68,10 +68,22 @@ async function initPushButton() {
       }
 
       const result = await initPush({ getAuthToken });
-      if (result.ok) showNotification('Notificações ativadas.', 'success');
-      else {
-        if (result.reason === 'denied') showNotification('Notificações recusadas.', 'warning');
-        else if (result.reason !== 'unsupported') showNotification('Não foi possível ativar notificações.', 'error');
+      if (result.ok) {
+        showNotification('Notificações ativadas.', 'success');
+        // Send a test notification so the user knows it's working
+        try {
+          const token = await getAuthToken();
+          const endpoint = result.subscription?.endpoint;
+          await sendTestPush({ endpoint, authToken: token });
+          showNotification('Enviámos uma notificação de teste.', 'info', 3500);
+        } catch (e) {
+          // Non-fatal: subscription may still be fine; user can receive future pushes
+          console.warn('Test push failed:', e);
+        }
+      } else {
+        if (result.reason === 'denied') showNotification('Notificações recusadas no browser.', 'warning', 3500);
+        else if (String(result.reason || '').includes('VAPID')) showNotification('Push não configurado no servidor (VAPID).', 'error', 4500);
+        else if (result.reason !== 'unsupported') showNotification('Não foi possível ativar notificações.', 'error', 3500);
       }
       await updateLabel();
     } catch (error) {

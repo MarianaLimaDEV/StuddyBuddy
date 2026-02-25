@@ -2,12 +2,15 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('node:crypto');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const PasswordResetToken = require('../models/PasswordResetToken');
 const EmailVerificationToken = require('../models/EmailVerificationToken');
 const { hasSmtpConfig, sendEmail } = require('../mailer');
 
 const router = express.Router();
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClient = googleClientId ? new OAuth2Client(googleClientId) : null;
 
 function signToken(user, { rememberMe = false } = {}) {
   const secret = process.env.JWT_SECRET;
@@ -214,6 +217,54 @@ router.post('/resend-verification', async (req, res) => {
   }
 });
 
+// POST /api/auth/google
+// Body: { credential: <Google ID token> }
+router.post('/google', async (req, res) => {
+  try {
+    const { credential, rememberMe } = req.body || {};
+    if (!credential || typeof credential !== 'string') {
+      return res.status(400).json({ message: 'Credential é obrigatório' });
+    }
+    if (!googleClient) {
+      return res.status(500).json({ message: 'GOOGLE_CLIENT_ID não definido no servidor.' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: googleClientId,
+    });
+    const payload = ticket.getPayload() || {};
+    const email = String(payload.email || '').trim().toLowerCase();
+    if (!email) return res.status(400).json({ message: 'Email não encontrado no token Google.' });
+
+    const emailVerified = Boolean(payload.email_verified);
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        email,
+        passwordHash: null,
+        emailVerified: emailVerified ? true : false,
+        emailVerifiedAt: emailVerified ? new Date() : null,
+        settings: { theme: 'dark', soundMuted: false },
+      });
+    } else if (emailVerified && !user.emailVerified) {
+      user.emailVerified = true;
+      user.emailVerifiedAt = new Date();
+      await user.save();
+    }
+
+    const token = signToken(user, { rememberMe: Boolean(rememberMe) });
+    return res.json({
+      token,
+      user: { email: user.email, settings: user.settings, emailVerified: Boolean(user.emailVerified) },
+    });
+  } catch (err) {
+    console.error('Erro no login Google:', err);
+    return res.status(500).json({ message: 'Erro ao autenticar com Google' });
+  }
+});
+
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
@@ -230,6 +281,9 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(401).json({ message: 'Credenciais inválidas' });
+    }
+    if (!user.passwordHash) {
+      return res.status(401).json({ message: 'Conta criada via Google. Use "Conectar com Google".' });
     }
 
     const ok = await bcrypt.compare(password, user.passwordHash);

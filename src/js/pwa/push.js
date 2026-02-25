@@ -9,6 +9,7 @@ import { apiFetch, apiUrl } from '../api-base.js';
 const VAPID_PUBLIC_ENDPOINT = apiUrl('/api/push/vapid-public');
 const SUBSCRIBE_ENDPOINT = apiUrl('/api/push/subscribe');
 const UNSUBSCRIBE_ENDPOINT = apiUrl('/api/push/unsubscribe');
+const TEST_ENDPOINT = apiUrl('/api/push/test');
 
 /**
  * Obtém a chave pública VAPID do backend (para PushManager.subscribe).
@@ -79,6 +80,22 @@ export async function removeSubscriptionFromBackend(endpoint, authToken = null) 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || `Unsubscribe failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+/** Envia uma notificação de teste para esta subscrição (best-effort). */
+export async function sendTestPush({ endpoint, authToken = null } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+  const res = await apiFetch(TEST_ENDPOINT, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ endpoint }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Test push failed: ${res.status}`);
   }
   return res.json();
 }
