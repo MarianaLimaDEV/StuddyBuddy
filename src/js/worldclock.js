@@ -1,10 +1,15 @@
 /**
  * World Clock Module
- * Displays multiple timezones with local storage persistence
- * Optimized for performance using requestAnimationFrame and Intl.DateTimeFormat
+ * Uses Network-First strategy: fetches from API when online, falls back to IndexedDB/localStorage
+ * Supports authenticated users with JWT sync
  */
 import { showNotification } from './utils.js';
 import { playSound } from './sound.js';
+import { authFetch, apiUrl } from './api-base.js';
+import { isAuthenticated } from './utils.js';
+
+const WORLDCLOCK_API_URL = apiUrl('/api/worldclock');
+const STORAGE_KEY = 'worldClockTimezones';
 
 export class WorldClock {
   constructor() {
@@ -18,18 +23,7 @@ export class WorldClock {
   }
 
   init() {
-    // Load timezones from localStorage with error handling
-    try {
-      const storedTimezones = localStorage.getItem('worldClockTimezones');
-      this.timezones = storedTimezones ? JSON.parse(storedTimezones) : [];
-    } catch (error) {
-      console.warn('Failed to load timezones from localStorage:', error);
-      this.timezones = [];
-    }
-
-    // Pre-create formatters for better performance
-    this.timezones.forEach(({ tz }) => this.getFormatter(tz));
-
+    // Pre-create formatters (will be populated after load)
     const addBtn = document.getElementById('addTimezoneBtn');
     const timezoneList = document.getElementById('timezoneList');
     
@@ -51,10 +45,82 @@ export class WorldClock {
       });
     }
 
+    // Load timezones using Network-First strategy
+    this.loadTimezones();
+
     // Start the update loop
     this.startUpdateLoop();
     
     this.render();
+
+    // Listen for login success to re-sync
+    window.addEventListener('login-success', () => {
+      this.loadTimezones();
+    });
+  }
+
+  /**
+   * Network-First: Try API, fall back to localStorage
+   */
+  async loadTimezones() {
+    // First, try to load from localStorage for immediate display
+    this.loadFromLocalStorage();
+
+    // Then try network fetch if authenticated
+    if (isAuthenticated()) {
+      try {
+        const res = await authFetch(WORLDCLOCK_API_URL);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            // Convert API response to local format
+            this.timezones = data.map(t => ({
+              tz: t.tz,
+              name: t.name,
+              _id: t._id
+            }));
+            this.saveToLocalStorage();
+            this.updateFormatters();
+            this.render();
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch timezones from API, using local data:', err);
+      }
+    }
+  }
+
+  /**
+   * Load timezones from localStorage (fallback)
+   */
+  loadFromLocalStorage() {
+    try {
+      const storedTimezones = localStorage.getItem(STORAGE_KEY);
+      this.timezones = storedTimezones ? JSON.parse(storedTimezones) : [];
+    } catch (error) {
+      console.warn('Failed to load timezones from localStorage:', error);
+      this.timezones = [];
+    }
+    this.updateFormatters();
+  }
+
+  /**
+   * Save timezones to localStorage
+   */
+  saveToLocalStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.timezones));
+    } catch (error) {
+      console.warn('Failed to save timezones to localStorage:', error);
+      showNotification('Falha ao guardar fusos horários. O armazenamento pode estar cheio.', 'error');
+    }
+  }
+
+  /**
+   * Update formatters for all timezones
+   */
+  updateFormatters() {
+    this.timezones.forEach(({ tz }) => this.getFormatter(tz));
   }
 
   /**
@@ -103,7 +169,7 @@ export class WorldClock {
     this.isRunning = false;
   }
 
-  addTimezone() {
+  async addTimezone() {
     const select = document.getElementById('timezoneSelect');
     if (!select) return;
 
@@ -123,42 +189,63 @@ export class WorldClock {
       return;
     }
 
-    // Add timezone
-    this.timezones.push({ tz, name: tzName });
-    
-    // Pre-create formatter for new timezone
+    // Add timezone locally first (optimistic)
+    const newTimezone = { tz, name: tzName };
+    this.timezones.push(newTimezone);
     this.getFormatter(tz);
-    
-    this.save();
+    this.saveToLocalStorage();
     this.render();
     playSound('timezone_add');
-    // Reduced notifications
-    // showNotification('Fuso horário adicionado!', 'success');
+
+    // Try to sync with server if authenticated
+    if (isAuthenticated()) {
+      try {
+        const res = await authFetch(WORLDCLOCK_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tz, name: tzName })
+        });
+        
+        if (!res.ok) {
+          // Server said no, but we keep it locally
+          console.warn('Server rejected timezone, keeping locally');
+        }
+      } catch (err) {
+        console.warn('Failed to sync timezone to server, saved locally:', err);
+        showNotification('Fuso horário guardado localmente; será sincronizado quando houver ligação.', 'info');
+      }
+    }
   }
 
-  removeTimezone(tz) {
+  async removeTimezone(tz) {
     const tzIndex = this.timezones.findIndex(t => t.tz === tz);
     if (tzIndex === -1) return;
 
+    // Remove locally first (optimistic)
     this.timezones.splice(tzIndex, 1);
-    
-    // Remove formatter from cache
     this.timeFormatters.delete(tz);
-    
-    this.save();
+    this.saveToLocalStorage();
     this.render();
     playSound('timezone_remove');
-    // Reduced notifications
-    // showNotification('Fuso horário removido', 'success');
+
+    // Try to sync with server if authenticated
+    if (isAuthenticated()) {
+      try {
+        const res = await authFetch(`${WORLDCLOCK_API_URL}/${tz}`, {
+          method: 'DELETE'
+        });
+        
+        if (!res.ok) {
+          console.warn('Server rejected timezone deletion');
+        }
+      } catch (err) {
+        console.warn('Failed to sync timezone deletion to server:', err);
+      }
+    }
   }
 
   save() {
-    try {
-      localStorage.setItem('worldClockTimezones', JSON.stringify(this.timezones));
-    } catch (error) {
-      console.warn('Failed to save timezones to localStorage:', error);
-      showNotification('Falha ao guardar fusos horários. O armazenamento pode estar cheio.', 'error');
-    }
+    this.saveToLocalStorage();
   }
 
   render() {

@@ -44,6 +44,12 @@ body {
     padding-bottom: calc(env(safe-area-inset-bottom, 0) + 96px);
   }
 
+  // Landscape phones/tablets: reduce vertical padding so content fits better
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding-top: max(8px, env(safe-area-inset-top, 0));
+    padding-bottom: max(60px, env(safe-area-inset-bottom, 0) + 72px);
+  }
+
   // Smoother mobile scrolling
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -1647,6 +1653,153 @@ body.focus-mode {
     padding: 1rem;
     font-size: 0.9rem;
     opacity: 0.8;
+  }
+}
+
+/* ============================================
+   Muffin Companion - Virtual Pet
+   ============================================ */
+.muffin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0;
+  min-height: 80px;
+}
+
+.muffin {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  animation: muffin-bounce 2s ease-in-out infinite;
+}
+
+.muffin-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+}
+
+.muffin-status {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.muffin-status.visible {
+  opacity: 1;
+}
+
+/* Muffin States */
+.muffin.focusing {
+  animation: muffin-focus 1.5s ease-in-out infinite;
+  
+  .muffin-body {
+    fill: #FFE4B5;
+  }
+  
+  .muffin-status {
+    content: '🎯 Focando!';
+  }
+}
+
+.muffin.resting {
+  animation: muffin-rest 2s ease-in-out infinite;
+  
+  .muffin-body {
+    fill: #E8F4FD;
+  }
+  
+  .muffin-top {
+    fill: #E8F4FD;
+  }
+  
+  .muffin-status {
+    content: '😴 Descansando!';
+  }
+}
+
+.muffin.idle {
+  animation: muffin-idle 3s ease-in-out infinite;
+  
+  .muffin-body {
+    fill: #FFF5E6;
+  }
+  
+  .muffin-status {
+    content: '👋 Olá!';
+  }
+}
+
+/* Animations */
+@keyframes muffin-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes muffin-focus {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes muffin-rest {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-2px) scale(0.98);
+  }
+  75% {
+    transform: translateY(-2px) scale(1.02);
+  }
+}
+
+@keyframes muffin-idle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(3deg);
+  }
+}
+
+/* Hide muffin on mobile if too small */
+@include respond-to('xs') {
+  .muffin-container {
+    min-height: 60px;
+  }
+  
+  .muffin {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .muffin,
+  .muffin.focusing,
+  .muffin.resting,
+  .muffin.idle {
+    animation: none;
   }
 }
 

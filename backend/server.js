@@ -6,6 +6,7 @@ const connectDB = require('./db');
 const tasksRoutes = require('./routes/tasks');
 const countdownRoutes = require('./routes/countdown');
 const worldclockRoutes = require('./routes/worldclock');
+const studySessionsRoutes = require('./routes/studySessions');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const pushRoutes = require('./routes/push');
@@ -65,6 +66,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/countdown', countdownRoutes);
 app.use('/api/worldclock', worldclockRoutes);
+app.use('/api/study-sessions', studySessionsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/push', pushRoutes);

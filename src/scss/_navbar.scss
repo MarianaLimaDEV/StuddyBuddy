@@ -123,34 +123,6 @@
       background: var(--hover-overlay);
       border: 2px solid var(--border-subtle);
     }
-
-    /* Tooltip on hover */
-    &::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%) translateY(5px);
-      background: var(--text);
-      color: var(--bg-color);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      white-space: nowrap;
-      opacity: 0;
-      visibility: hidden;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      pointer-events: none;
-      z-index: 1001;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    &:hover::after {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(-50%) translateY(0);
-    }
   }
 }
 

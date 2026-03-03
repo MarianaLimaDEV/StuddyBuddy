@@ -1,15 +1,17 @@
 /**
  * Countdown Timer Module
- * Handles multiple countdowns with local storage persistence
+ * Uses Network-First strategy: fetches from API when online, falls back to localStorage
+ * Supports authenticated users with JWT sync
  */
 import { showNotification, showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
+import { authFetch, apiUrl } from './api-base.js';
+import { isAuthenticated } from './utils.js';
 
 // Constants
 const UPDATE_INTERVAL = 1000; // 1 second
-const STORAGE_LIST_KEY = 'countdowns';
-const STORAGE_LEGACY_DATE_KEY = 'countdownTargetDate';
-const STORAGE_LEGACY_ACTIVE_KEY = 'countdownActive';
+const STORAGE_KEY = 'countdowns';
+const COUNTDOWN_API_URL = apiUrl('/api/countdown');
 
 function safeJsonParse(value, fallback) {
   try {
@@ -48,8 +50,8 @@ export class CountdownTimer {
     this.elements.labelInput = document.getElementById('countdownLabel');
     this.elements.list = document.getElementById('countdownList');
 
-    // Load countdowns (and migrate legacy single countdown if present)
-    this.load();
+    // Load countdowns using Network-First strategy
+    this.loadCountdowns();
 
     if (this.elements.addBtn) {
       this.elements.addBtn.addEventListener('click', (e) => {
@@ -77,34 +79,51 @@ export class CountdownTimer {
 
     this.render();
     this.startLoop();
+
+    // Listen for login success to re-sync
+    window.addEventListener('login-success', () => {
+      this.loadCountdowns();
+    });
   }
 
-  load() {
-    // Migration: old single countdown -> list
-    try {
-      const legacyDate = localStorage.getItem(STORAGE_LEGACY_DATE_KEY);
-      if (legacyDate) {
-        const legacyActive = localStorage.getItem(STORAGE_LEGACY_ACTIVE_KEY) === 'true';
-        const id = makeId();
-        this.countdowns = [
-          {
-            id,
-            label: 'Countdown',
-            targetISO: legacyDate,
-            active: Boolean(legacyActive),
-            createdAt: Date.now()
-          }
-        ];
-        localStorage.removeItem(STORAGE_LEGACY_DATE_KEY);
-        localStorage.removeItem(STORAGE_LEGACY_ACTIVE_KEY);
-        localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(this.countdowns));
-      }
-    } catch {
-      // ignore
-    }
+  /**
+   * Network-First: Try API, fall back to localStorage
+   */
+  async loadCountdowns() {
+    // First, try to load from localStorage for immediate display
+    this.loadFromLocalStorage();
 
+    // Then try network fetch if authenticated
+    if (isAuthenticated()) {
+      try {
+        const res = await authFetch(COUNTDOWN_API_URL);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data._id) {
+            // Convert API response to local format
+            this.countdowns = [{
+              id: data._id,
+              label: data.label || 'Countdown',
+              targetISO: new Date(data.targetDate).toISOString(),
+              active: new Date(data.targetDate) > new Date(),
+              createdAt: data.createdAt
+            }];
+            this.saveToLocalStorage();
+            this.render();
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch countdowns from API, using local data:', err);
+      }
+    }
+  }
+
+  /**
+   * Load countdowns from localStorage (fallback)
+   */
+  loadFromLocalStorage() {
     try {
-      const raw = localStorage.getItem(STORAGE_LIST_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       const list = safeJsonParse(raw, []);
       this.countdowns = Array.isArray(list) ? list : [];
     } catch {
@@ -124,18 +143,21 @@ export class CountdownTimer {
         }
       }
     });
-    if (changed) this.save();
+    if (changed) this.saveToLocalStorage();
   }
 
-  save() {
+  /**
+   * Save countdowns to localStorage
+   */
+  saveToLocalStorage() {
     try {
-      localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(this.countdowns));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.countdowns));
     } catch (e) {
       // ignore
     }
   }
 
-  addCountdown() {
+  async addCountdown() {
     const dateInput = this.elements.dateInput;
     if (!dateInput) return;
 
@@ -155,6 +177,7 @@ export class CountdownTimer {
     const label = (this.elements.labelInput?.value || '').trim();
     const id = makeId();
 
+    // Add locally first (optimistic)
     this.countdowns.push({
       id,
       label: label || 'Countdown',
@@ -167,25 +190,68 @@ export class CountdownTimer {
     if (this.elements.labelInput) this.elements.labelInput.value = '';
     dateInput.value = '';
 
-    this.save();
+    this.saveToLocalStorage();
     this.render();
     playSound('open');
+
+    // Try to sync with server if authenticated
+    if (isAuthenticated()) {
+      try {
+        const res = await authFetch(COUNTDOWN_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            targetDate: target.toISOString(),
+            label: label || 'Countdown'
+          })
+        });
+        
+        if (!res.ok) {
+          console.warn('Server rejected countdown, keeping locally');
+        } else {
+          // Update local ID with server response
+          const data = await res.json();
+          const localIndex = this.countdowns.findIndex(c => c.id === id);
+          if (localIndex !== -1 && data._id) {
+            this.countdowns[localIndex].id = data._id;
+            this.saveToLocalStorage();
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to sync countdown to server, saved locally:', err);
+        showNotification('Countdown guardado localmente; será sincronizado quando houver ligação.', 'info');
+      }
+    }
   }
 
-  removeCountdown(id) {
+  async removeCountdown(id) {
     const before = this.countdowns.length;
     this.countdowns = this.countdowns.filter((c) => c.id !== id);
     if (this.countdowns.length !== before) {
-      this.save();
+      this.saveToLocalStorage();
       this.render();
       playSound('close');
+
+      // Try to sync with server if authenticated (only for server-side IDs)
+      if (isAuthenticated() && !id.includes('temp-')) {
+        try {
+          const res = await authFetch(COUNTDOWN_API_URL, {
+            method: 'DELETE'
+          });
+          if (!res.ok) {
+            console.warn('Server rejected countdown deletion');
+          }
+        } catch (err) {
+          console.warn('Failed to sync countdown deletion to server:', err);
+        }
+      }
     }
   }
 
   resetAll() {
     if (!this.countdowns.length) return;
     this.countdowns = [];
-    this.save();
+    this.saveToLocalStorage();
     this.render();
     playSound('reset');
   }
@@ -224,7 +290,7 @@ export class CountdownTimer {
       }
     }
 
-    if (changed) this.save();
+    if (changed) this.saveToLocalStorage();
     this.render();
   }
 

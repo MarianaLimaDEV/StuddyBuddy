@@ -1,45 +1,28 @@
-# TODO List - Fix Implementation (COMPLETED)
+# TODO - StuddyBuddy Feature Implementation
 
-## Phase 1: Core Files ✅
-- [x] 1. index.html - Add i18n attributes to push toggle elements
-- [x] 2. package.json - Remove unnecessary "path" dependency
-- [x] 3. src/js/main.js - Wrap PWA init calls with try/catch
-- [x] 4. src/js/main.js - Add try-finally to push button handler
+## Task 1: Cloud Migration for World Clock & Countdowns
+- [x] 1.1 Refactor src/js/worldclock.js to use Network-First strategy
+- [x] 1.2 Refactor src/js/countdown.js to use Network-First strategy
+- [x] 1.3 Update backend models to include userId field
+- [x] 1.4 Test offline fallback to IndexedDB/localStorage
 
-## Phase 2: Task List & Utils ✅
-- [x] 5. src/js/tasklist.js - Add error handling in delete catch block
-- [x] 6. src/js/tasklist.js - Wrap offline flow with error handling
-- [x] 7. src/js/utils.js - Wrap salvarOffline in settings fetch (3 places)
+## Task 2: Persistent Study Statistics
+- [x] 2.1 Create backend/models/StudySession.js model
+- [x] 2.2 Create backend/routes/studySessions.js API routes
+- [x] 2.3 Register new route in backend/server.js
+- [x] 2.4 Update src/js/study-stats.js to sync with backend
+- [x] 2.5 Add offline sync support via pendingSync queue
 
-## Phase 3: PWA Files ✅
-- [x] 8. src/js/pwa/db.js - Add AbortController timeout to carregarTasks
-- [x] 9. src/js/pwa/push.js - Fix async getAuthToken in two places
-- [x] 10. src/js/pwa/sw-registration.js - Add guard to skipWaitingAndReload
-- [x] 11. src/js/pwa/sync.js - Add re-entrancy guard
-- [x] 12. src/js/pwa/sync.js - Handle non-retriable 4xx errors
+## Task 3: PWA Browser Fallbacks (Manual Sync Queue)
+- [x] 3.1 Verify window 'online' listener in sync.js triggers runFullSync()
+- [x] 3.2 Add additional retry logic if needed
 
-## Phase 4: Service Worker ✅
-- [x] 13. public/service-worker.js - Add onupgradeneeded for IndexedDB
-- [x] 14. public/service-worker.js - Add retry logic to processPendingSyncInSW
+## Task 4: Virtual Companion "Muffin" Interaction Logic
+- [x] 4.1 Add #muffin-container HTML to index.html (inside pomodoro card)
+- [x] 4.2 Add Muffin SVG/CSS to main.scss
+- [x] 4.3 Update src/js/pomodoro.js to manage Muffin states
 
-## Phase 5: Backend ✅
-- [x] 15. backend/models/PushSubscription.js - Add pre-save hook for endpoint sync
-- [x] 16. backend/routes/push.js - Validate subscription keys
-- [x] 17. backend/routes/push.js - Add ownership verification to unsubscribe
-- [x] 18. backend/routes/push.js - Add auth to /send endpoint
-
-## Phase 6: CSS & UI ✅
-- [x] 19. src/scss/main.scss - Increase close button touch target
-- [x] 20. public/offline.html - Add focus styles to buttons
-
-## Phase 7: Documentation ✅
-- [x] 21. docs/PWA.md - Fix duplicated heading
-- [x] 22. docs/PWA_ARCHITECTURE.md - Add URL validation warning
-- [x] 23. docs/PWA_ARCHITECTURE.md - Add Background Sync browser support note
-- [x] 24. docs/PWA_ARCHITECTURE.md - Add Push API browser support note
-- [x] 25. docs/PWA_ARCHITECTURE.md - Add VAPID security warning
-
----
-
-All 28 issues have been resolved!
+## Task 5: Smooth Theme Transitions
+- [x] 5.1 Verify CSS transitions in main.scss for body and .card
+- [x] 5.2 Ensure prefers-reduced-motion disables transitions for accessibility
 
