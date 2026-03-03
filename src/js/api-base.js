@@ -25,3 +25,23 @@ export function getApiBaseUrl() {
   return API_BASE_URL;
 }
 
+/**
+ * Authenticated fetch - adds Authorization header if user is logged in
+ * @param {string} url - URL or path to fetch
+ * @param {RequestInit} [options] - Fetch options
+ * @returns {Promise<Response>}
+ */
+export async function authFetch(url, options = {}) {
+  const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+  
+  const headers = {
+    ...options.headers,
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return fetch(apiUrl(url), { ...options, headers });
+}
+
