@@ -1067,6 +1067,15 @@
         box-shadow: 0 4px 12px rgba(88, 101, 242, 0.5);
       }
     }
+
+    &.email {
+      background: #ea4335;
+
+      &:hover {
+        background: #f45d50;
+        box-shadow: 0 4px 12px rgba(234, 67, 53, 0.5);
+      }
+    }
   }
 
   p {
