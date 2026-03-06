@@ -116,8 +116,9 @@ export function formatMinutes(m) {
 /**
  * Render statistics in a container
  * @param {string} containerId - ID of the container element
+ * @param {boolean} showHistory - Whether to show history list
  */
-export function renderStatsIn(containerId) {
+export function renderStatsIn(containerId, showHistory = false) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -127,6 +128,37 @@ export function renderStatsIn(containerId) {
   const weekStart = new Date();
   weekStart.setDate(weekStart.getDate() - 7);
   const weekMinutes = sessions.filter(s => s.date >= weekStart.toISOString().slice(0, 10)).reduce((a, s) => a + s.minutes, 0);
+
+  // Generate history HTML if requested
+  let historyHtml = '';
+  if (showHistory && sessions.length > 0) {
+    // Group sessions by date
+    const groupedByDate = {};
+    const sortedSessions = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+    
+    sortedSessions.forEach(session => {
+      if (!groupedByDate[session.date]) {
+        groupedByDate[session.date] = [];
+      }
+      groupedByDate[session.date].push(session);
+    });
+    
+    historyHtml = '<div class="stats-history"><h5 class="stats-history-title">Histórico de sessões</h5><ul class="stats-history-list">';
+    
+    Object.keys(groupedByDate).forEach(date => {
+      const daySessions = groupedByDate[date];
+      const dayTotal = daySessions.reduce((a, s) => a + s.minutes, 0);
+      const dateObj = new Date(date + 'T00:00:00');
+      const formattedDate = dateObj.toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'short' });
+      
+      historyHtml += `<li class="stats-history-item">
+        <span class="stats-history-date">${formattedDate}</span>
+        <span class="stats-history-details">${daySessions.length} sessão${daySessions.length !== 1 ? 'ões' : ''} (${formatMinutes(dayTotal)})</span>
+      </li>`;
+    });
+    
+    historyHtml += '</ul></div>';
+  }
 
   container.innerHTML = `
     <div class="stats-box">
@@ -147,6 +179,7 @@ export function renderStatsIn(containerId) {
         <span>${tr('statsSessions')}</span>
         <strong>${sessions.length}</strong>
       </div>
+      ${historyHtml}
     </div>
   `;
 }

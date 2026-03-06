@@ -19,13 +19,12 @@ app.set('trust proxy', 1);
 // Security headers (CSP/HSTS/etc.)
 app.use(
   helmet({
-    // We use inline SVGs and Vite dev scripts; keep CSP off in dev.
     contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
     crossOriginEmbedderPolicy: false,
   })
 );
 
-// Force HTTPS in production (only when behind a proxy that sets x-forwarded-proto)
+// Force HTTPS in production
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     const proto = req.headers['x-forwarded-proto'];
@@ -36,29 +35,33 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Liga ao MongoDB
-let server = null;
-
-// CORS middleware - permitir requests do Vite dev server
+// CORS middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
 // Middleware para JSON
 app.use(express.json());
 
+// --- NOVA ROTA PARA RESOLVER O "CANNOT GET /" ---
+app.get('/', (req, res) => {
+  res.send(`
+    <div style="font-family: sans-serif; text-align: center; padding-top: 50px;">
+      <h1>StuddyBuddy API 🚀</h1>
+      <p>O backend está online e funcionando!</p>
+      <p>Acesse <a href="/api/health">/api/health</a> para verificar o status do banco de dados.</p>
+    </div>
+  `);
+});
+// ----------------------------------------------
+
 // Rota de teste/health check
 app.get('/api/health', (req, res) => {
-  const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+  const state = mongoose.connection.readyState;
   res.json({ status: 'ok', db: state, message: 'StuddyBuddy API a funcionar 🚀' });
 });
 
@@ -71,7 +74,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/push', pushRoutes);
 
-// Fallback simples para erros 404 de API
+// Fallback para erros 404 de API
 app.use('/api', (req, res) => {
   res.status(404).json({ message: 'Endpoint não encontrado' });
 });
@@ -80,17 +83,14 @@ app.use('/api', (req, res) => {
 (async () => {
   await connectDB();
 
-  server = app.listen(PORT, () => {
+  let server = app.listen(PORT, () => {
     console.log(`🌐 Servidor API a correr em http://localhost:${PORT}`);
   });
 
   const shutdown = async (signal) => {
     try {
       console.log(`\n🛑 Recebido ${signal}. A encerrar...`);
-      if (server) {
-        await new Promise((resolve) => server.close(resolve));
-      }
-      // Close DB connections so deploy platforms can recycle cleanly
+      if (server) await new Promise((resolve) => server.close(resolve));
       await mongoose.connection.close(false);
       process.exit(0);
     } catch (err) {

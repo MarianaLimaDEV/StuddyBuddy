@@ -1,7 +1,6 @@
 /**
  * Pomodoro Timer Module
  * Handles the Pomodoro timer functionality with work/break cycles
- * Includes Muffin companion visual feedback
  */
 import { showCustomNotification } from './utils.js';
 import { playSound, playSoundWithOverlap } from './sound.js';
@@ -50,10 +49,6 @@ export class PomodoroTimer {
     this.elements.stopBtn = document.getElementById('pomodoroStop');
     this.elements.resetBtn = document.getElementById('pomodoroReset');
     this.elements.display = document.getElementById('pomodoroDisplay');
-    
-    // Cache Muffin elements
-    this.elements.muffin = document.getElementById('muffin');
-    this.elements.muffinStatus = document.getElementById('muffin-status');
 
     if (this.elements.workInput) {
       this.elements.workInput.addEventListener('change', (e) => {
@@ -105,44 +100,6 @@ export class PomodoroTimer {
       });
     }
     this.updateDisplay();
-    this.updateMuffinState();
-  }
-
-  /**
-   * Update Muffin's visual state based on timer state
-   */
-  updateMuffinState() {
-    const muffin = this.elements.muffin;
-    const status = this.elements.muffinStatus;
-    if (!muffin) return;
-    
-    // Remove all state classes first
-    muffin.classList.remove('focusing', 'resting', 'idle');
-    
-    if (this.isRunning) {
-      if (this.isBreak) {
-        // Resting state
-        muffin.classList.add('resting');
-        if (status) {
-          status.textContent = '😴 Descansando!';
-          status.classList.add('visible');
-        }
-      } else {
-        // Focusing state
-        muffin.classList.add('focusing');
-        if (status) {
-          status.textContent = '🎯 Focando!';
-          status.classList.add('visible');
-        }
-      }
-    } else {
-      // Idle state
-      muffin.classList.add('idle');
-      if (status) {
-        status.textContent = '👋 Olá!';
-        status.classList.remove('visible');
-      }
-    }
   }
 
   start() {
@@ -150,7 +107,6 @@ export class PomodoroTimer {
     requestNotificationPermission();
     this.isRunning = true;
     playSound('click');
-    this.updateMuffinState();
     this.interval = setInterval(() => {
       this.timeLeft--;
       if (this.timeLeft <= 0) {
@@ -163,8 +119,6 @@ export class PomodoroTimer {
         this.timeLeft = (this.isBreak ? this.breakTime : this.workTime) * 60;
         // Update display to show the corrected (non-negative) value
         this.updateDisplay();
-        // Update Muffin state
-        this.updateMuffinState();
         // Play alarm sound first (with overlap allowed so it can complete)
         playSoundWithOverlap('alarm');
         // Browser notification (if permitted)
@@ -189,7 +143,6 @@ export class PomodoroTimer {
       this.interval = null;
     }
     playSound('reset');
-    this.updateMuffinState();
   }
 
   reset() {
@@ -198,7 +151,6 @@ export class PomodoroTimer {
     this.isBreak = false;
     playSound('reset');
     this.updateDisplay();
-    this.updateMuffinState();
   }
 
   updateDisplay() {

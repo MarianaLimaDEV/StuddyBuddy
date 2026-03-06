@@ -114,16 +114,19 @@ export class TaskList {
       this.render();
       playSound('task_add');
     } catch (error) {
-      // Check if truly network-related (not a server validation error)
+      // Check if it's a network error OR any HTTP error (server issues should also save locally)
       const isNetworkError = !navigator.onLine || error.message.includes('Failed to fetch') || error.message.includes('NetworkError');
       
-      if (!isNetworkError) {
-        // Server validation error - show error, don't save locally
+      // Check if it's an HTTP error (4xx, 5xx) - treat these as offline scenarios too
+      const isHttpError = error.message.includes('Erro HTTP');
+      
+      if (!isNetworkError && !isHttpError) {
+        // Only show error for validation issues (not network/server problems)
         showNotification('Erro ao adicionar tarefa: ' + error.message, 'error');
         return;
       }
 
-      // Offline: add to UI immediately, then try to queue for sync
+      // Network or HTTP error: add to UI immediately, then try to queue for sync
       const tempId = `temp-${Date.now()}`;
       const tempTask = {
         _id: tempId,

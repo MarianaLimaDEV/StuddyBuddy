@@ -116,7 +116,7 @@ a:focus-visible {
 
 /* Card styles */
 .card {
-  --card-chrome-height: 44px;
+  --card-chrome-height: 32px;
   --chrome-close-size: 2.25rem;
   --card-min-w: 280px;
   --card-max-w: min(600px, 95vw);
@@ -158,7 +158,6 @@ a:focus-visible {
   text-align: center;
   color: var(--text);
   z-index: 900;
-  overflow: hidden;
 
   // Mobile responsiveness - disable resize, fixed dimensions
   @include respond-to('sm') {
@@ -1323,6 +1322,51 @@ body.focus-mode {
   strong { color: var(--text); }
 }
 
+/* Stats History */
+.stats-history {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.stats-history-title {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.stats-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.stats-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border-subtle);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.stats-history-date {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stats-history-details {
+  color: var(--muted);
+}
+
 /* Config buttons */
 .shortcuts-btn, .focus-mode-btn {
   @include button-base;
@@ -1653,153 +1697,6 @@ body.focus-mode {
     padding: 1rem;
     font-size: 0.9rem;
     opacity: 0.8;
-  }
-}
-
-/* ============================================
-   Muffin Companion - Virtual Pet
-   ============================================ */
-.muffin-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0.5rem 0;
-  min-height: 80px;
-}
-
-.muffin {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  animation: muffin-bounce 2s ease-in-out infinite;
-}
-
-.muffin-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
-}
-
-.muffin-status {
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--primary);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.muffin-status.visible {
-  opacity: 1;
-}
-
-/* Muffin States */
-.muffin.focusing {
-  animation: muffin-focus 1.5s ease-in-out infinite;
-  
-  .muffin-body {
-    fill: #FFE4B5;
-  }
-  
-  .muffin-status {
-    content: '🎯 Focando!';
-  }
-}
-
-.muffin.resting {
-  animation: muffin-rest 2s ease-in-out infinite;
-  
-  .muffin-body {
-    fill: #E8F4FD;
-  }
-  
-  .muffin-top {
-    fill: #E8F4FD;
-  }
-  
-  .muffin-status {
-    content: '😴 Descansando!';
-  }
-}
-
-.muffin.idle {
-  animation: muffin-idle 3s ease-in-out infinite;
-  
-  .muffin-body {
-    fill: #FFF5E6;
-  }
-  
-  .muffin-status {
-    content: '👋 Olá!';
-  }
-}
-
-/* Animations */
-@keyframes muffin-bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes muffin-focus {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-8px) scale(1.02);
-  }
-}
-
-@keyframes muffin-rest {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  25% {
-    transform: translateY(-2px) scale(0.98);
-  }
-  75% {
-    transform: translateY(-2px) scale(1.02);
-  }
-}
-
-@keyframes muffin-idle {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3px) rotate(-3deg);
-  }
-  75% {
-    transform: translateY(-3px) rotate(3deg);
-  }
-}
-
-/* Hide muffin on mobile if too small */
-@include respond-to('xs') {
-  .muffin-container {
-    min-height: 60px;
-  }
-  
-  .muffin {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .muffin,
-  .muffin.focusing,
-  .muffin.resting,
-  .muffin.idle {
-    animation: none;
   }
 }
 

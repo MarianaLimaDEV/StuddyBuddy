@@ -415,7 +415,7 @@ try {
 }
 
 function renderSidebarStats() {
-  renderStatsIn('sidebarStats');
+  renderStatsIn('sidebarStats', true);
 }
 
 function initSidebarTab() {
