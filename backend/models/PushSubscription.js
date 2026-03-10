@@ -1,3 +1,7 @@
+/**
+ * PushSubscription model.
+ * Persists Web Push (VAPID) subscriptions per browser/device for notifications.
+ */
 const mongoose = require('mongoose');
 
 // Stores Web Push subscriptions (VAPID). Endpoint is unique per browser profile/device.

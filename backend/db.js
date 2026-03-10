@@ -1,3 +1,7 @@
+/**
+ * MongoDB connection helper.
+ * Handles loading environment variables, retry logic and graceful shutdown hooks.
+ */
 const mongoose = require('mongoose');
 const path = require('path');
 

@@ -1,3 +1,7 @@
+/**
+ * Task model.
+ * Represents a single to‑do item with completion metadata.
+ */
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(

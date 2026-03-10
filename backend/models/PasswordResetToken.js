@@ -1,3 +1,7 @@
+/**
+ * PasswordResetToken model.
+ * Stores hashed, expiring tokens used during password reset flows.
+ */
 const mongoose = require('mongoose');
 
 // Password reset tokens (hashed) with TTL expiration.

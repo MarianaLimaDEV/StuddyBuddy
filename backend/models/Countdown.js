@@ -1,3 +1,7 @@
+/**
+ * Countdown model.
+ * Stores a single target date and label per user for the countdown feature.
+ */
 const mongoose = require('mongoose');
 
 const countdownSchema = new mongoose.Schema(

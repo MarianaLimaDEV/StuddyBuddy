@@ -1,3 +1,7 @@
+/**
+ * Mailer utilities for StuddyBuddy.
+ * Centralizes SMTP configuration and exposes helpers to send transactional emails.
+ */
 const nodemailer = require('nodemailer');
 
 function getBoolEnv(name, fallback = false) {

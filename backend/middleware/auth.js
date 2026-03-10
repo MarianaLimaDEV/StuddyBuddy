@@ -1,3 +1,7 @@
+/**
+ * Authentication middleware.
+ * Verifies JWT bearer tokens and attaches the decoded payload to the request.
+ */
 const jwt = require('jsonwebtoken');
 
 function requireAuth(req, res, next) {

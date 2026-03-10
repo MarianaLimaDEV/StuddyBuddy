@@ -1,3 +1,7 @@
+/**
+ * EmailVerificationToken model.
+ * Manages short‑lived hashed tokens for verifying user email addresses.
+ */
 const mongoose = require('mongoose');
 
 // Email verification tokens (hashed) with TTL expiration.

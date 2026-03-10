@@ -1,3 +1,7 @@
+/**
+ * User model.
+ * Stores authentication state and per‑user settings (theme, sound, etc.).
+ */
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(

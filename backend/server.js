@@ -1,3 +1,7 @@
+/**
+ * StuddyBuddy API server.
+ * Configures Express, security middleware, API routes and graceful shutdown.
+ */
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');

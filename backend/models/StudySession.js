@@ -1,3 +1,7 @@
+/**
+ * StudySession model.
+ * Aggregates minutes studied per day and type for a given user.
+ */
 const mongoose = require('mongoose');
 
 const studySessionSchema = new mongoose.Schema(

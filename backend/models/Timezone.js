@@ -1,3 +1,7 @@
+/**
+ * Timezone model.
+ * Persists user‑selected timezones for the World Clock feature.
+ */
 const mongoose = require('mongoose');
 
 const timezoneSchema = new mongoose.Schema(
