@@ -415,9 +415,8 @@
     border-radius: 50%;
 
     &:hover {
-      background: var(--hover-overlay);
+      background: rgba(239, 68, 68, 0.08);
       color: var(--danger);
-      transform: rotate(90deg);
     }
 
     &:focus-visible {
