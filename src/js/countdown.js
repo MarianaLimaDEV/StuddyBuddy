@@ -34,6 +34,14 @@ function makeId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
+/** Format a Date for <input type="datetime-local"> (local timezone, minute precision). */
+function toDatetimeLocalValue(date) {
+  const d = new Date(date);
+  if (!Number.isFinite(d.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export class CountdownTimer {
   constructor() {
     this.countdowns = [];
@@ -66,6 +74,16 @@ export class CountdownTimer {
         this.resetAll();
       });
     }
+
+    document.querySelectorAll('#countdownCard .countdown-quick-pick[data-offset-minutes]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const minutes = Number(btn.getAttribute('data-offset-minutes'));
+        if (!this.elements.dateInput || !Number.isFinite(minutes) || minutes <= 0) return;
+        const end = new Date(Date.now() + minutes * 60 * 1000);
+        this.elements.dateInput.value = toDatetimeLocalValue(end);
+      });
+    });
 
     // Event delegation for remove
     if (this.elements.list) {

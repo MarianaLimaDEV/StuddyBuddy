@@ -281,12 +281,12 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 0; // remove "bubble" look around the X
   border: none;
+  background: transparent;
   
   &:hover {
     opacity: 1;
-    background: rgba(239, 68, 68, 0.1);
     color: var(--danger);
   }
 
@@ -599,6 +599,36 @@ a:focus-visible {
     margin-top: 0;
     button {
       @include button-base;
+    }
+  }
+
+  .countdown-quick-picks {
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .countdown-quick-picks__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+
+  .countdown-quick-pick {
+    @include button-base;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    min-height: 36px;
+    border-radius: 999px;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.98);
     }
   }
 }
@@ -1149,6 +1179,15 @@ $sidebar-expanded-width: 220px;
   transition: opacity 0.15s ease;
   cursor: pointer;
   flex-shrink: 0;
+  // Strip native button chrome (gray background on some browsers)
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
 
   &::after {
     content: '';
@@ -1397,6 +1436,13 @@ body.focus-mode {
   box-shadow: 0 8px 24px var(--shadow-color);
   min-height: 44px;
   bottom: max(1rem, env(safe-area-inset-bottom));
+  // Disable button-base motion/animation for this control
+  transition: none;
+
+  &:hover,
+  &:active {
+    transform: translateX(-50%);
+  }
 
   @include respond-to('xs') {
     left: 1rem;
@@ -1404,6 +1450,11 @@ body.focus-mode {
     width: auto;
     transform: none;
     bottom: max(1rem, env(safe-area-inset-bottom));
+
+    &:hover,
+    &:active {
+      transform: none;
+    }
   }
 }
 .focus-mode-exit.hidden {
@@ -1452,8 +1503,8 @@ body.focus-mode {
 .shortcuts-modal__close {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border-subtle);
+  border-radius: 0; // remove "bubble" look around the X
+  border: none;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -1461,7 +1512,6 @@ body.focus-mode {
   line-height: 1;
 }
 .shortcuts-modal__close:hover {
-  background: var(--hover-overlay);
   color: var(--text);
 }
 .shortcuts-modal__body {

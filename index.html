@@ -61,27 +61,11 @@
             </a>
             <ul class="navbar-menu" id="navbar-menu">
                 <li>
-                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-principal" data-dropdown="principal" data-i18n="principal">Principal</button>
-<div id="dropdown-principal" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-principal-heading" hidden>
-                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
-                        <h3 class="nav-dropdown__heading" id="dropdown-principal-heading" data-i18n="principal">Principal</h3>
-                        <p data-i18n="principalText">Bem-vindo ao StuddyBuddy! Acede às ferramentas clicando nos botões abaixo: Pomodoro, Timer, Cronómetro, Task List, Countdown e World Clock. Podes abrir várias ao mesmo tempo e arrastá-las no ecrã. Usa o modo foco para esconder a navegação e concentrares-te no estudo.</p>
-                    </div>
-                </li>
-                <li>
                     <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-sobre" data-dropdown="sobre" data-i18n="sobre">Sobre</button>
 <div id="dropdown-sobre" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-sobre-heading" hidden>
                         <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
                         <h3 class="nav-dropdown__heading" id="dropdown-sobre-heading" data-i18n="sobre">Sobre</h3>
                         <p data-i18n="sobreText">O StuddyBuddy é uma plataforma de estudo com ferramentas práticas: Pomodoro para sessões de foco, Timer, Cronómetro, lista de tarefas, contagem regressiva e relógio mundial. Faz login para sincronizar o teu tema e preferências na nuvem.</p>
-                    </div>
-                </li>
-                <li>
-                    <button class="navbar-dropdown-btn" type="button" aria-expanded="false" aria-controls="dropdown-servicos" data-dropdown="servicos" data-i18n="servicos">Serviços</button>
-<div id="dropdown-servicos" class="navbar-dropdown hidden" role="region" aria-labelledby="dropdown-servicos-heading" hidden>
-                        <button class="dropdown-close" type="button" aria-label="Fechar" data-i18n-aria="dropdownClose">&times;</button>
-                        <h3 class="nav-dropdown__heading" id="dropdown-servicos-heading" data-i18n="servicos">Serviços</h3>
-                        <p data-i18n="servicosText">Pomodoro (trabalho/pausa), Timer personalizável, Cronómetro com voltas, Task List com backend, Countdown para datas importantes e World Clock com vários fusos. Todas as ferramentas funcionam offline e podem ser instaladas como app (PWA).</p>
                     </div>
                 </li>
                 <li>
@@ -265,6 +249,19 @@
             <input type="text" id="countdownLabel" data-i18n-placeholder="countdownLabelPlaceholder" data-i18n-aria="countdownLabelAria">
             <label for="countdownDate" class="sr-only" data-i18n="countdownDateAria">Data e hora de destino</label>
             <input type="datetime-local" id="countdownDate" data-i18n-aria="countdownDateAria">
+            <fieldset class="countdown-quick-picks">
+                <legend class="sr-only" data-i18n="countdownQuickPicksLabel">Sugestões rápidas de duração</legend>
+                <div class="countdown-quick-picks__chips" role="group" data-i18n-aria="countdownQuickPicksLabel">
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="1" data-i18n="countdownQuick1m">1 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="10" data-i18n="countdownQuick10m">10 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="15" data-i18n="countdownQuick15m">15 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="20" data-i18n="countdownQuick20m">20 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="30" data-i18n="countdownQuick30m">30 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="45" data-i18n="countdownQuick45m">45 min</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="60" data-i18n="countdownQuick1h">1 h</button>
+                    <button type="button" class="countdown-quick-pick" data-offset-minutes="120" data-i18n="countdownQuick2h">2 h</button>
+                </div>
+            </fieldset>
             <div class="buttons">
                 <button id="countdownAdd" data-i18n-aria="addCountdownAria" data-i18n="add">Add</button>
                 <button id="countdownResetAll" data-i18n-aria="resetCountdownAria" data-i18n="reset">Reset</button>

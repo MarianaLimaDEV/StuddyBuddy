@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
 
+projeto/
+
 # Build output
 build/
 

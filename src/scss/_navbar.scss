@@ -166,13 +166,9 @@
     box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
   }
 
-  /* When toggled (hamburger -> X) */
+  /* When toggled: barras de cima e baixo formam o X; o traço do meio mantém-se visível */
   &.is-open .bar:nth-child(1) {
     transform: translateY(6px) rotate(45deg);
-  }
-  &.is-open .bar:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
   }
   &.is-open .bar:nth-child(3) {
     transform: translateY(-6px) rotate(-45deg);
@@ -403,8 +399,8 @@
     right: 10px;
     width: var(--popup-close-size);
     height: var(--popup-close-size);
-    background: color-mix(in srgb, var(--surface) 65%, transparent);
-    border: 1px solid var(--border-subtle);
+    background: transparent;
+    border: none;
     color: var(--muted);
     font-size: 1.25rem;
     cursor: pointer;
@@ -412,10 +408,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 0; // remove "bubble" look around the X
 
     &:hover {
-      background: rgba(239, 68, 68, 0.08);
       color: var(--danger);
     }
 
