@@ -37,7 +37,7 @@ import {
   formatUserLabel,
   getAuthToken
 } from './utils.js';
-import { renderStatsIn } from './study-stats.js';
+import { renderStatsIn, syncStudyStats } from './study-stats.js';
 import { initLanguageToggle } from './i18n.js';
 import { initSWRegistration, skipWaitingAndReload } from './pwa/sw-registration.js';
 import { initSyncManager } from './pwa/sync.js';
@@ -164,6 +164,7 @@ async function initializeApp() {
     }
 
     if (isAuthenticated()) {
+      await syncStudyStats();
       const settings = await fetchUserSettings();
 
       if (settings?.theme === 'dark' || settings?.theme === 'light') {
@@ -198,6 +199,19 @@ async function initializeApp() {
     initLanguageToggle();
     initPushButton();
     renderSidebarStats();
+    // Keep stats synced with account-scoped sessions whenever auth state changes.
+    document.addEventListener('login-success', () => {
+      syncStudyStats().catch((err) => console.warn('Failed to sync study sessions after login:', err));
+    });
+    // Keep study stats aligned across devices while the app is open.
+    window.setInterval(() => {
+      if (!isAuthenticated()) return;
+      syncStudyStats().catch((err) => console.warn('Periodic study-session sync failed:', err));
+    }, 60_000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible' || !isAuthenticated()) return;
+      syncStudyStats().catch((err) => console.warn('Study-session sync on resume failed:', err));
+    });
     window.addEventListener('studystats-updated', renderSidebarStats);
     document.addEventListener('i18n-changed', renderSidebarStats);
     initSidebarTab();

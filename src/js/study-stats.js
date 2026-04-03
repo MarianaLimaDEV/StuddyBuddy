@@ -4,20 +4,25 @@
  * Queues offline sessions for sync via pendingSync
  */
 import { tr } from './i18n.js';
-import { authFetch, apiUrl } from './api-base.js';
-import { isAuthenticated } from './utils.js';
+import { apiUrl } from './api-base.js';
+import { authFetch, isAuthenticated, getStoredUserEmail } from './utils.js';
 import { addToPendingSync } from './pwa/db.js';
 import { registerBackgroundSync } from './pwa/sync.js';
 
 const STATS_KEY = 'studdybuddy_study_stats';
 const STUDY_SESSIONS_API_URL = apiUrl('/api/study-sessions');
 
+function getStatsStorageKey() {
+  const email = String(getStoredUserEmail() || '').trim().toLowerCase();
+  return email ? `${STATS_KEY}:${email}` : STATS_KEY;
+}
+
 /**
  * Get local statistics from localStorage
  */
 function getStats() {
   try {
-    const raw = localStorage.getItem(STATS_KEY);
+    const raw = localStorage.getItem(getStatsStorageKey());
     if (!raw) return { sessions: [], totalMinutes: 0 };
     const data = JSON.parse(raw);
     return { sessions: data.sessions || [], totalMinutes: data.totalMinutes || 0 };
@@ -31,7 +36,7 @@ function getStats() {
  */
 function saveStats(sessions, totalMinutes) {
   try {
-    localStorage.setItem(STATS_KEY, JSON.stringify({ sessions, totalMinutes }));
+    localStorage.setItem(getStatsStorageKey(), JSON.stringify({ sessions, totalMinutes }));
   } catch (_) {}
 }
 
@@ -198,19 +203,11 @@ export async function syncStudyStats() {
     const serverSessions = await res.json();
     if (!Array.isArray(serverSessions)) return;
 
-    const { sessions: localSessions, totalMinutes: localTotal } = getStats();
-
-    // Create a map of local sessions by date and type
-    const localMap = new Map();
-    localSessions.forEach(s => {
-      const key = `${s.date}-${s.type}`;
-      localMap.set(key, (localMap.get(key) || 0) + s.minutes);
-    });
-
-    // Merge server sessions
-    const mergedMap = new Map(localMap);
+    // Server is the source of truth for authenticated users (cross-device sync).
+    // Aggregate by date+type to keep the same compact local structure.
+    const mergedMap = new Map();
     serverSessions.forEach(s => {
-      const key = `${s.date}-${s.type || 'pomodoro'}`;
+      const key = `${s.date}|${s.type || 'pomodoro'}`;
       mergedMap.set(key, (mergedMap.get(key) || 0) + s.minutes);
     });
 
@@ -218,7 +215,7 @@ export async function syncStudyStats() {
     const mergedSessions = [];
     const sortedKeys = Array.from(mergedMap.keys()).sort().reverse().slice(0, 500);
     sortedKeys.forEach(key => {
-      const [date, type] = key.split('-');
+      const [date, type] = key.split('|');
       const minutes = mergedMap.get(key);
       mergedSessions.push({ date, minutes, type });
     });

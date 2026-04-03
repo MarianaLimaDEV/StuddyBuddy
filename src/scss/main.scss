@@ -1089,7 +1089,7 @@ $sidebar-expanded-width: 220px;
     top: 50svh;
   }
   transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
-  height: 280px;
+  height: 360px;
   width: $sidebar-expanded-width;
   z-index: 998;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
@@ -1124,7 +1124,7 @@ $sidebar-expanded-width: 220px;
 
   @include respond-to('md') {
     width: 200px;
-    height: 260px;
+    height: 330px;
     transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
       transform: translateY(-50%) translateX(0);
@@ -1133,7 +1133,7 @@ $sidebar-expanded-width: 220px;
 
   @include respond-to('sm') {
     width: 180px;
-    height: 240px;
+    height: 300px;
     transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
       transform: translateY(-50%) translateX(0);
@@ -1148,7 +1148,7 @@ $sidebar-expanded-width: 220px;
     transform: translateY(-50%) translateX(-100%);
     overflow: visible;
     pointer-events: none;
-    height: 220px;
+    height: 300px;
 
     &:hover {
       transform: translateY(-50%) translateX(-100%);
@@ -1220,7 +1220,7 @@ $sidebar-expanded-width: 220px;
 body.sidebar-open .left-sidebar {
   @include respond-to('xs') {
     width: 200px;
-    height: 220px;
+    height: 300px;
     padding: 1rem 0.75rem;
     overflow-y: auto;
     pointer-events: auto;
