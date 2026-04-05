@@ -231,7 +231,7 @@ export class WorldClock {
     // Try to sync with server if authenticated
     if (isAuthenticated()) {
       try {
-        const res = await authFetch(`${WORLDCLOCK_API_URL}/${tz}`, {
+        const res = await authFetch(`${WORLDCLOCK_API_URL}?tz=${encodeURIComponent(tz)}`, {
           method: 'DELETE'
         });
         
