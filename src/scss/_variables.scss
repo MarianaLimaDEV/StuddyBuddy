@@ -63,35 +63,34 @@ $font-sizes: (
   --btn-soft-hover-bg: rgba(122, 167, 255, 0.20);
   --btn-soft-text: var(--text);
   --focus-ring: rgba(122, 167, 255, 0.45);
+  --input-focus-bg: rgba(255, 255, 255, 0.08);
 }
 
 [data-theme="light"] {
-  // Light theme: more neutral, less saturated
-  // Slightly darker/off-white (avoid pure white)
-  // Cooler greys + "azul bebé"
-  --bg-color: #dfe5ee;            // cooler light grey-blue
-  --surface: #e9eef6;            // slightly darker surface (not white)
-  --text: #0f172a;               // slate-900-ish
-  --muted: rgba(15, 23, 42, 0.64);
-  --shadow-color: rgba(15, 23, 42, 0.12);
-  --hover-overlay: rgba(15, 23, 42, 0.08);
-  --border-subtle: rgba(15, 23, 42, 0.16);
+  // Tema claro: azuis pastéis (sem branco nem cinza “neutro”)
+  --bg-color: #b9d4f0;           // fundo — azul céu suave
+  --surface: #d2e6f9;            // cartões / painéis — mais claro, ainda pastel
+  --text: #1a3552;               // texto — azul‑ardósia escuro
+  --muted: rgba(26, 53, 82, 0.62);
+  --shadow-color: rgba(28, 58, 95, 0.14);
+  --hover-overlay: rgba(74, 130, 190, 0.14);
+  --border-subtle: rgba(56, 98, 150, 0.22);
 
-  // Slightly more neutral primary in light mode
-  --primary: #6f9cff;            // baby blue
-  --primary-variant: #5b8cf5;    // hover/active
+  --primary: #6a9fe8;            // acento principal pastel
+  --primary-variant: #5088d9;    // hover / ativo
 
-  // Cores de botões (light)
-  --btn-bg: rgba(111, 156, 255, 0.14);
-  --btn-border: rgba(15, 23, 42, 0.16);
-  --btn-hover-bg: rgba(111, 156, 255, 0.20);
-  --btn-hover-border: rgba(15, 23, 42, 0.26);
+  // Botões (harmonizados com o fundo azul)
+  --btn-bg: rgba(90, 145, 220, 0.18);
+  --btn-border: rgba(56, 98, 150, 0.28);
+  --btn-hover-bg: rgba(90, 145, 220, 0.26);
+  --btn-hover-border: rgba(45, 85, 140, 0.32);
 
-  --btn-soft-bg: rgba(111, 156, 255, 0.14);
-  --btn-soft-border: rgba(15, 23, 42, 0.16);
-  --btn-soft-hover-bg: rgba(111, 156, 255, 0.20);
+  --btn-soft-bg: rgba(90, 145, 220, 0.16);
+  --btn-soft-border: rgba(56, 98, 150, 0.24);
+  --btn-soft-hover-bg: rgba(90, 145, 220, 0.24);
   --btn-soft-text: var(--text);
-  --focus-ring: rgba(111, 156, 255, 0.38);
+  --focus-ring: rgba(90, 145, 220, 0.42);
+  --input-focus-bg: rgba(90, 145, 220, 0.18);
 }
 
 // Alias para compatibilidade com código existente
@@ -106,10 +105,10 @@ $bg-color-dark: #212228;
 $surface-dark: #2b2f36;
 $text-dark: #F4F7FA;
 $muted-dark: #9AA3AD;
-$bg-color-light: #F5F5F5;
-$surface-light: #FFFFFF;
-$text-light: #212228;
-$muted-light: #666666;
+$bg-color-light: #b9d4f0;
+$surface-light: #d2e6f9;
+$text-light: #1a3552;
+$muted-light: #4a6278;
 $btn-pressed: var(--btn-pressed);
 $btn-danger-hover: var(--btn-danger-hover);
 
@@ -227,7 +226,7 @@ $breakpoints: (
   &:focus {
     outline: none;
     border-color: var(--primary);
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--input-focus-bg);
   }
 }
 

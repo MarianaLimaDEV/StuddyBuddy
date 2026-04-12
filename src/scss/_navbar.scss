@@ -140,38 +140,71 @@
 
 /* Toggle button (hidden on desktop) */
 .navbar-toggle {
+  $bar-gap: 5px;
+  $bar-h: 2px;
+  $bar-merge-offset: $bar-gap + $bar-h; // distance from outer bar centre to middle bar centre
+
   display: none;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 0;
+  gap: $bar-gap;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
   width: 44px;
   height: 44px;
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background: var(--hover-overlay);
+    border-color: color-mix(in srgb, var(--border-subtle) 70%, var(--text));
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
 
   .bar {
     display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--text);
-    margin: 4px 0;
-    transition: transform .25s ease, opacity .2s ease;
+    width: 20px;
+    height: $bar-h;
+    border-radius: 999px;
+    background: currentColor;
+    margin: 0;
+    transition:
+      transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.22s ease;
     transform-origin: center;
+    will-change: transform, opacity;
   }
 
   /* Accessible focus state */
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 4px var(--focus-ring), 0 8px 22px var(--shadow-color);
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 4px 16px var(--shadow-color);
   }
 
-  /* When toggled: barras de cima e baixo formam o X; o traço do meio mantém-se visível */
-  &.is-open .bar:nth-child(1) {
-    transform: translateY(6px) rotate(45deg);
-  }
-  &.is-open .bar:nth-child(3) {
-    transform: translateY(-6px) rotate(-45deg);
+  /* Classic morph: top + bottom meet at centre; middle fades (reads as a clean X) */
+  &.is-open {
+    background: color-mix(in srgb, var(--hover-overlay) 80%, transparent);
+
+    .bar:nth-child(1) {
+      transform: translateY($bar-merge-offset) rotate(45deg);
+    }
+
+    .bar:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0.2);
+    }
+
+    .bar:nth-child(3) {
+      transform: translateY(-$bar-merge-offset) rotate(-45deg);
+    }
   }
 }
 
@@ -862,6 +895,88 @@
       display: none;
     }
   }
+
+  .contact-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-btn {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: map.get($fonts, "fredoka");
+    transition: all $transition-fast;
+    color: white;
+    flex: 1;
+    justify-content: center;
+    min-width: 100px;
+    border: none;
+
+    svg {
+      flex-shrink: 0;
+      display: block;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--focus-ring), 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &.github {
+      background: #24292e;
+
+      &:hover {
+        background: #2f363d;
+        box-shadow: 0 4px 12px rgba(36, 41, 46, 0.5);
+      }
+    }
+
+    &.linkedin {
+      background: #0a66c2;
+
+      &:hover {
+        background: #0b5ad1;
+        box-shadow: 0 4px 12px rgba(10, 102, 194, 0.5);
+      }
+    }
+
+    &.discord {
+      background: #5865f2;
+
+      &:hover {
+        background: #6876f5;
+        box-shadow: 0 4px 12px rgba(88, 101, 242, 0.5);
+      }
+    }
+
+    &.email {
+      background: #ea4335;
+
+      &:hover {
+        background: #f45d50;
+        box-shadow: 0 4px 12px rgba(234, 67, 53, 0.5);
+      }
+    }
+  }
 }
 
 // Remove/hide the “X” close button from navbar dropdowns
@@ -991,85 +1106,6 @@
     padding: 0.75rem 1rem;
     border-radius: 12px;
     text-align: left;
-  }
-
-  .contact-buttons {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .contact-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    font-family: map.get($fonts, "fredoka");
-    transition: all $transition-fast;
-    color: white;
-    flex: 1;
-    justify-content: center;
-    min-width: 100px;
-
-    svg {
-      flex-shrink: 0;
-    }
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      filter: brightness(1.1);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 4px var(--focus-ring), 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    &.github {
-      background: #24292e;
-
-      &:hover {
-        background: #2f363d;
-        box-shadow: 0 4px 12px rgba(36, 41, 46, 0.5);
-      }
-    }
-
-    &.linkedin {
-      background: #0a66c2;
-
-      &:hover {
-        background: #0b5ad1;
-        box-shadow: 0 4px 12px rgba(10, 102, 194, 0.5);
-      }
-    }
-
-    &.discord {
-      background: #5865f2;
-
-      &:hover {
-        background: #6876f5;
-        box-shadow: 0 4px 12px rgba(88, 101, 242, 0.5);
-      }
-    }
-
-    &.email {
-      background: #ea4335;
-
-      &:hover {
-        background: #f45d50;
-        box-shadow: 0 4px 12px rgba(234, 67, 53, 0.5);
-      }
-    }
   }
 
   p {

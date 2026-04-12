@@ -1077,7 +1077,7 @@ footer {
 
 /* Left sidebar - escondida, só barrinha visível; expande no hover */
 $sidebar-bar-width: 12px;
-$sidebar-expanded-width: 220px;
+$sidebar-expanded-width: 300px;
 
 .left-sidebar {
   position: fixed;
@@ -1089,8 +1089,11 @@ $sidebar-expanded-width: 220px;
     top: 50svh;
   }
   transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width})); /* só a barrinha fica visível */
-  height: 360px;
   width: $sidebar-expanded-width;
+  /* Tall enough for stats + history + foco without inner scroll in typical viewports */
+  height: auto;
+  min-height: 420px;
+  max-height: min(92svh, 720px);
   z-index: 998;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
   -webkit-backdrop-filter: blur(12px);
@@ -1102,11 +1105,11 @@ $sidebar-expanded-width: 220px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, max-height 0.25s ease;
 
   &:hover {
     transform: translateY(-50%) translateX(0);
-    padding: 1rem 0.75rem;
+    padding: 1rem 0.9rem;
     box-shadow: 4px 0 20px var(--shadow-color);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -1123,8 +1126,9 @@ $sidebar-expanded-width: 220px;
   }
 
   @include respond-to('md') {
-    width: 200px;
-    height: 330px;
+    width: min(280px, calc(100vw - 1.5rem));
+    min-height: 400px;
+    max-height: min(90svh, 640px);
     transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
       transform: translateY(-50%) translateX(0);
@@ -1132,8 +1136,9 @@ $sidebar-expanded-width: 220px;
   }
 
   @include respond-to('sm') {
-    width: 180px;
-    height: 300px;
+    width: min(260px, calc(100vw - 1.25rem));
+    min-height: 380px;
+    max-height: min(88svh, 600px);
     transform: translateY(-50%) translateX(calc(-100% + #{$sidebar-bar-width}));
     &:hover {
       transform: translateY(-50%) translateX(0);
@@ -1148,7 +1153,8 @@ $sidebar-expanded-width: 220px;
     transform: translateY(-50%) translateX(-100%);
     overflow: visible;
     pointer-events: none;
-    height: 300px;
+    min-height: 320px;
+    max-height: min(85svh, 560px);
 
     &:hover {
       transform: translateY(-50%) translateX(-100%);
@@ -1219,9 +1225,10 @@ $sidebar-expanded-width: 220px;
 /* No hover (touch): mostrar conteúdo quando sidebar aberta via tab */
 body.sidebar-open .left-sidebar {
   @include respond-to('xs') {
-    width: 200px;
-    height: 300px;
-    padding: 1rem 0.75rem;
+    width: min(280px, calc(100vw - 1rem));
+    min-height: 360px;
+    max-height: min(88svh, 620px);
+    padding: 1rem 0.85rem;
     overflow-y: auto;
     pointer-events: auto;
     transform: translateY(-50%) translateX(0);
@@ -1249,8 +1256,10 @@ body.sidebar-open .left-sidebar {
 
   body.sidebar-open .left-sidebar {
     transform: translateY(-50%) translateX(0);
-    padding: 1rem 0.75rem;
+    padding: 1rem 0.9rem;
     overflow-y: auto;
+    max-height: min(92svh, 720px);
+    min-height: 400px;
     box-shadow: 4px 0 20px var(--shadow-color);
 
     .left-sidebar__inner {
